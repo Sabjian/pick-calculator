@@ -365,6 +365,12 @@ function deleteRecord(id) {
 function renderHistory() {
   let records = JSON.parse(localStorage.getItem('pickRecords') || '[]');
   if (activeFilter !== 'all') records = records.filter(r => (r.zone || 'ambient') === activeFilter);
+  const toSortKey = r => {
+    const dateStr = r.savedAt.replace(/(\d{2})\/(\d{2})\/(\d{4}),?\s*/, '$3-$2-$1 ');
+    const timeStr = r.current || '00:00';
+    return dateStr + timeStr;
+  };
+  records.sort((a, b) => toSortKey(b).localeCompare(toSortKey(a)));
   const el = document.getElementById('historyList');
   if (!records.length) {
     const suffix = activeFilter !== 'all' ? ' for ' + activeFilter : '';
@@ -390,6 +396,7 @@ function renderHistory() {
         <div class="history-detail-item"><strong>${r.ogrp}%</strong>OGRP</div>
         <div class="history-detail-item"><strong>${r.uph}</strong>UPH</div>
         <div class="history-detail-item"><strong>${r.pickout}</strong>Pick out</div>
+        <div class="history-detail-item"><strong>${r.current||'—'}</strong>Current time</div>
         <div class="history-detail-item"><strong>${r.breaks}m</strong>Breaks</div>
         <div class="history-detail-item"><strong>${r.active||'—'}</strong>Active</div>
       </div>
