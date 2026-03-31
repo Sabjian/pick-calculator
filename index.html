@@ -66,6 +66,17 @@
   .zone-badge.chill   { background: #E6F1FB; color: #185FA5; }
   .zone-badge.freezer { background: #E1F5EE; color: #0F6E56; }
 
+  .filter-bar { display: flex; gap: 6px; margin-bottom: 14px; }
+  .filter-btn {
+    flex: 1; height: 34px; font-size: 12px; font-weight: 500;
+    border: 0.5px solid rgba(0,0,0,0.2); border-radius: 8px;
+    background: transparent; cursor: pointer; color: #666; transition: all 0.15s;
+  }
+  .filter-btn.active-all     { background: #1a1a1a; color: #fff; border-color: transparent; }
+  .filter-btn.active-ambient { background: #FAEEDA; color: #854F0B; border-color: #EF9F27; }
+  .filter-btn.active-chill   { background: #E6F1FB; color: #185FA5; border-color: #378ADD; }
+  .filter-btn.active-freezer { background: #E1F5EE; color: #0F6E56; border-color: #1D9E75; }
+
   .result-card {
     background: #fff; border: 0.5px solid rgba(0,0,0,0.12);
     border-radius: 12px; padding: 20px; margin: 16px 0; text-align: center;
@@ -120,17 +131,17 @@
     body { background: #1a1a1a; color: #f0f0f0; }
     .header { background: #242424; border-color: rgba(255,255,255,0.1); }
     .header h1 { color: #f0f0f0; }
-    .header p { color: #999; }
+    .header p, .field-label, .field-group label { color: #999; }
     .tab { border-color: rgba(255,255,255,0.2); color: #999; }
     .tab.active { background: #2e2e2e; color: #f0f0f0; border-color: rgba(255,255,255,0.4); }
-    .field-group label, .field-label { color: #999; }
     .field-group input { background: #242424; border-color: rgba(255,255,255,0.2); color: #f0f0f0; }
     .field-group input:focus { border-color: rgba(255,255,255,0.5); }
     .zone-btn { border-color: rgba(255,255,255,0.2); color: #999; }
+    .filter-btn { border-color: rgba(255,255,255,0.2); color: #999; }
+    .filter-btn.active-all { background: #f0f0f0; color: #1a1a1a; }
     .result-card { background: #242424; border-color: rgba(255,255,255,0.1); }
-    .result-label { color: #999; }
+    .result-label, .result-sub { color: #999; }
     .result-value { color: #f0f0f0; }
-    .result-sub { color: #999; }
     .metric { background: #2a2a2a; }
     .metric-label { color: #999; }
     .metric-value { color: #f0f0f0; }
@@ -138,11 +149,9 @@
     .btn:hover { background: #2a2a2a; }
     .btn.primary { background: #f0f0f0; color: #1a1a1a; }
     .history-item { background: #242424; border-color: rgba(255,255,255,0.1); }
-    .history-date { color: #999; }
-    .history-people span { color: #999; }
-    .history-details { border-color: rgba(255,255,255,0.1); }
-    .history-detail-item { color: #999; }
+    .history-date, .history-people span, .history-detail-item { color: #999; }
     .history-detail-item strong { color: #f0f0f0; }
+    .history-details { border-color: rgba(255,255,255,0.1); }
     .note-field { background: #242424; border-color: rgba(255,255,255,0.2); color: #f0f0f0; }
     .history-empty { color: #999; }
     .divider { border-color: rgba(255,255,255,0.1); }
@@ -204,19 +213,56 @@
   </div>
 
   <div id="history" class="section">
+    <div class="filter-bar">
+      <button class="filter-btn active-all" id="filter-all" onclick="setFilter('all')">All</button>
+      <button class="filter-btn" id="filter-ambient" onclick="setFilter('ambient')">Ambient</button>
+      <button class="filter-btn" id="filter-chill" onclick="setFilter('chill')">Chill</button>
+      <button class="filter-btn" id="filter-freezer" onclick="setFilter('freezer')">Freezer</button>
+    </div>
     <div id="historyList"></div>
   </div>
 </div>
 
 <script>
+const ZONES = ['ambient', 'chill', 'freezer'];
+const FIELDS = ['pickout', 'breaks', 'units', 'ogrp', 'uph', 'activepeople'];
+
 let selectedZone = 'ambient';
+let activeFilter = 'all';
+
+function zoneStateKey(zone) { return 'zoneState_' + zone; }
+
+function saveZoneState(zone) {
+  const state = {};
+  FIELDS.forEach(id => { state[id] = document.getElementById(id).value; });
+  localStorage.setItem(zoneStateKey(zone), JSON.stringify(state));
+}
+
+function loadZoneState(zone) {
+  const raw = localStorage.getItem(zoneStateKey(zone));
+  if (!raw) return;
+  const state = JSON.parse(raw);
+  FIELDS.forEach(id => {
+    if (state[id] !== undefined) document.getElementById(id).value = state[id];
+  });
+}
 
 function setZone(zone) {
+  saveZoneState(selectedZone);
   selectedZone = zone;
-  ['ambient','chill','freezer'].forEach(z => {
-    const btn = document.getElementById('zone-' + z);
-    btn.className = 'zone-btn' + (z === zone ? ' active-' + z : '');
+  ZONES.forEach(z => {
+    document.getElementById('zone-' + z).className = 'zone-btn' + (z === zone ? ' active-' + z : '');
   });
+  loadZoneState(zone);
+  calculate();
+}
+
+function setFilter(filter) {
+  activeFilter = filter;
+  ['all','ambient','chill','freezer'].forEach(f => {
+    document.getElementById('filter-' + f).className = 'filter-btn' + (f === filter ? ' active-' + filter : '');
+  });
+  renderHistory();
 }
 
 function switchTab(tab) {
@@ -266,7 +312,7 @@ function calculate() {
   return { timeRemHours, effectiveUnits, calcPeople };
 }
 
-['pickout','currenttime','breaks','units','ogrp','uph','activepeople'].forEach(id => {
+FIELDS.concat(['currenttime']).forEach(id => {
   document.getElementById(id).addEventListener('input', calculate);
 });
 calculate();
@@ -294,15 +340,18 @@ function saveRecord() {
     note: document.getElementById('noteField').value.trim(),
   });
   localStorage.setItem('pickRecords', JSON.stringify(records));
+  saveZoneState(selectedZone);
   document.getElementById('noteField').value = '';
   switchTab('history');
 }
 
 function resetForm() {
-  ['breaks','units','ogrp','uph','activepeople'].forEach(id => document.getElementById(id).value = '');
+  FIELDS.forEach(id => {
+    document.getElementById(id).value = id === 'pickout' ? '14:00' : '';
+  });
   document.getElementById('currenttime').value = now();
   document.getElementById('noteField').value = '';
-  setZone('ambient');
+  localStorage.removeItem(zoneStateKey(selectedZone));
   calculate();
 }
 
@@ -314,9 +363,14 @@ function deleteRecord(id) {
 }
 
 function renderHistory() {
-  const records = JSON.parse(localStorage.getItem('pickRecords') || '[]');
+  let records = JSON.parse(localStorage.getItem('pickRecords') || '[]');
+  if (activeFilter !== 'all') records = records.filter(r => (r.zone || 'ambient') === activeFilter);
   const el = document.getElementById('historyList');
-  if (!records.length) { el.innerHTML = '<div class="history-empty">No saved records yet.<br>Calculate and save from the calculator tab.</div>'; return; }
+  if (!records.length) {
+    const suffix = activeFilter !== 'all' ? ' for ' + activeFilter : '';
+    el.innerHTML = '<div class="history-empty">No saved records' + suffix + '.</div>';
+    return;
+  }
   el.innerHTML = records.map(r => {
     const zone = r.zone || 'ambient';
     const zoneLabel = zone.charAt(0).toUpperCase() + zone.slice(1);
