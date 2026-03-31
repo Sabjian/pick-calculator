@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Pick Calc">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Pick Calculator</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f5f5f3;
+    min-height: 100vh;
+    color: #1a1a1a;
+  }
+  .app { max-width: 480px; margin: 0 auto; padding: 0 0 80px 0; }
+
+  .header {
+    background: #fff;
+    border-bottom: 0.5px solid rgba(0,0,0,0.12);
+    padding: 16px 20px 12px;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .header h1 { font-size: 18px; font-weight: 500; letter-spacing: -0.3px; }
+  .header p { font-size: 12px; color: #666; margin-top: 2px; }
+
+  .tabs { display: flex; gap: 4px; padding: 12px 20px 0; }
+  .tab {
+    flex: 1; padding: 8px; font-size: 13px; font-weight: 500;
+    border: 0.5px solid rgba(0,0,0,0.25);
+    border-radius: 8px; background: transparent; color: #666; cursor: pointer; transition: all 0.15s;
+  }
+  .tab.active { background: #fff; color: #1a1a1a; border-color: rgba(0,0,0,0.4); }
+
+  .section { display: none; padding: 16px 20px; }
+  .section.active { display: block; }
+
+  .field-label { font-size: 12px; font-weight: 500; color: #666; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .field-group { margin-bottom: 12px; }
+  .field-group label { display: block; font-size: 12px; font-weight: 500; color: #666; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .field-group input {
+    width: 100%; height: 44px; padding: 0 12px; font-size: 16px;
+    border: 0.5px solid rgba(0,0,0,0.25); border-radius: 8px;
+    background: #fff; color: #1a1a1a; -webkit-appearance: none;
+  }
+  .field-group input:focus { outline: none; border-color: rgba(0,0,0,0.5); box-shadow: 0 0 0 2px rgba(0,0,0,0.06); }
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .zone-selector { display: flex; gap: 6px; margin-bottom: 12px; }
+  .zone-btn {
+    flex: 1; height: 40px; font-size: 13px; font-weight: 500;
+    border: 0.5px solid rgba(0,0,0,0.25); border-radius: 8px;
+    background: transparent; cursor: pointer; transition: all 0.15s; color: #666;
+  }
+  .zone-btn.active-ambient { background: #FAEEDA; color: #854F0B; border-color: #EF9F27; }
+  .zone-btn.active-chill   { background: #E6F1FB; color: #185FA5; border-color: #378ADD; }
+  .zone-btn.active-freezer { background: #E1F5EE; color: #0F6E56; border-color: #1D9E75; }
+
+  .zone-badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 6px; margin-left: 6px; }
+  .zone-badge.ambient { background: #FAEEDA; color: #854F0B; }
+  .zone-badge.chill   { background: #E6F1FB; color: #185FA5; }
+  .zone-badge.freezer { background: #E1F5EE; color: #0F6E56; }
+
+  .result-card {
+    background: #fff; border: 0.5px solid rgba(0,0,0,0.12);
+    border-radius: 12px; padding: 20px; margin: 16px 0; text-align: center;
+  }
+  .result-label { font-size: 12px; font-weight: 500; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .result-value { font-size: 48px; font-weight: 500; color: #1a1a1a; letter-spacing: -2px; line-height: 1; }
+  .result-sub { font-size: 13px; color: #666; margin-top: 8px; }
+  .result-error { font-size: 14px; color: #c0392b; font-style: italic; }
+
+  .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+  .metric { background: #f0efe8; border-radius: 8px; padding: 12px; }
+  .metric-label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+  .metric-value { font-size: 18px; font-weight: 500; color: #1a1a1a; }
+
+  .btn-row { display: flex; gap: 8px; margin-top: 4px; }
+  .btn {
+    flex: 1; height: 44px; font-size: 14px; font-weight: 500;
+    border: 0.5px solid rgba(0,0,0,0.25); border-radius: 8px;
+    background: transparent; color: #1a1a1a; cursor: pointer; transition: background 0.1s, transform 0.1s;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn:hover { background: #f0efe8; }
+  .btn.primary { background: #1a1a1a; color: #fff; border-color: transparent; }
+  .btn.primary:hover { opacity: 0.85; }
+
+  .history-empty { text-align: center; padding: 40px 20px; color: #666; font-size: 14px; }
+  .history-item {
+    background: #fff; border: 0.5px solid rgba(0,0,0,0.12);
+    border-radius: 12px; padding: 14px 16px; margin-bottom: 10px;
+  }
+  .history-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .history-date { font-size: 12px; color: #666; }
+  .history-people { font-size: 22px; font-weight: 500; letter-spacing: -0.5px; }
+  .history-people span { font-size: 13px; font-weight: 400; color: #666; letter-spacing: 0; }
+  .history-details {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+    border-top: 0.5px solid rgba(0,0,0,0.1); padding-top: 10px;
+  }
+  .history-detail-item { font-size: 11px; color: #666; }
+  .history-detail-item strong { display: block; font-size: 13px; font-weight: 500; color: #1a1a1a; }
+
+  .note-field {
+    width: 100%; padding: 10px 12px; font-size: 14px;
+    border: 0.5px solid rgba(0,0,0,0.25); border-radius: 8px;
+    background: #fff; color: #1a1a1a; resize: none; height: 64px;
+    font-family: inherit; margin-bottom: 10px;
+  }
+  .note-field:focus { outline: none; border-color: rgba(0,0,0,0.5); }
+  .divider { border: none; border-top: 0.5px solid rgba(0,0,0,0.1); margin: 16px 0; }
+
+  @media (prefers-color-scheme: dark) {
+    body { background: #1a1a1a; color: #f0f0f0; }
+    .header { background: #242424; border-color: rgba(255,255,255,0.1); }
+    .header h1 { color: #f0f0f0; }
+    .header p { color: #999; }
+    .tab { border-color: rgba(255,255,255,0.2); color: #999; }
+    .tab.active { background: #2e2e2e; color: #f0f0f0; border-color: rgba(255,255,255,0.4); }
+    .field-group label, .field-label { color: #999; }
+    .field-group input { background: #242424; border-color: rgba(255,255,255,0.2); color: #f0f0f0; }
+    .field-group input:focus { border-color: rgba(255,255,255,0.5); }
+    .zone-btn { border-color: rgba(255,255,255,0.2); color: #999; }
+    .result-card { background: #242424; border-color: rgba(255,255,255,0.1); }
+    .result-label { color: #999; }
+    .result-value { color: #f0f0f0; }
+    .result-sub { color: #999; }
+    .metric { background: #2a2a2a; }
+    .metric-label { color: #999; }
+    .metric-value { color: #f0f0f0; }
+    .btn { border-color: rgba(255,255,255,0.2); color: #f0f0f0; }
+    .btn:hover { background: #2a2a2a; }
+    .btn.primary { background: #f0f0f0; color: #1a1a1a; }
+    .history-item { background: #242424; border-color: rgba(255,255,255,0.1); }
+    .history-date { color: #999; }
+    .history-people span { color: #999; }
+    .history-details { border-color: rgba(255,255,255,0.1); }
+    .history-detail-item { color: #999; }
+    .history-detail-item strong { color: #f0f0f0; }
+    .note-field { background: #242424; border-color: rgba(255,255,255,0.2); color: #f0f0f0; }
+    .history-empty { color: #999; }
+    .divider { border-color: rgba(255,255,255,0.1); }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <h1>Pick calculator</h1>
+    <p>Workforce planning tool</p>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('calc')">Calculator</button>
+    <button class="tab" onclick="switchTab('history')">History</button>
+  </div>
+
+  <div id="calc" class="section active">
+    <div class="field-label">Zone</div>
+    <div class="zone-selector">
+      <button class="zone-btn active-ambient" id="zone-ambient" onclick="setZone('ambient')">Ambient</button>
+      <button class="zone-btn" id="zone-chill" onclick="setZone('chill')">Chill</button>
+      <button class="zone-btn" id="zone-freezer" onclick="setZone('freezer')">Freezer</button>
+    </div>
+
+    <div class="row-2">
+      <div class="field-group"><label>Pick out time</label><input type="time" id="pickout" value="14:00"></div>
+      <div class="field-group"><label>Current time</label><input type="time" id="currenttime"></div>
+    </div>
+    <div class="row-2">
+      <div class="field-group"><label>Breaks (mins)</label><input type="number" id="breaks" placeholder="0" min="0" inputmode="numeric"></div>
+      <div class="field-group"><label>Remaining units</label><input type="number" id="units" placeholder="0" min="0" inputmode="numeric"></div>
+    </div>
+    <div class="row-2">
+      <div class="field-group"><label>OGRP %</label><input type="number" id="ogrp" placeholder="0" min="0" max="100" inputmode="numeric"></div>
+      <div class="field-group"><label>UPH</label><input type="number" id="uph" placeholder="0" min="0" inputmode="numeric"></div>
+    </div>
+    <div class="field-group"><label>Active people</label><input type="number" id="activepeople" placeholder="0" min="0" inputmode="numeric"></div>
+
+    <div class="result-card">
+      <div class="result-label">Calculated people</div>
+      <div class="result-value" id="resultValue">—</div>
+      <div class="result-sub" id="resultSub"></div>
+    </div>
+
+    <div class="metrics-grid" id="metricsGrid" style="display:none">
+      <div class="metric"><div class="metric-label">Time remaining</div><div class="metric-value" id="mTime">—</div></div>
+      <div class="metric"><div class="metric-label">Effective units</div><div class="metric-value" id="mUnits">—</div></div>
+      <div class="metric"><div class="metric-label">Active people</div><div class="metric-value" id="mActive">—</div></div>
+      <div class="metric"><div class="metric-label">People needed</div><div class="metric-value" id="mNeeded">—</div></div>
+    </div>
+
+    <hr class="divider">
+    <textarea class="note-field" id="noteField" placeholder="Optional note for this record..."></textarea>
+    <div class="btn-row">
+      <button class="btn" onclick="resetForm()">Clear</button>
+      <button class="btn primary" onclick="saveRecord()">Save record</button>
+    </div>
+  </div>
+
+  <div id="history" class="section">
+    <div id="historyList"></div>
+  </div>
+</div>
+
+<script>
+let selectedZone = 'ambient';
+
+function setZone(zone) {
+  selectedZone = zone;
+  ['ambient','chill','freezer'].forEach(z => {
+    const btn = document.getElementById('zone-' + z);
+    btn.className = 'zone-btn' + (z === zone ? ' active-' + z : '');
+  });
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='calc')||(i===1&&tab==='history')));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(tab).classList.add('active');
+  if (tab === 'history') renderHistory();
+}
+
+function now() {
+  const d = new Date();
+  return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+}
+document.getElementById('currenttime').value = now();
+
+function getVals() {
+  const toMins = t => { if(!t) return null; const [h,m] = t.split(':').map(Number); return h*60+m; };
+  return {
+    pickout: toMins(document.getElementById('pickout').value),
+    current: toMins(document.getElementById('currenttime').value),
+    breaks: parseFloat(document.getElementById('breaks').value) || 0,
+    units: parseFloat(document.getElementById('units').value) || 0,
+    ogrp: parseFloat(document.getElementById('ogrp').value) || 0,
+    uph: parseFloat(document.getElementById('uph').value) || 0,
+    active: parseFloat(document.getElementById('activepeople').value) || 0,
+  };
+}
+
+function calculate() {
+  const v = getVals();
+  const resultValue = document.getElementById('resultValue');
+  const resultSub = document.getElementById('resultSub');
+  const metricsGrid = document.getElementById('metricsGrid');
+  if (!v.pickout || !v.current) { resultValue.innerHTML = '<span class="result-error">Enter times</span>'; metricsGrid.style.display='none'; return null; }
+  const timeRemHours = (v.pickout - v.current - v.breaks) / 60;
+  if (timeRemHours <= 0) { resultValue.innerHTML = '<span class="result-error">No time remaining</span>'; metricsGrid.style.display='none'; return null; }
+  if (v.uph <= 0) { resultValue.innerHTML = '<span class="result-error">Enter UPH</span>'; metricsGrid.style.display='none'; return null; }
+  const effectiveUnits = v.units - (v.units * v.ogrp / 100);
+  const calcPeople = (effectiveUnits / v.uph) / timeRemHours;
+  resultValue.textContent = Math.ceil(calcPeople);
+  resultSub.textContent = calcPeople.toFixed(2) + ' exact';
+  document.getElementById('mTime').textContent = timeRemHours.toFixed(2) + 'h';
+  document.getElementById('mUnits').textContent = Math.round(effectiveUnits).toLocaleString();
+  document.getElementById('mActive').textContent = v.active || '—';
+  document.getElementById('mNeeded').textContent = Math.ceil(calcPeople);
+  metricsGrid.style.display = 'grid';
+  return { timeRemHours, effectiveUnits, calcPeople };
+}
+
+['pickout','currenttime','breaks','units','ogrp','uph','activepeople'].forEach(id => {
+  document.getElementById(id).addEventListener('input', calculate);
+});
+calculate();
+
+function saveRecord() {
+  const result = calculate();
+  if (!result) { alert('Fix errors before saving.'); return; }
+  const v = getVals();
+  const records = JSON.parse(localStorage.getItem('pickRecords') || '[]');
+  const toTime = mins => { if(!mins) return '—'; return Math.floor(mins/60).toString().padStart(2,'0')+':'+String(mins%60).padStart(2,'0'); };
+  records.unshift({
+    id: Date.now(),
+    savedAt: new Date().toLocaleString('en-AU', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}),
+    zone: selectedZone,
+    pickout: toTime(v.pickout),
+    current: toTime(v.current),
+    breaks: v.breaks,
+    units: v.units,
+    ogrp: v.ogrp,
+    uph: v.uph,
+    active: v.active,
+    timeRemH: result.timeRemHours,
+    effectiveUnits: result.effectiveUnits,
+    calcPeople: result.calcPeople,
+    note: document.getElementById('noteField').value.trim(),
+  });
+  localStorage.setItem('pickRecords', JSON.stringify(records));
+  document.getElementById('noteField').value = '';
+  switchTab('history');
+}
+
+function resetForm() {
+  ['breaks','units','ogrp','uph','activepeople'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('currenttime').value = now();
+  document.getElementById('noteField').value = '';
+  setZone('ambient');
+  calculate();
+}
+
+function deleteRecord(id) {
+  if (!confirm('Delete this record?')) return;
+  const records = JSON.parse(localStorage.getItem('pickRecords') || '[]').filter(r => r.id !== id);
+  localStorage.setItem('pickRecords', JSON.stringify(records));
+  renderHistory();
+}
+
+function renderHistory() {
+  const records = JSON.parse(localStorage.getItem('pickRecords') || '[]');
+  const el = document.getElementById('historyList');
+  if (!records.length) { el.innerHTML = '<div class="history-empty">No saved records yet.<br>Calculate and save from the calculator tab.</div>'; return; }
+  el.innerHTML = records.map(r => {
+    const zone = r.zone || 'ambient';
+    const zoneLabel = zone.charAt(0).toUpperCase() + zone.slice(1);
+    return `<div class="history-item">
+      <div class="history-header">
+        <div>
+          <div class="history-date">${r.savedAt}<span class="zone-badge ${zone}">${zoneLabel}</span></div>
+          ${r.note ? '<div style="font-size:12px;color:#999;margin-top:2px;font-style:italic">'+r.note+'</div>' : ''}
+        </div>
+        <div style="text-align:right">
+          <div class="history-people">${Math.ceil(r.calcPeople)} <span>people</span></div>
+          <button onclick="deleteRecord(${r.id})" style="font-size:11px;color:#999;background:none;border:none;cursor:pointer;padding:2px 0;">delete</button>
+        </div>
+      </div>
+      <div class="history-details">
+        <div class="history-detail-item"><strong>${r.units.toLocaleString()}</strong>Rem. units</div>
+        <div class="history-detail-item"><strong>${r.ogrp}%</strong>OGRP</div>
+        <div class="history-detail-item"><strong>${r.uph}</strong>UPH</div>
+        <div class="history-detail-item"><strong>${r.pickout}</strong>Pick out</div>
+        <div class="history-detail-item"><strong>${r.breaks}m</strong>Breaks</div>
+        <div class="history-detail-item"><strong>${r.active||'—'}</strong>Active</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
+</script>
+</body>
+</html>
