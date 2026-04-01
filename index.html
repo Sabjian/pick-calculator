@@ -11,151 +11,106 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Pick Calculator</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #f5f5f3;
-    min-height: 100vh;
-    color: #1a1a1a;
-  }
-  .app { max-width: 480px; margin: 0 auto; padding: 0 0 80px 0; }
-
-  .header {
-    background: #fff;
-    border-bottom: 0.5px solid rgba(0,0,0,0.12);
-    padding: 16px 20px 12px;
-    position: sticky; top: 0; z-index: 10;
-  }
-  .header h1 { font-size: 18px; font-weight: 500; letter-spacing: -0.3px; }
-  .header p { font-size: 12px; color: #666; margin-top: 2px; }
-
-  .tabs { display: flex; gap: 4px; padding: 12px 20px 0; }
-  .tab {
-    flex: 1; padding: 8px; font-size: 13px; font-weight: 500;
-    border: 0.5px solid rgba(0,0,0,0.25);
-    border-radius: 8px; background: transparent; color: #666; cursor: pointer; transition: all 0.15s;
-  }
-  .tab.active { background: #fff; color: #1a1a1a; border-color: rgba(0,0,0,0.4); }
-
-  .section { display: none; padding: 16px 20px; }
-  .section.active { display: block; }
-
-  .field-label { font-size: 12px; font-weight: 500; color: #666; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .field-group { margin-bottom: 12px; }
-  .field-group label { display: block; font-size: 12px; font-weight: 500; color: #666; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .field-group input {
-    width: 100%; height: 44px; padding: 0 12px; font-size: 16px;
-    border: 0.5px solid rgba(0,0,0,0.25); border-radius: 8px;
-    background: #fff; color: #1a1a1a; -webkit-appearance: none;
-  }
-  .field-group input:focus { outline: none; border-color: rgba(0,0,0,0.5); box-shadow: 0 0 0 2px rgba(0,0,0,0.06); }
-  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-  .zone-selector { display: flex; gap: 6px; margin-bottom: 12px; }
-  .zone-btn {
-    flex: 1; height: 40px; font-size: 13px; font-weight: 500;
-    border: 0.5px solid rgba(0,0,0,0.25); border-radius: 8px;
-    background: transparent; cursor: pointer; transition: all 0.15s; color: #666;
-  }
-  .zone-btn.active-ambient { background: #FAEEDA; color: #854F0B; border-color: #EF9F27; }
-  .zone-btn.active-chill   { background: #E6F1FB; color: #185FA5; border-color: #378ADD; }
-  .zone-btn.active-freezer { background: #E1F5EE; color: #0F6E56; border-color: #1D9E75; }
-
-  .zone-badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 6px; margin-left: 6px; }
-  .zone-badge.ambient { background: #FAEEDA; color: #854F0B; }
-  .zone-badge.chill   { background: #E6F1FB; color: #185FA5; }
-  .zone-badge.freezer { background: #E1F5EE; color: #0F6E56; }
-
-  .filter-bar { display: flex; gap: 6px; margin-bottom: 14px; }
-  .filter-btn {
-    flex: 1; height: 34px; font-size: 12px; font-weight: 500;
-    border: 0.5px solid rgba(0,0,0,0.2); border-radius: 8px;
-    background: transparent; cursor: pointer; color: #666; transition: all 0.15s;
-  }
-  .filter-btn.active-all     { background: #1a1a1a; color: #fff; border-color: transparent; }
-  .filter-btn.active-ambient { background: #FAEEDA; color: #854F0B; border-color: #EF9F27; }
-  .filter-btn.active-chill   { background: #E6F1FB; color: #185FA5; border-color: #378ADD; }
-  .filter-btn.active-freezer { background: #E1F5EE; color: #0F6E56; border-color: #1D9E75; }
-
-  .result-card {
-    background: #fff; border: 0.5px solid rgba(0,0,0,0.12);
-    border-radius: 12px; padding: 20px; margin: 16px 0; text-align: center;
-  }
-  .result-label { font-size: 12px; font-weight: 500; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-  .result-value { font-size: 48px; font-weight: 500; color: #1a1a1a; letter-spacing: -2px; line-height: 1; }
-  .result-sub { font-size: 13px; color: #666; margin-top: 8px; }
-  .result-error { font-size: 14px; color: #c0392b; font-style: italic; }
-
-  .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
-  .metric { background: #f0efe8; border-radius: 8px; padding: 12px; }
-  .metric-label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
-  .metric-value { font-size: 18px; font-weight: 500; color: #1a1a1a; }
-
-  .btn-row { display: flex; gap: 8px; margin-top: 4px; }
-  .btn {
-    flex: 1; height: 44px; font-size: 14px; font-weight: 500;
-    border: 0.5px solid rgba(0,0,0,0.25); border-radius: 8px;
-    background: transparent; color: #1a1a1a; cursor: pointer; transition: background 0.1s, transform 0.1s;
-  }
-  .btn:active { transform: scale(0.98); }
-  .btn:hover { background: #f0efe8; }
-  .btn.primary { background: #1a1a1a; color: #fff; border-color: transparent; }
-  .btn.primary:hover { opacity: 0.85; }
-
-  .history-empty { text-align: center; padding: 40px 20px; color: #666; font-size: 14px; }
-  .history-item {
-    background: #fff; border: 0.5px solid rgba(0,0,0,0.12);
-    border-radius: 12px; padding: 14px 16px; margin-bottom: 10px;
-  }
-  .history-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-  .history-date { font-size: 12px; color: #666; }
-  .history-people { font-size: 22px; font-weight: 500; letter-spacing: -0.5px; }
-  .history-people span { font-size: 13px; font-weight: 400; color: #666; letter-spacing: 0; }
-  .history-details {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
-    border-top: 0.5px solid rgba(0,0,0,0.1); padding-top: 10px;
-  }
-  .history-detail-item { font-size: 11px; color: #666; }
-  .history-detail-item strong { display: block; font-size: 13px; font-weight: 500; color: #1a1a1a; }
-
-  .note-field {
-    width: 100%; padding: 10px 12px; font-size: 14px;
-    border: 0.5px solid rgba(0,0,0,0.25); border-radius: 8px;
-    background: #fff; color: #1a1a1a; resize: none; height: 64px;
-    font-family: inherit; margin-bottom: 10px;
-  }
-  .note-field:focus { outline: none; border-color: rgba(0,0,0,0.5); }
-  .divider { border: none; border-top: 0.5px solid rgba(0,0,0,0.1); margin: 16px 0; }
-
-  @media (prefers-color-scheme: dark) {
-    body { background: #1a1a1a; color: #f0f0f0; }
-    .header { background: #242424; border-color: rgba(255,255,255,0.1); }
-    .header h1 { color: #f0f0f0; }
-    .header p, .field-label, .field-group label { color: #999; }
-    .tab { border-color: rgba(255,255,255,0.2); color: #999; }
-    .tab.active { background: #2e2e2e; color: #f0f0f0; border-color: rgba(255,255,255,0.4); }
-    .field-group input { background: #242424; border-color: rgba(255,255,255,0.2); color: #f0f0f0; }
-    .field-group input:focus { border-color: rgba(255,255,255,0.5); }
-    .zone-btn { border-color: rgba(255,255,255,0.2); color: #999; }
-    .filter-btn { border-color: rgba(255,255,255,0.2); color: #999; }
-    .filter-btn.active-all { background: #f0f0f0; color: #1a1a1a; }
-    .result-card { background: #242424; border-color: rgba(255,255,255,0.1); }
-    .result-label, .result-sub { color: #999; }
-    .result-value { color: #f0f0f0; }
-    .metric { background: #2a2a2a; }
-    .metric-label { color: #999; }
-    .metric-value { color: #f0f0f0; }
-    .btn { border-color: rgba(255,255,255,0.2); color: #f0f0f0; }
-    .btn:hover { background: #2a2a2a; }
-    .btn.primary { background: #f0f0f0; color: #1a1a1a; }
-    .history-item { background: #242424; border-color: rgba(255,255,255,0.1); }
-    .history-date, .history-people span, .history-detail-item { color: #999; }
-    .history-detail-item strong { color: #f0f0f0; }
-    .history-details { border-color: rgba(255,255,255,0.1); }
-    .note-field { background: #242424; border-color: rgba(255,255,255,0.2); color: #f0f0f0; }
-    .history-empty { color: #999; }
-    .divider { border-color: rgba(255,255,255,0.1); }
-  }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f3; min-height: 100vh; color: #1a1a1a; }
+.app { max-width: 480px; margin: 0 auto; padding: 0 0 80px 0; }
+.header { background: #fff; border-bottom: 0.5px solid rgba(0,0,0,0.12); padding: 16px 20px 12px; position: sticky; top: 0; z-index: 10; }
+.header h1 { font-size: 18px; font-weight: 500; letter-spacing: -0.3px; }
+.header p { font-size: 12px; color: #666; margin-top: 2px; }
+.tabs { display: flex; gap: 4px; padding: 12px 20px 0; }
+.tab { flex: 1; padding: 8px; font-size: 13px; font-weight: 500; border: 0.5px solid rgba(0,0,0,0.25); border-radius: 8px; background: transparent; color: #666; cursor: pointer; transition: all 0.15s; }
+.tab.active { background: #fff; color: #1a1a1a; border-color: rgba(0,0,0,0.4); }
+.section { display: none; padding: 16px 20px; }
+.section.active { display: block; }
+.flabel { font-size: 12px; font-weight: 500; color: #666; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; display: block; }
+.fgroup { margin-bottom: 12px; }
+.fgroup input { width: 100%; height: 44px; padding: 0 12px; font-size: 16px; border: 0.5px solid rgba(0,0,0,0.25); border-radius: 8px; background: #fff; color: #1a1a1a; -webkit-appearance: none; }
+.fgroup input:focus { outline: none; border-color: rgba(0,0,0,0.5); box-shadow: 0 0 0 2px rgba(0,0,0,0.06); }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.zone-sel { display: flex; gap: 6px; margin-bottom: 12px; }
+.zbtn { flex: 1; height: 40px; font-size: 13px; font-weight: 500; border: 0.5px solid rgba(0,0,0,0.25); border-radius: 8px; background: transparent; cursor: pointer; color: #666; }
+.zbtn.za { background: #FAEEDA; color: #854F0B; border-color: #EF9F27; }
+.zbtn.zc { background: #E6F1FB; color: #185FA5; border-color: #378ADD; }
+.zbtn.zf { background: #E1F5EE; color: #0F6E56; border-color: #1D9E75; }
+.result-card { background: #fff; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 12px; padding: 18px; margin: 12px 0; }
+.result-split { display: grid; grid-template-columns: 1fr 0.5px 1fr; }
+.result-divider { background: rgba(0,0,0,0.12); }
+.result-col { text-align: center; padding: 0 12px; }
+.rlabel { font-size: 11px; font-weight: 500; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.rvalue { font-size: 44px; font-weight: 500; color: #1a1a1a; letter-spacing: -2px; line-height: 1; }
+.rsub { font-size: 12px; color: #666; margin-top: 6px; }
+.rerr { font-size: 13px; color: #c0392b; font-style: italic; }
+.delta-value { font-size: 44px; font-weight: 500; letter-spacing: -2px; line-height: 1; }
+.delta-ok   { color: #888; }
+.delta-warn { color: #BA7517; }
+.delta-crit { color: #c0392b; }
+.delta-sub { font-size: 12px; margin-top: 6px; }
+.delta-sub.ok   { color: #888; }
+.delta-sub.warn { color: #BA7517; }
+.delta-sub.crit { color: #c0392b; }
+.mgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.metric { background: #f0efe8; border-radius: 8px; padding: 10px; }
+.mlabel { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 3px; }
+.mval { font-size: 16px; font-weight: 500; color: #1a1a1a; }
+.btnrow { display: flex; gap: 8px; margin-top: 4px; }
+.btn { flex: 1; height: 44px; font-size: 14px; font-weight: 500; border: 0.5px solid rgba(0,0,0,0.25); border-radius: 8px; background: transparent; color: #1a1a1a; cursor: pointer; }
+.btn:active { transform: scale(0.98); }
+.btn.primary { background: #1a1a1a; color: #fff; border-color: transparent; }
+.divider { border: none; border-top: 0.5px solid rgba(0,0,0,0.1); margin: 12px 0; }
+.note-field { width: 100%; padding: 10px 12px; font-size: 14px; border: 0.5px solid rgba(0,0,0,0.25); border-radius: 8px; background: #fff; color: #1a1a1a; resize: none; height: 64px; font-family: inherit; margin-bottom: 10px; }
+.note-field:focus { outline: none; border-color: rgba(0,0,0,0.5); }
+.filter-bar { display: flex; gap: 6px; margin-bottom: 14px; }
+.fbtn { flex: 1; height: 34px; font-size: 12px; font-weight: 500; border: 0.5px solid rgba(0,0,0,0.2); border-radius: 8px; background: transparent; cursor: pointer; color: #666; }
+.fbtn.fall { background: #1a1a1a; color: #fff; border-color: transparent; }
+.fbtn.famb { background: #FAEEDA; color: #854F0B; border-color: #EF9F27; }
+.fbtn.fchi { background: #E6F1FB; color: #185FA5; border-color: #378ADD; }
+.fbtn.ffre { background: #E1F5EE; color: #0F6E56; border-color: #1D9E75; }
+.zbadge { display: inline-block; font-size: 10px; font-weight: 500; padding: 1px 7px; border-radius: 5px; margin-left: 5px; }
+.zbadge.ambient { background: #FAEEDA; color: #854F0B; }
+.zbadge.chill   { background: #E6F1FB; color: #185FA5; }
+.zbadge.freezer { background: #E1F5EE; color: #0F6E56; }
+.hitem { background: #fff; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; }
+.hhead { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.hdate { font-size: 11px; color: #666; }
+.hgrid { display: grid; gap: 0; }
+.hgrid-7 { grid-template-columns: repeat(7, 1fr); border-bottom: 0.5px solid rgba(0,0,0,0.1); padding-bottom: 8px; margin-bottom: 8px; }
+.hgrid-2 { grid-template-columns: repeat(2, 1fr); }
+.hgcol { text-align: center; padding: 4px 2px; }
+.hgcol + .hgcol { border-left: 0.5px solid rgba(0,0,0,0.1); }
+.hglabel { font-size: 9px; color: #666; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 3px; }
+.hgval { font-size: 13px; font-weight: 500; color: #1a1a1a; }
+.hempty { text-align: center; padding: 40px 20px; color: #666; font-size: 14px; }
+@media (prefers-color-scheme: dark) {
+  body { background: #1a1a1a; color: #f0f0f0; }
+  .header { background: #242424; border-color: rgba(255,255,255,0.1); }
+  .header h1 { color: #f0f0f0; }
+  .header p, .flabel { color: #999; }
+  .tab { border-color: rgba(255,255,255,0.2); color: #999; }
+  .tab.active { background: #2e2e2e; color: #f0f0f0; border-color: rgba(255,255,255,0.4); }
+  .fgroup input { background: #242424; border-color: rgba(255,255,255,0.2); color: #f0f0f0; }
+  .zbtn { border-color: rgba(255,255,255,0.2); color: #999; }
+  .result-card { background: #242424; border-color: rgba(255,255,255,0.1); }
+  .result-divider { background: rgba(255,255,255,0.1); }
+  .rlabel, .rsub { color: #999; }
+  .rvalue { color: #f0f0f0; }
+  .delta-ok { color: #999; }
+  .delta-sub.ok { color: #999; }
+  .metric { background: #2a2a2a; }
+  .mlabel { color: #999; }
+  .mval { color: #f0f0f0; }
+  .btn { border-color: rgba(255,255,255,0.2); color: #f0f0f0; }
+  .btn.primary { background: #f0f0f0; color: #1a1a1a; }
+  .fbtn { border-color: rgba(255,255,255,0.2); color: #999; }
+  .fbtn.fall { background: #f0f0f0; color: #1a1a1a; }
+  .note-field { background: #242424; border-color: rgba(255,255,255,0.2); color: #f0f0f0; }
+  .hitem { background: #242424; border-color: rgba(255,255,255,0.1); }
+  .hdate, .hglabel { color: #999; }
+  .hgval { color: #f0f0f0; }
+  .hgcol + .hgcol { border-color: rgba(255,255,255,0.1); }
+  .hgrid-7 { border-color: rgba(255,255,255,0.1); }
+  .divider { border-color: rgba(255,255,255,0.1); }
+  .hempty { color: #999; }
+}
 </style>
 </head>
 <body>
@@ -170,43 +125,52 @@
   </div>
 
   <div id="calc" class="section active">
-    <div class="field-label">Zone</div>
-    <div class="zone-selector">
-      <button class="zone-btn active-ambient" id="zone-ambient" onclick="setZone('ambient')">Ambient</button>
-      <button class="zone-btn" id="zone-chill" onclick="setZone('chill')">Chill</button>
-      <button class="zone-btn" id="zone-freezer" onclick="setZone('freezer')">Freezer</button>
+    <label class="flabel">Zone</label>
+    <div class="zone-sel">
+      <button class="zbtn za" id="zone-ambient" onclick="setZone('ambient')">Ambient</button>
+      <button class="zbtn" id="zone-chill" onclick="setZone('chill')">Chill</button>
+      <button class="zbtn" id="zone-freezer" onclick="setZone('freezer')">Freezer</button>
     </div>
-
-    <div class="row-2">
-      <div class="field-group"><label>Pick out time</label><input type="time" id="pickout" value="14:00"></div>
-      <div class="field-group"><label>Current time</label><input type="time" id="currenttime"></div>
+    <div class="row2">
+      <div class="fgroup"><label class="flabel">Pick out time</label><input type="time" id="pickout" value="14:00"></div>
+      <div class="fgroup"><label class="flabel">Current time</label><input type="time" id="currenttime"></div>
     </div>
-    <div class="row-2">
-      <div class="field-group"><label>Breaks (mins)</label><input type="number" id="breaks" placeholder="0" min="0" inputmode="numeric"></div>
-      <div class="field-group"><label>Remaining units</label><input type="number" id="units" placeholder="0" min="0" inputmode="numeric"></div>
+    <div class="row2">
+      <div class="fgroup"><label class="flabel">Breaks (mins)</label><input type="number" id="breaks" placeholder="0" min="0" inputmode="numeric"></div>
+      <div class="fgroup"><label class="flabel">Remaining units</label><input type="number" id="units" placeholder="0" min="0" inputmode="numeric"></div>
     </div>
-    <div class="row-2">
-      <div class="field-group"><label>OGRP %</label><input type="number" id="ogrp" placeholder="0" min="0" max="100" inputmode="numeric"></div>
-      <div class="field-group"><label>UPH</label><input type="number" id="uph" placeholder="0" min="0" inputmode="numeric"></div>
+    <div class="row2">
+      <div class="fgroup"><label class="flabel">OGRP %</label><input type="number" id="ogrp" placeholder="0" min="0" max="100" inputmode="numeric"></div>
+      <div class="fgroup"><label class="flabel">UPH</label><input type="number" id="uph" placeholder="0" min="0" inputmode="numeric"></div>
     </div>
-    <div class="field-group"><label>Active people</label><input type="number" id="activepeople" placeholder="0" min="0" inputmode="numeric"></div>
+    <div class="fgroup"><label class="flabel">Active people</label><input type="number" id="activepeople" placeholder="0" min="0" inputmode="numeric"></div>
 
     <div class="result-card">
-      <div class="result-label">Calculated people</div>
-      <div class="result-value" id="resultValue">—</div>
-      <div class="result-sub" id="resultSub"></div>
+      <div class="result-split">
+        <div class="result-col">
+          <div class="rlabel">Calculated</div>
+          <div class="rvalue" id="resultValue">—</div>
+          <div class="rsub" id="resultSub"></div>
+        </div>
+        <div class="result-divider"></div>
+        <div class="result-col">
+          <div class="rlabel">Delta</div>
+          <div class="delta-value delta-ok" id="deltaValue">—</div>
+          <div class="delta-sub ok" id="deltaSub"></div>
+        </div>
+      </div>
     </div>
 
-    <div class="metrics-grid" id="metricsGrid" style="display:none">
-      <div class="metric"><div class="metric-label">Time remaining</div><div class="metric-value" id="mTime">—</div></div>
-      <div class="metric"><div class="metric-label">Effective units</div><div class="metric-value" id="mUnits">—</div></div>
-      <div class="metric"><div class="metric-label">Active people</div><div class="metric-value" id="mActive">—</div></div>
-      <div class="metric"><div class="metric-label">People needed</div><div class="metric-value" id="mNeeded">—</div></div>
+    <div class="mgrid" id="metricsGrid" style="display:none">
+      <div class="metric"><div class="mlabel">Time remaining</div><div class="mval" id="mTime">—</div></div>
+      <div class="metric"><div class="mlabel">Effective units</div><div class="mval" id="mUnits">—</div></div>
+      <div class="metric"><div class="mlabel">Active people</div><div class="mval" id="mActive">—</div></div>
+      <div class="metric"><div class="mlabel">People needed</div><div class="mval" id="mNeeded">—</div></div>
     </div>
 
     <hr class="divider">
-    <textarea class="note-field" id="noteField" placeholder="Optional note for this record..."></textarea>
-    <div class="btn-row">
+    <textarea class="note-field" id="noteField" placeholder="Optional note..."></textarea>
+    <div class="btnrow">
       <button class="btn" onclick="resetForm()">Clear</button>
       <button class="btn primary" onclick="saveRecord()">Save record</button>
     </div>
@@ -214,130 +178,144 @@
 
   <div id="history" class="section">
     <div class="filter-bar">
-      <button class="filter-btn active-all" id="filter-all" onclick="setFilter('all')">All</button>
-      <button class="filter-btn" id="filter-ambient" onclick="setFilter('ambient')">Ambient</button>
-      <button class="filter-btn" id="filter-chill" onclick="setFilter('chill')">Chill</button>
-      <button class="filter-btn" id="filter-freezer" onclick="setFilter('freezer')">Freezer</button>
+      <button class="fbtn fall" id="filter-all" onclick="setFilter('all')">All</button>
+      <button class="fbtn" id="filter-ambient" onclick="setFilter('ambient')">Ambient</button>
+      <button class="fbtn" id="filter-chill" onclick="setFilter('chill')">Chill</button>
+      <button class="fbtn" id="filter-freezer" onclick="setFilter('freezer')">Freezer</button>
     </div>
     <div id="historyList"></div>
   </div>
 </div>
 
 <script>
-const ZONES = ['ambient', 'chill', 'freezer'];
-const FIELDS = ['pickout', 'breaks', 'units', 'ogrp', 'uph', 'activepeople'];
-
+const ZONES = ['ambient','chill','freezer'];
+const FIELDS = ['pickout','breaks','units','ogrp','uph','activepeople'];
 let selectedZone = 'ambient';
 let activeFilter = 'all';
 
-function zoneStateKey(zone) { return 'zoneState_' + zone; }
-
-function saveZoneState(zone) {
-  const state = {};
-  FIELDS.forEach(id => { state[id] = document.getElementById(id).value; });
-  localStorage.setItem(zoneStateKey(zone), JSON.stringify(state));
+function now() {
+  const d = new Date();
+  return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
 }
+document.getElementById('currenttime').value = now();
 
-function loadZoneState(zone) {
-  const raw = localStorage.getItem(zoneStateKey(zone));
+function zKey(z) { return 'zoneState_'+z; }
+function saveZoneState(z) {
+  const s = {};
+  FIELDS.forEach(id => s[id] = document.getElementById(id).value);
+  localStorage.setItem(zKey(z), JSON.stringify(s));
+}
+function loadZoneState(z) {
+  const raw = localStorage.getItem(zKey(z));
   if (!raw) return;
-  const state = JSON.parse(raw);
-  FIELDS.forEach(id => {
-    if (state[id] !== undefined) document.getElementById(id).value = state[id];
-  });
+  const s = JSON.parse(raw);
+  FIELDS.forEach(id => { if (s[id] !== undefined) document.getElementById(id).value = s[id]; });
 }
 
 function setZone(zone) {
   saveZoneState(selectedZone);
   selectedZone = zone;
   ZONES.forEach(z => {
-    document.getElementById('zone-' + z).className = 'zone-btn' + (z === zone ? ' active-' + z : '');
+    const cls = z==='ambient'?'za':z==='chill'?'zc':'zf';
+    document.getElementById('zone-'+z).className = 'zbtn'+(z===zone?' '+cls:'');
   });
   loadZoneState(zone);
   calculate();
 }
 
-function setFilter(filter) {
-  activeFilter = filter;
-  ['all','ambient','chill','freezer'].forEach(f => {
-    document.getElementById('filter-' + f).className = 'filter-btn' + (f === filter ? ' active-' + filter : '');
+function setFilter(f) {
+  activeFilter = f;
+  ['all','ambient','chill','freezer'].forEach(x => {
+    const cls = x==='all'?'fall':x==='ambient'?'famb':x==='chill'?'fchi':'ffre';
+    document.getElementById('filter-'+x).className = 'fbtn'+(x===f?' '+cls:'');
   });
   renderHistory();
 }
 
 function switchTab(tab) {
-  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='calc')||(i===1&&tab==='history')));
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active',(i===0&&tab==='calc')||(i===1&&tab==='history')));
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.getElementById(tab).classList.add('active');
-  if (tab === 'history') renderHistory();
+  if (tab==='history') renderHistory();
 }
-
-function now() {
-  const d = new Date();
-  return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
-}
-document.getElementById('currenttime').value = now();
 
 function getVals() {
-  const toMins = t => { if(!t) return null; const [h,m] = t.split(':').map(Number); return h*60+m; };
+  const toMins = t => { if(!t) return null; const [h,m]=t.split(':').map(Number); return h*60+m; };
   return {
     pickout: toMins(document.getElementById('pickout').value),
     current: toMins(document.getElementById('currenttime').value),
-    breaks: parseFloat(document.getElementById('breaks').value) || 0,
-    units: parseFloat(document.getElementById('units').value) || 0,
-    ogrp: parseFloat(document.getElementById('ogrp').value) || 0,
-    uph: parseFloat(document.getElementById('uph').value) || 0,
-    active: parseFloat(document.getElementById('activepeople').value) || 0,
+    breaks: parseFloat(document.getElementById('breaks').value)||0,
+    units: parseFloat(document.getElementById('units').value)||0,
+    ogrp: parseFloat(document.getElementById('ogrp').value)||0,
+    uph: parseFloat(document.getElementById('uph').value)||0,
+    active: parseFloat(document.getElementById('activepeople').value)||0,
   };
+}
+
+function getDeltaInfo(delta) {
+  if (delta === null) return { cls: 'ok',   label: 'enter active people' };
+  if (delta >= 4)     return { cls: 'crit', label: 'overstaffed' };
+  if (delta >= 2)     return { cls: 'warn', label: 'overstaffed' };
+  if (delta >= 0)     return { cls: 'ok',   label: 'on track' };
+  if (delta >= -3)    return { cls: 'warn', label: 'short-staffed' };
+  return                     { cls: 'crit', label: 'short-staffed' };
+}
+
+function formatDelta(delta) {
+  if (delta === null) return '—';
+  return (delta > 0 ? '+' : '') + delta;
 }
 
 function calculate() {
   const v = getVals();
-  const resultValue = document.getElementById('resultValue');
-  const resultSub = document.getElementById('resultSub');
-  const metricsGrid = document.getElementById('metricsGrid');
-  if (!v.pickout || !v.current) { resultValue.innerHTML = '<span class="result-error">Enter times</span>'; metricsGrid.style.display='none'; return null; }
-  const timeRemHours = (v.pickout - v.current - v.breaks) / 60;
-  if (timeRemHours <= 0) { resultValue.innerHTML = '<span class="result-error">No time remaining</span>'; metricsGrid.style.display='none'; return null; }
-  if (v.uph <= 0) { resultValue.innerHTML = '<span class="result-error">Enter UPH</span>'; metricsGrid.style.display='none'; return null; }
-  const effectiveUnits = v.units - (v.units * v.ogrp / 100);
-  const calcPeople = (effectiveUnits / v.uph) / timeRemHours;
-  resultValue.textContent = Math.ceil(calcPeople);
-  resultSub.textContent = calcPeople.toFixed(2) + ' exact';
-  document.getElementById('mTime').textContent = timeRemHours.toFixed(2) + 'h';
-  document.getElementById('mUnits').textContent = Math.round(effectiveUnits).toLocaleString();
-  document.getElementById('mActive').textContent = v.active || '—';
-  document.getElementById('mNeeded').textContent = Math.ceil(calcPeople);
-  metricsGrid.style.display = 'grid';
-  return { timeRemHours, effectiveUnits, calcPeople };
+  const rv = document.getElementById('resultValue');
+  const rs = document.getElementById('resultSub');
+  const dv = document.getElementById('deltaValue');
+  const ds = document.getElementById('deltaSub');
+  const mg = document.getElementById('metricsGrid');
+  const clearDelta = () => { dv.textContent='—'; dv.className='delta-value delta-ok'; ds.textContent=''; ds.className='delta-sub ok'; };
+  if (!v.pickout||!v.current) { rv.innerHTML='<span class="rerr">Enter times</span>'; clearDelta(); mg.style.display='none'; return null; }
+  const rem = (v.pickout - v.current - v.breaks) / 60;
+  if (rem<=0) { rv.innerHTML='<span class="rerr">No time remaining</span>'; clearDelta(); mg.style.display='none'; return null; }
+  if (v.uph<=0) { rv.innerHTML='<span class="rerr">Enter UPH</span>'; clearDelta(); mg.style.display='none'; return null; }
+  const eff = v.units - (v.units * v.ogrp / 100);
+  const cp = (eff / v.uph) / rem;
+  const cpCeil = Math.ceil(cp);
+  rv.textContent = cpCeil;
+  rs.textContent = cp.toFixed(2)+' exact';
+  const delta = v.active > 0 ? v.active - cpCeil : null;
+  const info = getDeltaInfo(delta);
+  dv.textContent = formatDelta(delta);
+  dv.className = 'delta-value delta-'+info.cls;
+  ds.textContent = info.label;
+  ds.className = 'delta-sub '+info.cls;
+  document.getElementById('mTime').textContent = rem.toFixed(2)+'h';
+  document.getElementById('mUnits').textContent = Math.round(eff).toLocaleString();
+  document.getElementById('mActive').textContent = v.active||'—';
+  document.getElementById('mNeeded').textContent = cpCeil;
+  mg.style.display = 'grid';
+  return { rem, eff, cp, cpCeil, delta };
 }
 
-FIELDS.concat(['currenttime']).forEach(id => {
-  document.getElementById(id).addEventListener('input', calculate);
-});
+FIELDS.concat(['currenttime']).forEach(id => document.getElementById(id).addEventListener('input', calculate));
 calculate();
 
 function saveRecord() {
   const result = calculate();
   if (!result) { alert('Fix errors before saving.'); return; }
   const v = getVals();
-  const records = JSON.parse(localStorage.getItem('pickRecords') || '[]');
-  const toTime = mins => { if(!mins) return '—'; return Math.floor(mins/60).toString().padStart(2,'0')+':'+String(mins%60).padStart(2,'0'); };
+  const records = JSON.parse(localStorage.getItem('pickRecords')||'[]');
+  const toTime = m => { if(!m) return '—'; return Math.floor(m/60).toString().padStart(2,'0')+':'+String(m%60).padStart(2,'0'); };
   records.unshift({
     id: Date.now(),
-    savedAt: new Date().toLocaleString('en-AU', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}),
-    savedDate: new Date().toLocaleString('en-AU', {day:'2-digit',month:'2-digit',year:'numeric'}),
+    savedAt: new Date().toLocaleString('en-AU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}),
+    savedDate: new Date().toLocaleString('en-AU',{day:'2-digit',month:'2-digit',year:'numeric'}),
     zone: selectedZone,
     pickout: toTime(v.pickout),
     current: toTime(v.current),
-    breaks: v.breaks,
-    units: v.units,
-    ogrp: v.ogrp,
-    uph: v.uph,
-    active: v.active,
-    timeRemH: result.timeRemHours,
-    effectiveUnits: result.effectiveUnits,
-    calcPeople: result.calcPeople,
+    breaks: v.breaks, units: v.units, ogrp: v.ogrp, uph: v.uph, active: v.active,
+    timeRemH: result.rem, effectiveUnits: result.eff, calcPeople: result.cp,
+    delta: result.delta,
     note: document.getElementById('noteField').value.trim(),
   });
   localStorage.setItem('pickRecords', JSON.stringify(records));
@@ -347,59 +325,61 @@ function saveRecord() {
 }
 
 function resetForm() {
-  FIELDS.forEach(id => {
-    document.getElementById(id).value = id === 'pickout' ? '14:00' : '';
-  });
+  FIELDS.forEach(id => document.getElementById(id).value = id==='pickout'?'14:00':'');
   document.getElementById('currenttime').value = now();
   document.getElementById('noteField').value = '';
-  localStorage.removeItem(zoneStateKey(selectedZone));
+  localStorage.removeItem(zKey(selectedZone));
   calculate();
 }
 
 function deleteRecord(id) {
   if (!confirm('Delete this record?')) return;
-  const records = JSON.parse(localStorage.getItem('pickRecords') || '[]').filter(r => r.id !== id);
+  const records = JSON.parse(localStorage.getItem('pickRecords')||'[]').filter(r => r.id!==id);
   localStorage.setItem('pickRecords', JSON.stringify(records));
   renderHistory();
 }
 
 function renderHistory() {
-  let records = JSON.parse(localStorage.getItem('pickRecords') || '[]');
-  if (activeFilter !== 'all') records = records.filter(r => (r.zone || 'ambient') === activeFilter);
+  let records = JSON.parse(localStorage.getItem('pickRecords')||'[]');
+  if (activeFilter!=='all') records = records.filter(r => (r.zone||'ambient')===activeFilter);
   const toSortKey = r => {
-    const dateStr = r.savedAt.replace(/(\d{2})\/(\d{2})\/(\d{4}),?\s*/, '$3-$2-$1 ');
-    const timeStr = r.current || '00:00';
-    return dateStr + timeStr;
+    const ds = r.savedAt.replace(/(\d{2})\/(\d{2})\/(\d{4}),?\s*/,'$3-$2-$1 ');
+    return ds + (r.current||'00:00');
   };
-  records.sort((a, b) => toSortKey(b).localeCompare(toSortKey(a)));
+  records.sort((a,b) => toSortKey(b).localeCompare(toSortKey(a)));
   const el = document.getElementById('historyList');
   if (!records.length) {
-    const suffix = activeFilter !== 'all' ? ' for ' + activeFilter : '';
-    el.innerHTML = '<div class="history-empty">No saved records' + suffix + '.</div>';
+    el.innerHTML = '<div class="hempty">No saved records'+(activeFilter!=='all'?' for '+activeFilter:'')+'.</div>';
     return;
   }
   el.innerHTML = records.map(r => {
-    const zone = r.zone || 'ambient';
-    const zoneLabel = zone.charAt(0).toUpperCase() + zone.slice(1);
-    return `<div class="history-item">
-      <div class="history-header">
+    const zone = r.zone||'ambient';
+    const zl = zone.charAt(0).toUpperCase()+zone.slice(1);
+    const displayDate = r.savedDate || r.savedAt.split(',')[0];
+    const cpCeil = Math.ceil(r.calcPeople);
+    const delta = r.delta !== undefined ? r.delta : (r.active > 0 ? r.active - cpCeil : null);
+    const info = getDeltaInfo(delta);
+    const timeRemH = r.timeRemH !== undefined ? parseFloat(r.timeRemH).toFixed(2) : '—';
+    return `<div class="hitem">
+      <div class="hhead">
         <div>
-          <div class="history-date">${r.savedDate || r.savedAt.split(',')[0]} ${r.current||''}<span class="zone-badge ${zone}">${zoneLabel}</span></div>
-          ${r.note ? '<div style="font-size:12px;color:#999;margin-top:2px;font-style:italic">'+r.note+'</div>' : ''}
+          <div class="hdate">${displayDate} ${r.current||''}<span class="zbadge ${zone}">${zl}</span></div>
+          ${r.note?'<div style="font-size:11px;color:#999;margin-top:2px;font-style:italic">'+r.note+'</div>':''}
         </div>
-        <div style="text-align:right">
-          <div class="history-people">${Math.ceil(r.calcPeople)} <span>people</span></div>
-          <button onclick="deleteRecord(${r.id})" style="font-size:11px;color:#999;background:none;border:none;cursor:pointer;padding:2px 0;">delete</button>
-        </div>
+        <button onclick="deleteRecord(${r.id})" style="font-size:10px;color:#999;background:none;border:none;cursor:pointer;padding:1px 0;">delete</button>
       </div>
-      <div class="history-details">
-        <div class="history-detail-item"><strong>${r.units.toLocaleString()}</strong>Rem. units</div>
-        <div class="history-detail-item"><strong>${r.ogrp}%</strong>OGRP</div>
-        <div class="history-detail-item"><strong>${r.uph}</strong>UPH</div>
-        <div class="history-detail-item"><strong>${r.pickout}</strong>Pick out</div>
-        <div class="history-detail-item"><strong>${r.current||'—'}</strong>Current time</div>
-        <div class="history-detail-item"><strong>${r.breaks}m</strong>Breaks</div>
-        <div class="history-detail-item"><strong>${r.active||'—'}</strong>Active</div>
+      <div class="hgrid hgrid-7">
+        <div class="hgcol"><div class="hglabel">Rem units</div><div class="hgval">${r.units.toLocaleString()}</div></div>
+        <div class="hgcol"><div class="hglabel">UPH</div><div class="hgval">${r.uph}</div></div>
+        <div class="hgcol"><div class="hglabel">OGRP%</div><div class="hgval">${r.ogrp}</div></div>
+        <div class="hgcol"><div class="hglabel">Time rem</div><div class="hgval">${timeRemH}</div></div>
+        <div class="hgcol"><div class="hglabel">Active</div><div class="hgval">${r.active||'—'}</div></div>
+        <div class="hgcol"><div class="hglabel">Calc</div><div class="hgval">${cpCeil}</div></div>
+        <div class="hgcol"><div class="hglabel">Delta</div><div class="hgval delta-${info.cls}">${formatDelta(delta)}</div></div>
+      </div>
+      <div class="hgrid hgrid-2">
+        <div class="hgcol"><div class="hglabel">Pick out</div><div class="hgval">${r.pickout}</div></div>
+        <div class="hgcol"><div class="hglabel">Breaks</div><div class="hgval">${r.breaks}m</div></div>
       </div>
     </div>`;
   }).join('');
