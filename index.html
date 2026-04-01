@@ -41,9 +41,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .rsub { font-size: 12px; color: #666; margin-top: 6px; }
 .rerr { font-size: 13px; color: #c0392b; font-style: italic; }
 .delta-value { font-size: 44px; font-weight: 500; letter-spacing: -2px; line-height: 1; }
-.delta-ok,   .hgval.delta-ok   { color: #888; }
-.delta-warn, .hgval.delta-warn { color: #BA7517; }
-.delta-crit, .hgval.delta-crit { color: #c0392b; }
+.delta-ok   { color: #888; }
+.delta-warn { color: #BA7517; }
+.delta-crit { color: #c0392b; }
 .delta-sub { font-size: 12px; margin-top: 6px; }
 .delta-sub.ok   { color: #888; }
 .delta-sub.warn { color: #BA7517; }
@@ -59,7 +59,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .divider { border: none; border-top: 0.5px solid rgba(0,0,0,0.1); margin: 12px 0; }
 .note-field { width: 100%; padding: 10px 12px; font-size: 14px; border: 0.5px solid rgba(0,0,0,0.25); border-radius: 8px; background: #fff; color: #1a1a1a; resize: none; height: 64px; font-family: inherit; margin-bottom: 10px; }
 .note-field:focus { outline: none; border-color: rgba(0,0,0,0.5); }
-.filter-bar { display: flex; gap: 6px; margin-bottom: 14px; }
+.filter-bar { display: flex; gap: 6px; margin-bottom: 10px; }
 .fbtn { flex: 1; height: 34px; font-size: 12px; font-weight: 500; border: 0.5px solid rgba(0,0,0,0.2); border-radius: 8px; background: transparent; cursor: pointer; color: #666; }
 .fbtn.fall { background: #1a1a1a; color: #fff; border-color: transparent; }
 .fbtn.famb { background: #FAEEDA; color: #854F0B; border-color: #EF9F27; }
@@ -69,16 +69,20 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .zbadge.ambient { background: #FAEEDA; color: #854F0B; }
 .zbadge.chill   { background: #E6F1FB; color: #185FA5; }
 .zbadge.freezer { background: #E1F5EE; color: #0F6E56; }
-.hitem { background: #fff; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; }
-.hhead { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.hitem { background: #fff; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 8px; padding: 8px 10px; margin-bottom: 6px; }
+.hhead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
 .hdate { font-size: 11px; color: #666; }
 .hgrid { display: grid; gap: 0; }
-.hgrid-7 { grid-template-columns: repeat(7, 1fr); border-bottom: 0.5px solid rgba(0,0,0,0.1); padding-bottom: 8px; margin-bottom: 8px; }
+.hgrid-4 { grid-template-columns: repeat(4, 1fr); border-bottom: 0.5px solid rgba(0,0,0,0.1); padding-bottom: 5px; margin-bottom: 5px; }
+.hgrid-3 { grid-template-columns: 1fr 1fr 2fr; border-bottom: 0.5px solid rgba(0,0,0,0.1); padding-bottom: 5px; margin-bottom: 5px; }
 .hgrid-2 { grid-template-columns: repeat(2, 1fr); }
-.hgcol { text-align: center; padding: 4px 2px; }
+.hgcol { text-align: center; padding: 2px 2px; }
 .hgcol + .hgcol { border-left: 0.5px solid rgba(0,0,0,0.1); }
-.hglabel { font-size: 9px; color: #666; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 3px; }
-.hgval { font-size: 13px; font-weight: 500; color: #1a1a1a; }
+.hglabel { font-size: 9px; color: #666; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 1px; }
+.hgval { font-size: 12px; font-weight: 500; color: #1a1a1a; }
+.hgval.delta-ok   { color: #888; }
+.hgval.delta-warn { color: #BA7517; }
+.hgval.delta-crit { color: #c0392b; }
 .hempty { text-align: center; padding: 40px 20px; color: #666; font-size: 14px; }
 @media (prefers-color-scheme: dark) {
   body { background: #1a1a1a; color: #f0f0f0; }
@@ -93,10 +97,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   .result-divider { background: rgba(255,255,255,0.1); }
   .rlabel, .rsub { color: #999; }
   .rvalue { color: #f0f0f0; }
-  .delta-ok, .hgval.delta-ok { color: #999; }
-  .hgval.delta-warn { color: #BA7517; }
-  .hgval.delta-crit { color: #c0392b; }
-  .delta-sub.ok { color: #999; }
+  .delta-ok, .delta-sub.ok { color: #999; }
   .metric { background: #2a2a2a; }
   .mlabel { color: #999; }
   .mval { color: #f0f0f0; }
@@ -108,8 +109,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   .hitem { background: #242424; border-color: rgba(255,255,255,0.1); }
   .hdate, .hglabel { color: #999; }
   .hgval { color: #f0f0f0; }
+  .hgval.delta-ok { color: #999; }
   .hgcol + .hgcol { border-color: rgba(255,255,255,0.1); }
-  .hgrid-7 { border-color: rgba(255,255,255,0.1); }
+  .hgrid-4, .hgrid-3 { border-color: rgba(255,255,255,0.1); }
   .divider { border-color: rgba(255,255,255,0.1); }
   .hempty { color: #999; }
 }
@@ -255,7 +257,7 @@ function getVals() {
 }
 
 function getDeltaInfo(delta) {
-  if (delta === null) return { cls: 'ok',   label: 'enter active people' };
+  if (delta === null) return { cls: 'ok',   label: '' };
   if (delta >= 4)     return { cls: 'crit', label: 'overstaffed' };
   if (delta >= 2)     return { cls: 'warn', label: 'overstaffed' };
   if (delta >= 0)     return { cls: 'ok',   label: 'on track' };
@@ -362,22 +364,22 @@ function renderHistory() {
     const delta = r.delta !== undefined ? r.delta : (r.active > 0 ? r.active - cpCeil : null);
     const info = getDeltaInfo(delta);
     const timeRemH = r.timeRemH !== undefined ? parseFloat(r.timeRemH).toFixed(2) : '—';
+    const deltaDisplay = delta !== null ? formatDelta(delta)+' ('+info.label+')' : '—';
     return `<div class="hitem">
       <div class="hhead">
-        <div>
-          <div class="hdate">${displayDate} ${r.current||''}<span class="zbadge ${zone}">${zl}</span></div>
-          ${r.note?'<div style="font-size:11px;color:#999;margin-top:2px;font-style:italic">'+r.note+'</div>':''}
-        </div>
-        <button onclick="deleteRecord(${r.id})" style="font-size:10px;color:#999;background:none;border:none;cursor:pointer;padding:1px 0;">delete</button>
+        <div class="hdate">${displayDate} ${r.current||''}<span class="zbadge ${zone}">${zl}</span>${r.note?'<span style="font-size:10px;color:#999;font-style:italic;margin-left:5px;">'+r.note+'</span>':''}</div>
+        <button onclick="deleteRecord(${r.id})" style="font-size:10px;color:#999;background:none;border:none;cursor:pointer;white-space:nowrap;margin-left:6px;">delete</button>
       </div>
-      <div class="hgrid hgrid-7">
+      <div class="hgrid hgrid-4">
         <div class="hgcol"><div class="hglabel">Rem units</div><div class="hgval">${r.units.toLocaleString()}</div></div>
-        <div class="hgcol"><div class="hglabel">UPH</div><div class="hgval">${r.uph}</div></div>
         <div class="hgcol"><div class="hglabel">OGRP%</div><div class="hgval">${r.ogrp}</div></div>
+        <div class="hgcol"><div class="hglabel">UPH</div><div class="hgval">${r.uph}</div></div>
         <div class="hgcol"><div class="hglabel">Time rem</div><div class="hgval">${timeRemH}</div></div>
+      </div>
+      <div class="hgrid hgrid-3">
         <div class="hgcol"><div class="hglabel">Active</div><div class="hgval">${r.active||'—'}</div></div>
         <div class="hgcol"><div class="hglabel">Calc</div><div class="hgval">${cpCeil}</div></div>
-        <div class="hgcol"><div class="hglabel">Delta</div><div class="hgval delta-${info.cls}">${formatDelta(delta)}</div></div>
+        <div class="hgcol"><div class="hglabel">Delta</div><div class="hgval delta-${info.cls}">${deltaDisplay}</div></div>
       </div>
       <div class="hgrid hgrid-2">
         <div class="hgcol"><div class="hglabel">Pick out</div><div class="hgval">${r.pickout}</div></div>
