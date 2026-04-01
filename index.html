@@ -41,9 +41,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .rsub { font-size: 12px; color: #666; margin-top: 6px; }
 .rerr { font-size: 13px; color: #c0392b; font-style: italic; }
 .delta-value { font-size: 44px; font-weight: 500; letter-spacing: -2px; line-height: 1; }
-.delta-ok   { color: #888; }
-.delta-warn { color: #BA7517; }
-.delta-crit { color: #c0392b; }
+.delta-ok,   .hgval.delta-ok   { color: #888; }
+.delta-warn, .hgval.delta-warn { color: #BA7517; }
+.delta-crit, .hgval.delta-crit { color: #c0392b; }
 .delta-sub { font-size: 12px; margin-top: 6px; }
 .delta-sub.ok   { color: #888; }
 .delta-sub.warn { color: #BA7517; }
@@ -93,7 +93,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   .result-divider { background: rgba(255,255,255,0.1); }
   .rlabel, .rsub { color: #999; }
   .rvalue { color: #f0f0f0; }
-  .delta-ok { color: #999; }
+  .delta-ok, .hgval.delta-ok { color: #999; }
+  .hgval.delta-warn { color: #BA7517; }
+  .hgval.delta-crit { color: #c0392b; }
   .delta-sub.ok { color: #999; }
   .metric { background: #2a2a2a; }
   .mlabel { color: #999; }
