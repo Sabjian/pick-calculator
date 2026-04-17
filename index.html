@@ -38,6 +38,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .result-col { text-align: center; padding: 0 12px; }
 .rlabel { font-size: 11px; font-weight: 500; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
 .rvalue { font-size: 44px; font-weight: 500; color: #1a1a1a; letter-spacing: -2px; line-height: 1; }
+.rvalue-sm { font-size: 28px; font-weight: 500; color: #1a1a1a; letter-spacing: -1px; line-height: 1; }
 .rsub { font-size: 12px; color: #666; margin-top: 6px; }
 .rerr { font-size: 13px; color: #c0392b; font-style: italic; }
 .delta-value { font-size: 44px; font-weight: 500; letter-spacing: -2px; line-height: 1; }
@@ -96,7 +97,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   .result-card { background: #242424; border-color: rgba(255,255,255,0.1); }
   .result-divider { background: rgba(255,255,255,0.1); }
   .rlabel, .rsub { color: #999; }
-  .rvalue { color: #f0f0f0; }
+  .rvalue, .rvalue-sm { color: #f0f0f0; }
   .delta-ok, .delta-sub.ok { color: #999; }
   .metric { background: #2a2a2a; }
   .mlabel { color: #999; }
@@ -124,10 +125,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     <p>Workforce planning tool</p>
   </div>
   <div class="tabs">
-    <button class="tab active" onclick="switchTab('calc')">Calculator</button>
+    <button class="tab active" onclick="switchTab('calc')">People</button>
+    <button class="tab" onclick="switchTab('timecalc')">Time</button>
     <button class="tab" onclick="switchTab('history')">History</button>
   </div>
 
+  <!-- People needed calculator -->
   <div id="calc" class="section active">
     <label class="flabel">Zone</label>
     <div class="zone-sel">
@@ -180,6 +183,56 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     </div>
   </div>
 
+  <!-- Time remaining calculator -->
+  <div id="timecalc" class="section">
+    <label class="flabel">Zone</label>
+    <div class="zone-sel">
+      <button class="zbtn za" id="tr-zone-ambient" onclick="setTrZone('ambient')">Ambient</button>
+      <button class="zbtn" id="tr-zone-chill" onclick="setTrZone('chill')">Chill</button>
+      <button class="zbtn" id="tr-zone-freezer" onclick="setTrZone('freezer')">Freezer</button>
+    </div>
+    <div class="row2">
+      <div class="fgroup"><label class="flabel">Current time</label><input type="time" id="tr-current"></div>
+      <div class="fgroup"><label class="flabel">Breaks (mins)</label><input type="number" id="tr-breaks" placeholder="0" min="0" inputmode="numeric"></div>
+    </div>
+    <div class="row2">
+      <div class="fgroup"><label class="flabel">Remaining units</label><input type="number" id="tr-units" placeholder="0" min="0" inputmode="numeric"></div>
+      <div class="fgroup"><label class="flabel">OGRP %</label><input type="number" id="tr-ogrp" placeholder="0" min="0" max="100" inputmode="numeric"></div>
+    </div>
+    <div class="row2">
+      <div class="fgroup"><label class="flabel">UPH</label><input type="number" id="tr-uph" placeholder="0" min="0" inputmode="numeric"></div>
+      <div class="fgroup"><label class="flabel">Active people</label><input type="number" id="tr-people" placeholder="0" min="0" inputmode="numeric"></div>
+    </div>
+
+    <div class="result-card">
+      <div class="result-split">
+        <div class="result-col">
+          <div class="rlabel">Time needed</div>
+          <div class="rvalue-sm" id="tr-resultTime">—</div>
+          <div class="rsub" id="tr-resultTimeSub"></div>
+        </div>
+        <div class="result-divider"></div>
+        <div class="result-col">
+          <div class="rlabel">Finish by</div>
+          <div class="rvalue-sm" id="tr-resultFinish">—</div>
+          <div class="rsub" id="tr-resultFinishSub"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mgrid" id="tr-metricsGrid" style="display:none">
+      <div class="metric"><div class="mlabel">Effective units</div><div class="mval" id="tr-mUnits">—</div></div>
+      <div class="metric"><div class="mlabel">Net hours</div><div class="mval" id="tr-mHours">—</div></div>
+      <div class="metric"><div class="mlabel">Active people</div><div class="mval" id="tr-mPeople">—</div></div>
+      <div class="metric"><div class="mlabel">Breaks</div><div class="mval" id="tr-mBreaks">—</div></div>
+    </div>
+
+    <div class="btnrow" style="margin-top:12px">
+      <button class="btn" onclick="resetTrForm()">Clear</button>
+    </div>
+  </div>
+
+  <!-- History -->
   <div id="history" class="section">
     <div class="filter-bar">
       <button class="fbtn fall" id="filter-all" onclick="setFilter('all')">All</button>
@@ -194,7 +247,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 <script>
 const ZONES = ['ambient','chill','freezer'];
 const FIELDS = ['pickout','breaks','units','ogrp','uph','activepeople'];
+const TR_FIELDS = ['tr-current','tr-breaks','tr-units','tr-ogrp','tr-uph','tr-people'];
 let selectedZone = 'ambient';
+let selectedTrZone = 'ambient';
 let activeFilter = 'all';
 
 function now() {
@@ -202,7 +257,9 @@ function now() {
   return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
 }
 document.getElementById('currenttime').value = now();
+document.getElementById('tr-current').value = now();
 
+// --- People calc zone state ---
 function zKey(z) { return 'zoneState_'+z; }
 function saveZoneState(z) {
   const s = {};
@@ -227,6 +284,41 @@ function setZone(zone) {
   calculate();
 }
 
+// --- Time calc zone state ---
+function trKey(z) { return 'trZoneState_'+z; }
+function saveTrZoneState(z) {
+  const s = {};
+  TR_FIELDS.forEach(id => s[id] = document.getElementById(id).value);
+  localStorage.setItem(trKey(z), JSON.stringify(s));
+}
+function loadTrZoneState(z) {
+  const raw = localStorage.getItem(trKey(z));
+  if (!raw) return;
+  const s = JSON.parse(raw);
+  TR_FIELDS.forEach(id => { if (s[id] !== undefined) document.getElementById(id).value = s[id]; });
+}
+
+function setTrZone(zone) {
+  saveTrZoneState(selectedTrZone);
+  selectedTrZone = zone;
+  ZONES.forEach(z => {
+    const cls = z==='ambient'?'za':z==='chill'?'zc':'zf';
+    document.getElementById('tr-zone-'+z).className = 'zbtn'+(z===zone?' '+cls:'');
+  });
+  loadTrZoneState(zone);
+  calculateTime();
+}
+
+// --- Tab switching ---
+function switchTab(tab) {
+  const tabIds = ['calc','timecalc','history'];
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', tabIds[i] === tab));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(tab).classList.add('active');
+  if (tab === 'history') renderHistory();
+}
+
+// --- History filter ---
 function setFilter(f) {
   activeFilter = f;
   ['all','ambient','chill','freezer'].forEach(x => {
@@ -236,13 +328,7 @@ function setFilter(f) {
   renderHistory();
 }
 
-function switchTab(tab) {
-  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active',(i===0&&tab==='calc')||(i===1&&tab==='history')));
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.getElementById(tab).classList.add('active');
-  if (tab==='history') renderHistory();
-}
-
+// --- People calc ---
 function getVals() {
   const toMins = t => { if(!t) return null; const [h,m]=t.split(':').map(Number); return h*60+m; };
   return {
@@ -304,6 +390,82 @@ function calculate() {
 FIELDS.concat(['currenttime']).forEach(id => document.getElementById(id).addEventListener('input', calculate));
 calculate();
 
+// --- Time remaining calc ---
+function getTrVals() {
+  const toMins = t => { if(!t) return null; const [h,m]=t.split(':').map(Number); return h*60+m; };
+  return {
+    current: toMins(document.getElementById('tr-current').value),
+    breaks: parseFloat(document.getElementById('tr-breaks').value)||0,
+    units: parseFloat(document.getElementById('tr-units').value)||0,
+    ogrp: parseFloat(document.getElementById('tr-ogrp').value)||0,
+    uph: parseFloat(document.getElementById('tr-uph').value)||0,
+    people: parseFloat(document.getElementById('tr-people').value)||0,
+  };
+}
+
+function minsToHM(mins) {
+  const h = Math.floor(mins / 60);
+  const m = Math.round(mins % 60);
+  if (h === 0) return m + 'm';
+  return h + 'h ' + String(m).padStart(2,'0') + 'm';
+}
+
+function minsToTime(totalMins) {
+  const h = Math.floor(totalMins / 60) % 24;
+  const m = Math.round(totalMins % 60);
+  return String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
+}
+
+function calculateTime() {
+  const v = getTrVals();
+  const rt = document.getElementById('tr-resultTime');
+  const rts = document.getElementById('tr-resultTimeSub');
+  const rf = document.getElementById('tr-resultFinish');
+  const rfs = document.getElementById('tr-resultFinishSub');
+  const mg = document.getElementById('tr-metricsGrid');
+
+  const clearResult = () => {
+    rt.innerHTML = '—'; rts.textContent = '';
+    rf.textContent = '—'; rfs.textContent = '';
+    mg.style.display = 'none';
+  };
+
+  if (v.uph <= 0) { rt.innerHTML = '<span class="rerr">Enter UPH</span>'; rf.textContent = '—'; rts.textContent = ''; rfs.textContent = ''; mg.style.display = 'none'; return; }
+  if (v.people <= 0) { rt.innerHTML = '<span class="rerr">Enter people</span>'; rf.textContent = '—'; rts.textContent = ''; rfs.textContent = ''; mg.style.display = 'none'; return; }
+
+  const eff = v.units - (v.units * v.ogrp / 100);
+  const netHours = eff / (v.uph * v.people);
+  const netMins = netHours * 60;
+  const totalMins = netMins + v.breaks;
+
+  rt.textContent = minsToHM(netMins);
+  rts.textContent = netHours.toFixed(2) + 'h net';
+
+  if (v.current !== null) {
+    const finishMins = v.current + totalMins;
+    rf.textContent = minsToTime(finishMins);
+    rfs.textContent = v.breaks > 0 ? 'incl. ' + v.breaks + 'm breaks' : 'no breaks';
+  } else {
+    rf.textContent = '—';
+    rfs.textContent = 'enter current time';
+  }
+
+  document.getElementById('tr-mUnits').textContent = Math.round(eff).toLocaleString();
+  document.getElementById('tr-mHours').textContent = netHours.toFixed(2) + 'h';
+  document.getElementById('tr-mPeople').textContent = v.people;
+  document.getElementById('tr-mBreaks').textContent = v.breaks ? v.breaks + 'm' : '—';
+  mg.style.display = 'grid';
+}
+
+TR_FIELDS.forEach(id => {
+  const el = document.getElementById(id);
+  const handler = () => { saveTrZoneState(selectedTrZone); calculateTime(); };
+  el.addEventListener('input', handler);
+  el.addEventListener('change', handler);
+});
+calculateTime();
+
+// --- People calc actions ---
 function saveRecord() {
   const result = calculate();
   if (!result) { alert('Fix errors before saving.'); return; }
@@ -334,6 +496,13 @@ function resetForm() {
   document.getElementById('noteField').value = '';
   localStorage.removeItem(zKey(selectedZone));
   calculate();
+}
+
+function resetTrForm() {
+  TR_FIELDS.forEach(id => document.getElementById(id).value = '');
+  document.getElementById('tr-current').value = now();
+  localStorage.removeItem(trKey(selectedTrZone));
+  calculateTime();
 }
 
 function deleteRecord(id) {
