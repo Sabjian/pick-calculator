@@ -285,8 +285,8 @@ function calculate() {
   const eff = v.units - (v.units * v.ogrp / 100);
   const cp = (eff / v.uph) / rem;
   const cpCeil = Math.ceil(cp);
-  rv.textContent = cpCeil;
-  rs.textContent = cp.toFixed(2)+' exact';
+  rv.textContent = cp.toFixed(2);
+  rs.textContent = '';
   const delta = v.active > 0 ? v.active - cpCeil : null;
   const info = getDeltaInfo(delta);
   dv.textContent = formatDelta(delta);
@@ -296,7 +296,7 @@ function calculate() {
   document.getElementById('mTime').textContent = rem.toFixed(2)+'h';
   document.getElementById('mUnits').textContent = Math.round(eff).toLocaleString();
   document.getElementById('mActive').textContent = v.active||'—';
-  document.getElementById('mNeeded').textContent = cpCeil;
+  document.getElementById('mNeeded').textContent = cp.toFixed(2);
   mg.style.display = 'grid';
   return { rem, eff, cp, cpCeil, delta };
 }
@@ -361,6 +361,7 @@ function renderHistory() {
     const zl = zone.charAt(0).toUpperCase()+zone.slice(1);
     const displayDate = r.savedDate || r.savedAt.split(',')[0];
     const cpCeil = Math.ceil(r.calcPeople);
+    const cpDisplay = parseFloat(r.calcPeople).toFixed(2);
     const delta = r.delta !== undefined ? r.delta : (r.active > 0 ? r.active - cpCeil : null);
     const info = getDeltaInfo(delta);
     const timeRemH = r.timeRemH !== undefined ? parseFloat(r.timeRemH).toFixed(2) : '—';
@@ -378,7 +379,7 @@ function renderHistory() {
       </div>
       <div class="hgrid hgrid-3">
         <div class="hgcol"><div class="hglabel">Active</div><div class="hgval">${r.active||'—'}</div></div>
-        <div class="hgcol"><div class="hglabel">Calc</div><div class="hgval">${cpCeil}</div></div>
+        <div class="hgcol"><div class="hglabel">Calc</div><div class="hgval">${cpDisplay}</div></div>
         <div class="hgcol"><div class="hglabel">Delta</div><div class="hgval delta-${info.cls}">${deltaDisplay}</div></div>
       </div>
       <div class="hgrid hgrid-2">
