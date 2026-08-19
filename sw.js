@@ -1,4 +1,4 @@
-const CACHE = 'pick-calc-v1.06';
+const CACHE = 'pick-calc-v1.07';
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
 self.addEventListener('install', e => {
@@ -14,7 +14,22 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request))
-  );
+  if (e.request.method !== 'GET') return;
+
+  // The page itself is network-first so a new build always wins when online,
+  // falling back to cache when offline. Cache-first here meant an installed
+  // device kept serving whatever build it first cached.
+  const accept = e.request.headers.get('accept') || '';
+  if (e.request.mode === 'navigate' || accept.includes('text/html')) {
+    e.respondWith(
+      fetch(e.request).then(res => {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, copy));
+        return res;
+      }).catch(() => caches.match(e.request).then(r => r || caches.match('/index.html')))
+    );
+    return;
+  }
+
+  e.respondWith(caches.match(e.request).then(cached => cached || fetch(e.request)));
 });

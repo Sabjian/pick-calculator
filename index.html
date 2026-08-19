@@ -17,6 +17,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .header { background: #fff; border-bottom: 0.5px solid rgba(0,0,0,0.12); padding: 16px 20px 12px; position: sticky; top: 0; z-index: 10; }
 .header h1 { font-size: 18px; font-weight: 500; letter-spacing: -0.3px; }
 .header p { font-size: 12px; color: #666; margin-top: 2px; }
+.header-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.gear { background: none; border: none; cursor: pointer; padding: 5px; color: #666; line-height: 0; border-radius: 8px; flex: none; }
+.gear svg { width: 22px; height: 22px; display: block; }
+.gear.on { color: #1a1a1a; background: rgba(0,0,0,0.07); }
 .tabs { display: flex; gap: 3px; padding: 12px 20px 0; }
 .tab { flex: 1; padding: 8px 2px; font-size: 11px; font-weight: 500; border: 0.5px solid rgba(0,0,0,0.25); border-radius: 8px; background: transparent; color: #666; cursor: pointer; transition: all 0.15s; }
 .tab.active { background: #fff; color: #1a1a1a; border-color: rgba(0,0,0,0.4); }
@@ -63,7 +67,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .metric { background: #f0efe8; border-radius: 8px; padding: 10px; }
 .mlabel { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 3px; }
 .mval { font-size: 16px; font-weight: 500; color: #1a1a1a; }
-.tstrip { display: grid; grid-template-columns: 1fr 1fr 1fr; background: #f0efe8; border-radius: 8px; padding: 10px 4px; margin-bottom: 8px; }
+.tstrip { background: #f0efe8; border-radius: 8px; padding: 10px 4px; margin-bottom: 8px; }
+.tsrow { display: grid; }
+.tsrow + .tsrow { border-top: 0.5px solid rgba(0,0,0,0.1); margin-top: 8px; padding-top: 8px; }
+.tsrow-3 { grid-template-columns: 1fr 1fr 1fr; }
+.tsrow-2 { grid-template-columns: 1fr 1fr; }
 .tscol { text-align: center; padding: 0 4px; }
 .tscol + .tscol { border-left: 0.5px solid rgba(0,0,0,0.1); }
 .tslabel { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 3px; }
@@ -77,6 +85,34 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .divider { border: none; border-top: 0.5px solid rgba(0,0,0,0.1); margin: 12px 0; }
 .note-field { width: 100%; padding: 10px 12px; font-size: 14px; border: 0.5px solid rgba(0,0,0,0.25); border-radius: 8px; background: #fff; color: #1a1a1a; resize: none; height: 64px; font-family: inherit; margin-bottom: 10px; }
 .note-field:focus { outline: none; border-color: rgba(0,0,0,0.5); }
+.pkgrid { display: grid; grid-template-columns: auto 1fr 1fr; gap: 8px; align-items: center; margin-bottom: 14px; }
+.pkcolhead { text-align: center; margin-bottom: 0; }
+.pkzone { font-size: 12px; font-weight: 600; padding: 7px 6px; border-radius: 6px; text-align: center; }
+.pkzone.ambient { background: #FAEEDA; color: #854F0B; }
+.pkzone.chill   { background: #E6F1FB; color: #185FA5; }
+.pkzone.freezer { background: #E1F5EE; color: #0F6E56; }
+.pkgrid input { width: 100%; height: 44px; padding: 0 10px; font-size: 16px; border: 0.5px solid rgba(0,0,0,0.25); border-radius: 8px; background: #fff; color: #1a1a1a; -webkit-appearance: none; }
+.pkgrid input:focus { outline: none; border-color: rgba(0,0,0,0.5); box-shadow: 0 0 0 2px rgba(0,0,0,0.06); }
+.pkstats { background: #fff; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 12px; padding: 12px 10px; }
+.pkrow { display: grid; grid-template-columns: 0.95fr 0.9fr 0.9fr 0.9fr 0.78fr 0.72fr 0.72fr; align-items: center; gap: 2px; }
+.pkrow + .pkrow { border-top: 0.5px solid rgba(0,0,0,0.08); margin-top: 6px; padding-top: 6px; }
+.pkcell { text-align: right; font-size: 11px; font-weight: 500; color: #1a1a1a; }
+.pkcell:first-child { text-align: left; font-weight: 600; }
+.pkhead .pkcell { font-size: 8.5px; font-weight: 500; color: #666; text-transform: uppercase; letter-spacing: 0.2px; }
+.pktotal { font-weight: 600; }
+.pknote { font-size: 11px; color: #666; text-align: center; margin-top: 10px; min-height: 14px; }
+.stitle { font-size: 13px; font-weight: 600; color: #1a1a1a; }
+.stbl { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.stbl th:first-child, .stbl td:first-child { width: 25%; }
+.stbl th, .stbl td { padding: 5px 2px; font-size: 12px; text-align: right; }
+.stbl th { font-size: 9px; font-weight: 500; color: #666; text-transform: uppercase; letter-spacing: 0.3px; }
+.stbl th:first-child, .stbl td:first-child { text-align: left; color: #666; font-weight: 500; }
+.stbl tbody td { font-weight: 500; color: #1a1a1a; }
+.stbl tbody tr + tr td { border-top: 0.5px solid rgba(0,0,0,0.08); }
+.stbl .totcol { font-weight: 600; }
+.stmuted { color: #999; font-size: 10px; }
+.slegend { font-size: 11px; color: #666; line-height: 1.5; padding: 0 2px; }
+.slegend b { color: #1a1a1a; font-weight: 600; }
 .pcard { background: #fff; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 12px; padding: 14px; margin-bottom: 10px; }
 .phead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .ptot { font-size: 11px; color: #666; }
@@ -89,7 +125,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .pcarry { font-size: 11px; color: #666; text-align: center; margin-top: 8px; padding-top: 8px; border-top: 0.5px solid rgba(0,0,0,0.1); }
 .warn-line { font-size: 11px; color: #c0392b; margin-bottom: 10px; min-height: 14px; }
 .crosscheck { font-size: 11px; color: #666; margin: 4px 0 12px; }
-.collapse-head { width: 100%; text-align: left; background: none; border: none; font-size: 12px; font-weight: 500; color: #666; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; padding: 6px 0; }
 .filter-bar { display: flex; gap: 6px; margin-bottom: 10px; }
 .fbtn { flex: 1; height: 34px; font-size: 12px; font-weight: 500; border: 0.5px solid rgba(0,0,0,0.2); border-radius: 8px; background: transparent; cursor: pointer; color: #666; }
 .fbtn.fall { background: #1a1a1a; color: #fff; border-color: transparent; }
@@ -144,14 +179,24 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   .metric, .tstrip { background: #2a2a2a; }
   .mlabel, .tslabel, .carry { color: #999; }
   .mval, .tsval { color: #f0f0f0; }
-  .tscol + .tscol { border-color: rgba(255,255,255,0.1); }
+  .tscol + .tscol, .tsrow + .tsrow { border-color: rgba(255,255,255,0.1); }
+  .gear { color: #999; }
+  .gear.on { color: #f0f0f0; background: rgba(255,255,255,0.12); }
   .btn { border-color: rgba(255,255,255,0.2); color: #f0f0f0; }
   .btn.primary { background: #f0f0f0; color: #1a1a1a; }
   .fbtn { border-color: rgba(255,255,255,0.2); color: #999; }
   .fbtn.fall { background: #f0f0f0; color: #1a1a1a; }
   .note-field { background: #242424; border-color: rgba(255,255,255,0.2); color: #f0f0f0; }
-  .pcard { background: #242424; border-color: rgba(255,255,255,0.1); }
-  .ptot, .pshift, .pcarry, .crosscheck, .collapse-head { color: #999; }
+  .pcard, .pkstats { background: #242424; border-color: rgba(255,255,255,0.1); }
+  .pkgrid input { background: #242424; border-color: rgba(255,255,255,0.2); color: #f0f0f0; }
+  .pkcell { color: #f0f0f0; }
+  .pkhead .pkcell, .pknote { color: #999; }
+  .pkrow + .pkrow { border-color: rgba(255,255,255,0.1); }
+  .ptot, .pshift, .pcarry, .crosscheck { color: #999; }
+  .stitle { color: #f0f0f0; }
+  .stbl th, .stbl th:first-child, .stbl td:first-child, .slegend { color: #999; }
+  .stbl tbody td, .slegend b { color: #f0f0f0; }
+  .stbl tbody tr + tr td { border-color: rgba(255,255,255,0.1); }
   .prow span:first-child { color: #999; }
   .prow span:last-child { color: #f0f0f0; }
   .pcarry { border-color: rgba(255,255,255,0.1); }
@@ -172,23 +217,35 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 <body>
 <div class="app">
   <div class="header">
-    <h1>Pick calculator</h1>
-    <p>Workforce planning tool</p>
+    <div class="header-row">
+      <div>
+        <h1>Pick calculator</h1>
+        <p>Workforce planning tool</p>
+      </div>
+      <button class="gear" id="gearBtn" onclick="toggleSettings()" aria-label="Settings" title="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
   </div>
   <div class="tabs">
-    <button class="tab active" onclick="switchTab('plan')">Plan</button>
-    <button class="tab" onclick="switchTab('calc')">People</button>
-    <button class="tab" onclick="switchTab('timecalc')">Time</button>
-    <button class="tab" onclick="switchTab('history')">History</button>
-    <button class="tab" onclick="switchTab('settings')">Settings</button>
+    <button class="tab active" data-tab="plan" onclick="switchTab('plan')">Plan</button>
+    <button class="tab" data-tab="picked" onclick="switchTab('picked')">Picked</button>
+    <button class="tab" data-tab="calc" onclick="switchTab('calc')">People</button>
+    <button class="tab" data-tab="timecalc" onclick="switchTab('timecalc')">Time</button>
+    <button class="tab" data-tab="history" onclick="switchTab('history')">History</button>
   </div>
 
   <!-- Day plan + overview -->
   <div id="plan" class="section active">
-    <div id="planOverview"></div>
+    <div class="filter-bar">
+      <button class="fbtn fall" id="sub-status" onclick="setPlanSub('status')">Status</button>
+      <button class="fbtn" id="sub-plan" onclick="setPlanSub('plan')">Plan</button>
+    </div>
 
-    <hr class="divider">
-    <button class="collapse-head" id="planToggle" onclick="togglePlanEdit()">&#9656;&nbsp; Edit plan</button>
+    <div id="planStatus">
+      <div id="planOverview"></div>
+    </div>
+
     <div id="planEdit" style="display:none">
       <div class="fgroup">
         <label class="flabel">Daily total units</label>
@@ -198,7 +255,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
       <label class="flabel">Shift split %</label>
       <div class="row2">
         <div class="fgroup"><label class="flabel">AM &middot; 05:00&ndash;13:00</label><input type="number" id="p-am" placeholder="0" min="0" max="100" inputmode="numeric"></div>
-        <div class="fgroup"><label class="flabel">PM &middot; 10:00&ndash;18:00</label><input type="number" id="p-pm" placeholder="0" min="0" max="100" inputmode="numeric"></div>
+        <div class="fgroup"><label class="flabel">PM &middot; 13:00&ndash;18:00</label><input type="number" id="p-pm" placeholder="0" min="0" max="100" inputmode="numeric"></div>
       </div>
       <div class="warn-line" id="shiftPctWarn"></div>
 
@@ -213,12 +270,88 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     </div>
   </div>
 
+  <!-- Picked quantities, all chambers -->
+  <div id="picked" class="section">
+    <label class="flabel">Shift</label>
+    <div class="shift-sel">
+      <button class="sbtn on" id="pk-shift-am" onclick="setShift('am')">AM<small>05:00&ndash;13:00</small></button>
+      <button class="sbtn" id="pk-shift-pm" onclick="setShift('pm')">PM<small>13:00&ndash;18:00</small></button>
+    </div>
+
+    <div class="pkgrid">
+      <div></div>
+      <div class="flabel pkcolhead">Manual</div>
+      <div class="flabel pkcolhead">OGRP</div>
+
+      <div class="pkzone ambient">Ambient</div>
+      <input type="number" id="pk-manual-ambient" placeholder="0" min="0" inputmode="numeric">
+      <input type="number" id="pk-ogrp-ambient" placeholder="0" min="0" inputmode="numeric">
+
+      <div class="pkzone chill">Chill</div>
+      <input type="number" id="pk-manual-chill" placeholder="0" min="0" inputmode="numeric">
+      <input type="number" id="pk-ogrp-chill" placeholder="0" min="0" inputmode="numeric">
+
+      <div class="pkzone freezer">Freezer</div>
+      <input type="number" id="pk-manual-freezer" placeholder="0" min="0" inputmode="numeric">
+      <input type="number" id="pk-ogrp-freezer" placeholder="0" min="0" inputmode="numeric">
+    </div>
+
+    <div class="pkstats">
+      <div class="pkrow pkhead">
+        <div class="pkcell"></div>
+        <div class="pkcell">Target</div>
+        <div class="pkcell">Picked</div>
+        <div class="pkcell">Rem</div>
+        <div class="pkcell">OGRP</div>
+        <div class="pkcell">% tgt</div>
+        <div class="pkcell">% tot</div>
+      </div>
+      <div class="pkrow">
+        <div class="pkcell">Ambient</div>
+        <div class="pkcell" id="pk-target-ambient">&mdash;</div>
+        <div class="pkcell" id="pk-picked-ambient">&mdash;</div>
+        <div class="pkcell" id="pk-rem-ambient">&mdash;</div>
+        <div class="pkcell" id="pk-ogrppct-ambient">&mdash;</div>
+        <div class="pkcell" id="pk-pcttarget-ambient">&mdash;</div>
+        <div class="pkcell" id="pk-pcttotal-ambient">&mdash;</div>
+      </div>
+      <div class="pkrow">
+        <div class="pkcell">Chill</div>
+        <div class="pkcell" id="pk-target-chill">&mdash;</div>
+        <div class="pkcell" id="pk-picked-chill">&mdash;</div>
+        <div class="pkcell" id="pk-rem-chill">&mdash;</div>
+        <div class="pkcell" id="pk-ogrppct-chill">&mdash;</div>
+        <div class="pkcell" id="pk-pcttarget-chill">&mdash;</div>
+        <div class="pkcell" id="pk-pcttotal-chill">&mdash;</div>
+      </div>
+      <div class="pkrow">
+        <div class="pkcell">Freezer</div>
+        <div class="pkcell" id="pk-target-freezer">&mdash;</div>
+        <div class="pkcell" id="pk-picked-freezer">&mdash;</div>
+        <div class="pkcell" id="pk-rem-freezer">&mdash;</div>
+        <div class="pkcell" id="pk-ogrppct-freezer">&mdash;</div>
+        <div class="pkcell" id="pk-pcttarget-freezer">&mdash;</div>
+        <div class="pkcell" id="pk-pcttotal-freezer">&mdash;</div>
+      </div>
+      <div class="pkrow pktotal">
+        <div class="pkcell">Total</div>
+        <div class="pkcell" id="pk-target-total">&mdash;</div>
+        <div class="pkcell" id="pk-picked-total">&mdash;</div>
+        <div class="pkcell" id="pk-rem-total">&mdash;</div>
+        <div class="pkcell" id="pk-ogrppct-total">&mdash;</div>
+        <div class="pkcell" id="pk-pcttarget-total">&mdash;</div>
+        <div class="pkcell" id="pk-pcttotal-total">&mdash;</div>
+      </div>
+    </div>
+    <div class="pknote" id="pk-carry"></div>
+  </div>
+
   <!-- People needed calculator -->
   <div id="calc" class="section">
     <label class="flabel">Shift</label>
     <div class="shift-sel">
       <button class="sbtn on" id="shift-am" onclick="setShift('am')">AM<small>05:00&ndash;13:00</small></button>
-      <button class="sbtn" id="shift-pm" onclick="setShift('pm')">PM<small>10:00&ndash;18:00</small></button>
+      <button class="sbtn" id="shift-pm" onclick="setShift('pm')">PM<small>13:00&ndash;18:00</small></button>
     </div>
 
     <label class="flabel">Zone</label>
@@ -227,18 +360,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
       <button class="zbtn" id="zone-chill" onclick="setZone('chill')">Chill</button>
       <button class="zbtn" id="zone-freezer" onclick="setZone('freezer')">Freezer</button>
     </div>
-
-    <div class="row2">
-      <div class="fgroup"><label class="flabel">Picked manual</label><input type="number" id="pickedManual" placeholder="0" min="0" inputmode="numeric"></div>
-      <div class="fgroup"><label class="flabel">Picked OGRP</label><input type="number" id="pickedOgrp" placeholder="0" min="0" inputmode="numeric"></div>
-    </div>
-
-    <div class="tstrip">
-      <div class="tscol"><div class="tslabel">Target</div><div class="tsval" id="tsTarget">&mdash;</div></div>
-      <div class="tscol"><div class="tslabel">Picked</div><div class="tsval" id="tsPicked">&mdash;</div></div>
-      <div class="tscol"><div class="tslabel">Remaining</div><div class="tsval" id="tsRemaining">&mdash;</div></div>
-    </div>
-    <div class="carry" id="carryLine"></div>
 
     <div class="row2">
       <div class="fgroup"><label class="flabel">Pick out time</label><input type="time" id="pickout"></div>
@@ -420,20 +541,21 @@ let selectedShift = 'am';
 let selectedTrZone = 'ambient';
 let activeFilter = 'all';
 
+const SETTINGS_V = 2;
 const DEFAULT_SETTINGS = {
   pickout: {
-    am: { ambient:'10:00', chill:'10:00', freezer:'09:30' },
-    pm: { ambient:'12:45', chill:'12:45', freezer:'12:00' }
+    am: { ambient:'12:55', chill:'12:40', freezer:'12:00' },
+    pm: { ambient:'15:55', chill:'15:40', freezer:'14:00' }
   },
-  ambient: { ogrp:30, uph:30  },
-  chill:   { ogrp:30, uph:30  },
+  ambient: { ogrp:46, uph:600 },
+  chill:   { ogrp:36, uph:650 },
   freezer: { ogrp:0,  uph:230 }
 };
 
 const DEFAULT_PLAN = {
   dailyTotal: 0,
-  shiftPct:   { am:50, pm:50 },
-  chamberPct: { ambient:34, chill:33, freezer:33 }
+  shiftPct:   { am:75, pm:25 },
+  chamberPct: { ambient:63.6, chill:32.2, freezer:4.2 }
 };
 
 // --- Shared helpers ---
@@ -452,12 +574,13 @@ function getSettings() {
   const raw = localStorage.getItem('appSettings');
   if (!raw) return merged;
   let saved; try { saved = JSON.parse(raw); } catch (e) { return merged; }
+  // Settings written before v2 held one pickout per zone with placeholder rates —
+  // there is no correct way to split those across two shifts, so use the defaults.
+  if (saved.v !== SETTINGS_V) return merged;
   ZONES.forEach(z => {
     if (!saved[z]) return;
     if (saved[z].ogrp !== undefined) merged[z].ogrp = saved[z].ogrp;
     if (saved[z].uph  !== undefined) merged[z].uph  = saved[z].uph;
-    // legacy shape: one pickout per zone — mirror it into both shifts
-    if (saved[z].pickout) { merged.pickout.am[z] = saved[z].pickout; merged.pickout.pm[z] = saved[z].pickout; }
   });
   if (saved.pickout) SHIFTS.forEach(s => ZONES.forEach(z => {
     if (saved.pickout[s] && saved.pickout[s][z]) merged.pickout[s][z] = saved.pickout[s][z];
@@ -466,7 +589,7 @@ function getSettings() {
 }
 
 function saveSettings() {
-  const s = { pickout: { am:{}, pm:{} } };
+  const s = { v: SETTINGS_V, pickout: { am:{}, pm:{} } };
   SHIFTS.forEach(sh => ZONES.forEach(z => {
     s.pickout[sh][z] = document.getElementById('s-pickout-'+sh+'-'+z).value || DEFAULT_SETTINGS.pickout[sh][z];
   }));
@@ -521,7 +644,7 @@ function savePlan() {
 
 function loadPlanUI() {
   const p = getPlan();
-  document.getElementById('p-total').value   = p.dailyTotal || '';
+  document.getElementById('p-total').value   = p.dailyTotal;
   document.getElementById('p-am').value      = p.shiftPct.am;
   document.getElementById('p-pm').value      = p.shiftPct.pm;
   document.getElementById('p-ambient').value = p.chamberPct.ambient;
@@ -529,11 +652,21 @@ function loadPlanUI() {
   document.getElementById('p-freezer').value = p.chamberPct.freezer;
 }
 
-function togglePlanEdit() {
-  const box = document.getElementById('planEdit');
-  const open = box.style.display !== 'none';
-  box.style.display = open ? 'none' : 'block';
-  document.getElementById('planToggle').innerHTML = (open ? '&#9656;' : '&#9662;') + '&nbsp; Edit plan';
+// Plan section sub-tabs. Null until the user picks one, so entering the section
+// lands on Plan when there is no daily total yet and Status once there is.
+let planSubTab = null;
+
+function applyPlanSub() {
+  const which = planSubTab || (getPlan().dailyTotal > 0 ? 'status' : 'plan');
+  document.getElementById('planStatus').style.display = which === 'status' ? 'block' : 'none';
+  document.getElementById('planEdit').style.display   = which === 'plan'   ? 'block' : 'none';
+  document.getElementById('sub-status').className = 'fbtn' + (which === 'status' ? ' fall' : '');
+  document.getElementById('sub-plan').className   = 'fbtn' + (which === 'plan'   ? ' fall' : '');
+}
+
+function setPlanSub(which) {
+  planSubTab = which;
+  applyPlanSub();
 }
 
 // --- Day progress ---
@@ -581,20 +714,26 @@ function computeCell(shift, zone) {
   const predOgrp = cell.predOgrp !== null ? cell.predOgrp
                  : (calcOgrp !== null ? calcOgrp : st[zone].ogrp);
 
-  // AM leaves its shortfall to PM; computed live so it self-corrects as AM picks.
-  const workingTarget = shift === 'am'
-    ? plannedShare('am')
-    : Math.max(0, chamberDayTotal - pickedIn('am'));
-  const carried = shift === 'am' ? 0 : plannedShare('am') - pickedIn('am');
+  // AM leaves its shortfall to PM, computed live so it self-corrects as AM picks.
+  // Carryover only ever adds: if AM beats its share the day's forecast was low,
+  // which is no reason to shrink PM's own target — let alone zero it out.
+  const shortfall = Math.max(0, plannedShare('am') - pickedIn('am'));
+  const amAhead   = Math.max(0, pickedIn('am') - plannedShare('am'));
+  const workingTarget = shift === 'am' ? plannedShare('am') : plannedShare('pm') + shortfall;
+  const carried = shift === 'am' ? 0 : shortfall;
 
-  const planRemaining = Math.max(0, workingTarget - picked);
+  // Signed for display: positive is still to pick, negative is an over-pick.
+  // planRemaining stays clamped because it drives the staffing maths, and you
+  // cannot need a negative number of pickers.
+  const variance = workingTarget - picked;
+  const planRemaining = Math.max(0, variance);
   const remaining = cell.unitsOv !== null ? cell.unitsOv : planRemaining;
   const effective = remaining * (1 - predOgrp/100);
 
   return {
-    chamberDayTotal, planned: plannedShare(shift), workingTarget, carried,
+    chamberDayTotal, planned: plannedShare(shift), workingTarget, carried, amAhead,
     pickedManual: cell.manual, pickedOgrp: cell.ogrp, picked,
-    calcOgrp, predOgrp, planRemaining, remaining, effective,
+    calcOgrp, predOgrp, planRemaining, variance, remaining, effective,
     hasPlan: plan.dailyTotal > 0,
     unitsOverridden: cell.unitsOv !== null,
     ogrpOverridden: cell.predOgrp !== null
@@ -637,38 +776,78 @@ function renderPlanOverview() {
   const plan = getPlan();
   const host = document.getElementById('planOverview');
   if (!(plan.dailyTotal > 0)) {
-    host.innerHTML = '<div class="hempty">No daily total set for today.<br>Open <strong>Edit plan</strong> below to start.</div>';
+    host.innerHTML = '<div class="hempty">No daily total set for today.<br>Open the <strong>Plan</strong> tab above to start.</div>';
     return;
   }
-  host.innerHTML = ZONES.map(z => {
-    const cols = SHIFTS.map(s => {
-      const c = computeCell(s, z);
-      const st = cellStaffing(s, z);
-      let deltaHtml = '<span>—</span>';
-      if (st && st.expired) deltaHtml = '<span>past pickout</span>';
-      else if (st && st.delta !== null) {
-        const info = getDeltaInfo(st.delta);
-        deltaHtml = '<span class="delta-' + info.cls + '">' + formatDelta(st.delta) + '</span>';
-      } else if (st) deltaHtml = '<span>' + st.needed.toFixed(1) + ' req</span>';
-      return '<div class="pcol">'
-        + '<div class="pshift">' + SLABEL[s] + '</div>'
-        + '<div class="prow"><span>Target</span><span>' + fmt(c.workingTarget) + '</span></div>'
-        + '<div class="prow"><span>Picked</span><span>' + fmt(c.picked) + '</span></div>'
-        + '<div class="prow"><span>Rem</span><span>' + fmt(c.planRemaining) + '</span></div>'
-        + '<div class="prow"><span>Delta</span>' + deltaHtml + '</div>'
-        + '</div>';
-    }).join('<div class="result-divider"></div>');
+  const deltaCell = st => {
+    if (!st) return '<span class="stmuted">—</span>';
+    if (st.expired) return '<span class="stmuted">past pickout</span>';
+    if (st.delta === null) return '<span class="stmuted">' + st.needed.toFixed(1) + ' req</span>';
+    const info = getDeltaInfo(st.delta);
+    return '<span class="delta-' + info.cls + '">' + formatDelta(st.delta) + '</span>';
+  };
+  const deltaSum = zones => SHIFTS.map(s => {
+    const ds = zones.map(z => cellStaffing(s, z))
+      .filter(st => st && !st.expired && st.delta !== null)
+      .map(st => st.delta);
+    if (!ds.length) return deltaCell(zones.length === 1 ? cellStaffing(s, zones[0]) : null);
+    const total = ds.reduce((a, b) => a + b, 0);
+    const info = getDeltaInfo(total);
+    return '<span class="delta-' + info.cls + '">' + formatDelta(total) + '</span>';
+  });
+
+  const dash = '<span class="stmuted">—</span>';
+
+  const table = (zones) => {
+    const am = zones.map(z => computeCell('am', z));
+    const pm = zones.map(z => computeCell('pm', z));
+    const add = (arr, key) => arr.reduce((t, c) => t + Math.round(c[key]), 0);
+
+    const amP = add(am, 'picked'), pmP = add(pm, 'picked');
+    const dayT = add(am, 'chamberDayTotal');
+    const deltas = deltaSum(zones);
+    // Target and Rem do not add across the shifts: units AM leaves short sit in
+    // AM's target and again in PM's, so Total is the day's own figure.
+    const rows = [
+      ['Target', fmt(add(am, 'workingTarget')), fmt(add(pm, 'workingTarget')), fmt(dayT)],
+      ['Picked', fmt(amP), fmt(pmP), fmt(amP + pmP)],
+      ['Rem', fmt(add(am, 'variance')), fmt(add(pm, 'variance')), fmt(dayT - amP - pmP)],
+      ['Delta', deltas[0], deltas[1], dash]
+    ];
+    return '<table class="stbl"><thead><tr><th></th><th>AM</th><th>PM</th><th>Total</th></tr></thead><tbody>'
+      + rows.map(r => '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td>'
+        + '<td class="totcol">' + r[3] + '</td></tr>').join('')
+      + '</tbody></table>';
+  };
+
+  const allCard = '<div class="pcard">'
+    + '<div class="phead"><span class="stitle">All chambers</span>'
+    + '<span class="ptot">day ' + fmt(plan.dailyTotal) + '</span></div>'
+    + table(ZONES)
+    + '</div>';
+
+  const zoneCards = ZONES.map(z => {
     const pmCell = computeCell('pm', z);
-    const carryTxt = pmCell.carried >= 0
-      ? fmt(pmCell.carried) + ' carried into PM'
-      : fmt(Math.abs(pmCell.carried)) + ' credited from AM';
+    const carryTxt = pmCell.carried > 0 ? fmt(pmCell.carried) + ' carried into PM'
+      : pmCell.amAhead > 0 ? 'AM ahead by ' + fmt(pmCell.amAhead) + ' — PM target unchanged'
+      : 'AM on target — nothing carried';
     return '<div class="pcard">'
-      + '<div class="phead"><div><span class="zbadge ' + z + '">' + ZLABEL[z] + '</span></div>'
-      + '<div class="ptot">day ' + fmt(pmCell.chamberDayTotal) + '</div></div>'
-      + '<div class="pgrid">' + cols + '</div>'
+      + '<div class="phead"><span class="zbadge ' + z + '">' + ZLABEL[z] + '</span>'
+      + '<span class="ptot">day ' + fmt(pmCell.chamberDayTotal) + '</span></div>'
+      + table([z])
       + '<div class="pcarry">' + carryTxt + '</div>'
       + '</div>';
   }).join('');
+
+  const legend = '<div class="slegend"><b>Delta</b> is active people minus the people needed to clear the '
+    + 'remaining units by that pickout time, using the UPH, breaks and headcount saved on the People tab for '
+    + 'that chamber and shift. Positive means more people than needed, negative means short. It reads '
+    + '<i>past pickout</i> once the pickout time has gone, or <i>N req</i> when no headcount has been entered yet.<br>'
+    + '<b>Rem</b> is target minus picked: positive is still to pick, negative is an over-pick.<br>'
+    + '<b>Total</b> is the day figure. Target and Rem do not add across the shifts, because units AM leaves '
+    + 'short sit in AM’s target and again in PM’s.</div>';
+
+  host.innerHTML = allCard + zoneCards + legend;
 }
 
 function renderPlanWarnings() {
@@ -725,9 +904,14 @@ function loadZoneState() {
 function setShift(shift) {
   selectedShift = shift;
   localStorage.setItem('shiftChoice', JSON.stringify({ date: todayISO(), shift: shift }));
-  SHIFTS.forEach(s => { document.getElementById('shift-' + s).className = 'sbtn' + (s === shift ? ' on' : ''); });
+  SHIFTS.forEach(s => {
+    const cls = 'sbtn' + (s === shift ? ' on' : '');
+    document.getElementById('shift-' + s).className = cls;
+    document.getElementById('pk-shift-' + s).className = cls;
+  });
   loadZoneState();
   refreshCellInputs();
+  refreshPickedTab();
   calculate();
 }
 
@@ -742,7 +926,7 @@ function setZone(zone) {
   calculate();
 }
 
-// AM always wins the 10:00-13:00 overlap.
+// PM picking runs 13:00-18:00; anything before that belongs to AM.
 function autoShift() {
   const m = nowMins();
   if (m >= 300 && m < 780) return 'am';
@@ -767,21 +951,8 @@ function refreshCellInputs() {
   const active = document.activeElement;
   const set = (id, val) => { const el = document.getElementById(id); if (el !== active) el.value = val; };
 
-  set('pickedManual', c.pickedManual || '');
-  set('pickedOgrp', c.pickedOgrp || '');
   set('units', (c.hasPlan || c.unitsOverridden) ? Math.round(c.remaining) : '');
   set('ogrp', Math.round(c.predOgrp * 10) / 10);
-
-  document.getElementById('tsTarget').textContent    = c.hasPlan ? fmt(c.workingTarget) : '—';
-  document.getElementById('tsPicked').textContent    = fmt(c.picked);
-  document.getElementById('tsRemaining').textContent = c.hasPlan ? fmt(c.planRemaining) : '—';
-
-  const carry = document.getElementById('carryLine');
-  if (!c.hasPlan) carry.textContent = 'No daily total set — enter remaining units manually.';
-  else if (selectedShift === 'pm') carry.textContent = c.carried >= 0
-    ? 'Planned ' + fmt(c.planned) + ' + ' + fmt(c.carried) + ' carried from AM'
-    : 'Planned ' + fmt(c.planned) + ' − ' + fmt(Math.abs(c.carried)) + ' credited from AM';
-  else carry.textContent = 'Planned share of ' + fmt(c.chamberDayTotal) + ' for the day';
 
   const uSub = document.getElementById('unitsSub');
   document.getElementById('unitsReset').style.display = c.unitsOverridden ? 'inline' : 'none';
@@ -794,19 +965,87 @@ function refreshCellInputs() {
   else { oSub.className = 'fsub'; oSub.textContent = c.calcOgrp !== null ? 'from picked split' : 'settings default'; }
 }
 
+// Picked tab: every chamber at once for the selected shift.
+function refreshPickedTab() {
+  const active = document.activeElement;
+  const set = (id, v) => { const el = document.getElementById(id); if (el !== active) el.value = v; };
+  const txt = (id, v) => { document.getElementById(id).textContent = v; };
+  // Both percentages cover this shift only: % tgt against its working target,
+  // % tot against the chamber's share of the daily total.
+  const pct = (num, den) => den > 0 ? (num / den * 100).toFixed(1) + '%' : '—';
+  const sum = { target: 0, picked: 0, rem: 0, ogrp: 0, dayTotal: 0 };
+  let hasPlan = false;
+
+  ZONES.forEach(z => {
+    const c = computeCell(selectedShift, z);
+    hasPlan = c.hasPlan;
+    set('pk-manual-' + z, c.pickedManual || '');
+    set('pk-ogrp-' + z, c.pickedOgrp || '');
+    txt('pk-target-' + z, c.hasPlan ? fmt(c.workingTarget) : '—');
+    txt('pk-picked-' + z, fmt(c.picked));
+    txt('pk-rem-' + z, c.hasPlan ? fmt(c.variance) : '—');
+    txt('pk-ogrppct-' + z, pct(c.pickedOgrp, c.picked));
+    txt('pk-pcttarget-' + z, pct(c.picked, c.workingTarget));
+    txt('pk-pcttotal-' + z, pct(c.picked, c.chamberDayTotal));
+    // Sum what is displayed, so the Total row always adds up on screen.
+    sum.target += Math.round(c.workingTarget);
+    sum.picked += Math.round(c.picked);
+    sum.rem += Math.round(c.variance);
+    sum.ogrp += Math.round(c.pickedOgrp);
+    sum.dayTotal += Math.round(c.chamberDayTotal);
+  });
+
+  txt('pk-target-total', hasPlan ? fmt(sum.target) : '—');
+  txt('pk-picked-total', fmt(sum.picked));
+  txt('pk-rem-total', hasPlan ? fmt(sum.rem) : '—');
+  txt('pk-ogrppct-total', pct(sum.ogrp, sum.picked));
+  txt('pk-pcttarget-total', pct(sum.picked, sum.target));
+  txt('pk-pcttotal-total', pct(sum.picked, sum.dayTotal));
+
+  txt('pk-carry', !hasPlan ? 'No daily total set — open the Plan tab.'
+    : selectedShift === 'pm' ? 'PM targets include units carried over from AM.'
+    : 'AM targets are this shift’s planned share of the day.');
+}
+
+ZONES.forEach(z => {
+  [['pk-manual-' + z, 'manual'], ['pk-ogrp-' + z, 'ogrp']].forEach(pair => {
+    const el = document.getElementById(pair[0]);
+    const handler = () => {
+      const patch = {};
+      patch[pair[1]] = parseFloat(el.value) || 0;
+      updateCell(selectedShift, z, patch);
+      refreshPickedTab();
+      refreshCellInputs();
+      calculate();
+    };
+    el.addEventListener('input', handler);
+    el.addEventListener('change', handler);
+  });
+});
+
 function clearUnitsOverride() { updateCell(selectedShift, selectedZone, { unitsOv: null }); refreshCellInputs(); calculate(); }
 function clearOgrpOverride()  { updateCell(selectedShift, selectedZone, { predOgrp: null }); refreshCellInputs(); calculate(); }
 
 // --- Tab switching ---
+// Settings lives behind the header gear rather than in the tab bar, so remember
+// which tab to come back to.
+let lastMainTab = 'plan';
+
 function switchTab(tab) {
-  const tabIds = ['plan','calc','timecalc','history','settings'];
-  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', tabIds[i] === tab));
+  if (tab !== 'settings') lastMainTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.getElementById(tab).classList.add('active');
-  if (tab === 'plan')     { loadPlanUI(); renderPlanOverview(); renderPlanWarnings(); }
+  document.getElementById('gearBtn').classList.toggle('on', tab === 'settings');
+  if (tab === 'plan')     { loadPlanUI(); renderPlanOverview(); renderPlanWarnings(); applyPlanSub(); }
+  if (tab === 'picked')   refreshPickedTab();
   if (tab === 'calc')     { refreshCellInputs(); calculate(); }
   if (tab === 'history')  renderHistory();
   if (tab === 'settings') loadSettingsUI();
+}
+
+function toggleSettings() {
+  switchTab(document.getElementById('settings').classList.contains('active') ? lastMainTab : 'settings');
 }
 
 // --- History filter ---
@@ -878,19 +1117,6 @@ FIELDS.forEach(id => {
 });
 ['input','change'].forEach(ev => document.getElementById('currenttime').addEventListener(ev, calculate));
 
-// Progress fields: write to dayProgress, then re-derive everything downstream.
-[['pickedManual','manual'], ['pickedOgrp','ogrp']].forEach(pair => {
-  const el = document.getElementById(pair[0]);
-  const handler = () => {
-    const patch = {}; patch[pair[1]] = parseFloat(el.value) || 0;
-    updateCell(selectedShift, selectedZone, patch);
-    refreshCellInputs();
-    calculate();
-  };
-  el.addEventListener('input', handler);
-  el.addEventListener('change', handler);
-});
-
 // Override fields: blank clears the override and falls back to the derived value.
 [['units','unitsOv'], ['ogrp','predOgrp']].forEach(pair => {
   const el = document.getElementById(pair[0]);
@@ -908,6 +1134,7 @@ FIELDS.forEach(id => {
 function refreshAll() {
   loadZoneState();
   refreshCellInputs();
+  refreshPickedTab();
   calculate();
   renderPlanOverview();
   renderPlanWarnings();
@@ -1021,8 +1248,10 @@ function saveRecord() {
 }
 
 function resetForm() {
+  // Clears this tab's fields and overrides only — picked quantities belong to the
+  // Picked tab and are left alone.
   localStorage.removeItem(zKey(selectedShift, selectedZone));
-  updateCell(selectedShift, selectedZone, { manual: 0, ogrp: 0, predOgrp: null, unitsOv: null });
+  updateCell(selectedShift, selectedZone, { predOgrp: null, unitsOv: null });
   document.getElementById('currenttime').value = now();
   document.getElementById('noteField').value = '';
   loadZoneState();
@@ -1151,8 +1380,10 @@ loadPlanUI();
 loadTrZoneState(selectedTrZone);
 setShift(initShift());
 setZone(selectedZone);
+refreshPickedTab();
 renderPlanOverview();
 renderPlanWarnings();
+applyPlanSub();
 calculateTime();
 
 SHIFTS.forEach(sh => ZONES.forEach(z => {

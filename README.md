@@ -11,7 +11,7 @@ The app plans a day against a target and tracks progress towards it.
 3. **Pick out times** are set per shift and chamber in Settings, and auto-fill on the People tab.
 4. **Carryover** — anything AM leaves unpicked rolls into PM's working target automatically.
 
-Shifts are AM 05:00-13:00 and PM 10:00-18:00. During the 10:00-13:00 overlap the app defaults to AM; you can switch manually at any time and the choice sticks for the day.
+Shifts are AM 05:00-13:00 and PM 13:00-18:00 — the PM window is when the pick actually runs, which is what its targets represent. The app selects the shift from the clock; you can switch manually at any time and the choice sticks for the day.
 
 The Time tab is an independent manual calculator and is unaffected by the plan.
 
