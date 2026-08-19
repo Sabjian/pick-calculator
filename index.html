@@ -85,6 +85,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .divider { border: none; border-top: 0.5px solid rgba(0,0,0,0.1); margin: 12px 0; }
 .note-field { width: 100%; padding: 10px 12px; font-size: 14px; border: 0.5px solid rgba(0,0,0,0.25); border-radius: 8px; background: #fff; color: #1a1a1a; resize: none; height: 64px; font-family: inherit; margin-bottom: 10px; }
 .note-field:focus { outline: none; border-color: rgba(0,0,0,0.5); }
+.stimes input[type=time] { font-size: 12.5px; padding: 0 2px; text-align: center; }
+.stimes input[type=time]::-webkit-calendar-picker-indicator { display: none; }
 .pkgrid { display: grid; grid-template-columns: auto 1fr 1fr; gap: 8px; align-items: center; margin-bottom: 14px; }
 .pkcolhead { text-align: center; margin-bottom: 0; }
 .pkzone { font-size: 12px; font-weight: 600; padding: 7px 6px; border-radius: 6px; text-align: center; }
@@ -101,9 +103,24 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .pkhead .pkcell { font-size: 8.5px; font-weight: 500; color: #666; text-transform: uppercase; letter-spacing: 0.2px; }
 .pktotal { font-weight: 600; }
 .pknote { font-size: 11px; color: #666; text-align: center; margin-top: 10px; min-height: 14px; }
+.ptbl { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.ptbl th, .ptbl td { padding: 3px 2px; text-align: center; }
+.ptbl th:first-child, .ptbl td:first-child { width: 29%; text-align: left; padding-right: 6px; }
+.ptbl thead th { padding-bottom: 7px; }
+.rlab { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.3px; line-height: 1.25; }
+.rowreset { margin-left: 4px; text-decoration: none; font-size: 12px; }
+.ptbl input { width: 100%; height: 38px; padding: 0 4px; font-size: 14px; text-align: center; border: 0.5px solid rgba(0,0,0,0.25); border-radius: 7px; background: #fff; color: #1a1a1a; -webkit-appearance: none; }
+.ptbl input:focus { outline: none; border-color: rgba(0,0,0,0.5); box-shadow: 0 0 0 2px rgba(0,0,0,0.06); }
+.ptbl input::-webkit-calendar-picker-indicator { display: none; }
+.ptbl input[type=time] { font-size: 12.5px; padding: 0 2px; }
+.ptbl input.ovr { border-color: #BA7517; color: #BA7517; }
+.dval { font-size: 15px; font-weight: 600; color: #1a1a1a; }
+.dval.sm { font-size: 13px; font-weight: 500; }
+.remrow td { padding-bottom: 8px; border-bottom: 0.5px solid rgba(0,0,0,0.12); }
+.calcrow td { padding-top: 10px; border-top: 0.5px solid rgba(0,0,0,0.12); }
 .stitle { font-size: 13px; font-weight: 600; color: #1a1a1a; }
 .stbl { width: 100%; border-collapse: collapse; table-layout: fixed; }
-.stbl th:first-child, .stbl td:first-child { width: 25%; }
+.stbl th:first-child, .stbl td:first-child { width: 22%; }
 .stbl th, .stbl td { padding: 5px 2px; font-size: 12px; text-align: right; }
 .stbl th { font-size: 9px; font-weight: 500; color: #666; text-transform: uppercase; letter-spacing: 0.3px; }
 .stbl th:first-child, .stbl td:first-child { text-align: left; color: #666; font-weight: 500; }
@@ -111,6 +128,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .stbl tbody tr + tr td { border-top: 0.5px solid rgba(0,0,0,0.08); }
 .stbl .totcol { font-weight: 600; }
 .stmuted { color: #999; font-size: 10px; }
+.overrun { font-size: 9px; font-weight: 600; color: #c0392b; margin-top: 2px; }
 .slegend { font-size: 11px; color: #666; line-height: 1.5; padding: 0 2px; }
 .slegend b { color: #1a1a1a; font-weight: 600; }
 .pcard { background: #fff; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 12px; padding: 14px; margin-bottom: 10px; }
@@ -193,6 +211,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   .pkhead .pkcell, .pknote { color: #999; }
   .pkrow + .pkrow { border-color: rgba(255,255,255,0.1); }
   .ptot, .pshift, .pcarry, .crosscheck { color: #999; }
+  .ptbl input { background: #242424; border-color: rgba(255,255,255,0.2); color: #f0f0f0; }
+  .ptbl input.ovr { border-color: #BA7517; color: #E0A040; }
+  .rlab { color: #999; }
+  .dval { color: #f0f0f0; }
+  .remrow td, .calcrow td { border-color: rgba(255,255,255,0.12); }
   .stitle { color: #f0f0f0; }
   .stbl th, .stbl th:first-child, .stbl td:first-child, .slegend { color: #999; }
   .stbl tbody td, .slegend b { color: #f0f0f0; }
@@ -247,10 +270,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     </div>
 
     <div id="planEdit" style="display:none">
-      <div class="fgroup">
-        <label class="flabel">Daily total units</label>
-        <input type="number" id="p-total" placeholder="0" min="0" inputmode="numeric">
+      <div class="row2">
+        <div class="fgroup">
+          <label class="flabel">Night total units</label>
+          <input type="number" id="p-night" placeholder="0" min="0" inputmode="numeric">
+        </div>
+        <div class="fgroup">
+          <label class="flabel">Daily total units</label>
+          <input type="number" id="p-total" placeholder="0" min="0" inputmode="numeric">
+        </div>
       </div>
+      <div class="crosscheck">Night picks 100% of its own total and runs first; the daily total splits across AM and PM.</div>
 
       <label class="flabel">Shift split %</label>
       <div class="row2">
@@ -274,7 +304,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   <div id="picked" class="section">
     <label class="flabel">Shift</label>
     <div class="shift-sel">
-      <button class="sbtn on" id="pk-shift-am" onclick="setShift('am')">AM<small>05:00&ndash;13:00</small></button>
+      <button class="sbtn on" id="pk-shift-night" onclick="setShift('night')">Night<small>20:00&ndash;05:00</small></button>
+      <button class="sbtn" id="pk-shift-am" onclick="setShift('am')">AM<small>05:00&ndash;13:00</small></button>
       <button class="sbtn" id="pk-shift-pm" onclick="setShift('pm')">PM<small>13:00&ndash;18:00</small></button>
     </div>
 
@@ -350,119 +381,187 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   <div id="calc" class="section">
     <label class="flabel">Shift</label>
     <div class="shift-sel">
-      <button class="sbtn on" id="shift-am" onclick="setShift('am')">AM<small>05:00&ndash;13:00</small></button>
+      <button class="sbtn on" id="shift-night" onclick="setShift('night')">Night<small>20:00&ndash;05:00</small></button>
+      <button class="sbtn" id="shift-am" onclick="setShift('am')">AM<small>05:00&ndash;13:00</small></button>
       <button class="sbtn" id="shift-pm" onclick="setShift('pm')">PM<small>13:00&ndash;18:00</small></button>
     </div>
 
-    <label class="flabel">Zone</label>
-    <div class="zone-sel">
-      <button class="zbtn za" id="zone-ambient" onclick="setZone('ambient')">Ambient</button>
-      <button class="zbtn" id="zone-chill" onclick="setZone('chill')">Chill</button>
-      <button class="zbtn" id="zone-freezer" onclick="setZone('freezer')">Freezer</button>
-    </div>
-
-    <div class="row2">
-      <div class="fgroup"><label class="flabel">Pick out time</label><input type="time" id="pickout"></div>
-      <div class="fgroup"><label class="flabel">Current time</label><input type="time" id="currenttime"></div>
-    </div>
-
     <div class="row2">
       <div class="fgroup">
-        <div class="flabel-row"><label class="flabel">Remaining units</label><button class="mini" id="unitsReset" onclick="clearUnitsOverride()" style="display:none">use plan</button></div>
-        <input type="number" id="units" placeholder="0" min="0" inputmode="numeric">
-        <div class="fsub" id="unitsSub"></div>
+        <div class="flabel-row"><label class="flabel">Current time</label><button class="mini" id="timeReset" onclick="clearTimeOverride()" style="display:none">use now</button></div>
+        <input type="time" id="currenttime">
+        <div class="fsub" id="timeSub"></div>
       </div>
-      <div class="fgroup">
-        <div class="flabel-row"><label class="flabel">Pred OGRP %</label><button class="mini" id="ogrpReset" onclick="clearOgrpOverride()" style="display:none">use calc</button></div>
-        <input type="number" id="ogrp" placeholder="0" min="0" max="100" inputmode="numeric">
-        <div class="fsub" id="ogrpSub"></div>
-      </div>
+      <div></div>
     </div>
 
-    <div class="row2">
-      <div class="fgroup"><label class="flabel">Breaks (mins)</label><input type="number" id="breaks" placeholder="0" min="0" inputmode="numeric"></div>
-      <div class="fgroup"><label class="flabel">UPH</label><input type="number" id="uph" placeholder="0" min="0" inputmode="numeric"></div>
-    </div>
-    <div class="fgroup"><label class="flabel">Active people</label><input type="number" id="activepeople" placeholder="0" min="0" inputmode="numeric"></div>
+    <table class="ptbl">
+      <thead>
+        <tr>
+          <th class="rlab"></th>
+          <th><span class="pkzone ambient">Ambient</span></th>
+          <th><span class="pkzone chill">Chill</span></th>
+          <th><span class="pkzone freezer">Freezer</span></th>
+        </tr>
+      </thead>
+      <tbody>
+      <tr class="remrow">
+        <td class="rlab">Time remaining</td>
+        <td><span class="dval sm" id="c-timerem-ambient">&mdash;</span></td>
+        <td><span class="dval sm" id="c-timerem-chill">&mdash;</span></td>
+        <td><span class="dval sm" id="c-timerem-freezer">&mdash;</span></td>
+      </tr>
+      <tr>
+        <td class="rlab">Pickout time</td>
+        <td><input type="time" id="c-pickout-ambient" ></td>
+        <td><input type="time" id="c-pickout-chill" ></td>
+        <td><input type="time" id="c-pickout-freezer" ></td>
+      </tr>
+      <tr>
+        <td class="rlab"><span class="rowlab">Remaining units</span><button class="mini rowreset" id="reset-units" onclick="clearUnitsOverride()" style="display:none" title="use plan figure">&#8634;</button></td>
+        <td><input type="number" id="c-units-ambient" placeholder="0" min="0" inputmode="numeric"></td>
+        <td><input type="number" id="c-units-chill" placeholder="0" min="0" inputmode="numeric"></td>
+        <td><input type="number" id="c-units-freezer" placeholder="0" min="0" inputmode="numeric"></td>
+      </tr>
+      <tr>
+        <td class="rlab"><span class="rowlab">Pred OGRP %</span><button class="mini rowreset" id="reset-ogrp" onclick="clearOgrpOverride()" style="display:none" title="use calculated figure">&#8634;</button></td>
+        <td><input type="number" id="c-ogrp-ambient" placeholder="0" min="0" max="100" inputmode="numeric"></td>
+        <td><input type="number" id="c-ogrp-chill" placeholder="0" min="0" max="100" inputmode="numeric"></td>
+        <td><input type="number" id="c-ogrp-freezer" placeholder="0" min="0" max="100" inputmode="numeric"></td>
+      </tr>
+      <tr>
+        <td class="rlab">UPH</td>
+        <td><input type="number" id="c-uph-ambient" placeholder="0" min="0" inputmode="numeric"></td>
+        <td><input type="number" id="c-uph-chill" placeholder="0" min="0" inputmode="numeric"></td>
+        <td><input type="number" id="c-uph-freezer" placeholder="0" min="0" inputmode="numeric"></td>
+      </tr>
+      <tr>
+        <td class="rlab">Breaks (mins)</td>
+        <td><input type="number" id="c-breaks-ambient" placeholder="0" min="0" inputmode="numeric"></td>
+        <td><input type="number" id="c-breaks-chill" placeholder="0" min="0" inputmode="numeric"></td>
+        <td><input type="number" id="c-breaks-freezer" placeholder="0" min="0" inputmode="numeric"></td>
+      </tr>
+      <tr>
+        <td class="rlab">Active people</td>
+        <td><input type="number" id="c-active-ambient" placeholder="0" min="0" inputmode="numeric"></td>
+        <td><input type="number" id="c-active-chill" placeholder="0" min="0" inputmode="numeric"></td>
+        <td><input type="number" id="c-active-freezer" placeholder="0" min="0" inputmode="numeric"></td>
+      </tr>
+      <tr class="calcrow">
+        <td class="rlab">Calculated people</td>
+        <td><span class="dval" id="c-calc-ambient">&mdash;</span></td>
+        <td><span class="dval" id="c-calc-chill">&mdash;</span></td>
+        <td><span class="dval" id="c-calc-freezer">&mdash;</span></td>
+      </tr>
+      <tr>
+        <td class="rlab">Delta</td>
+        <td><span class="dval" id="c-delta-ambient">&mdash;</span></td>
+        <td><span class="dval" id="c-delta-chill">&mdash;</span></td>
+        <td><span class="dval" id="c-delta-freezer">&mdash;</span></td>
+      </tr>
+      <tr>
+        <td class="rlab">Units/h required</td>
+        <td><span class="dval sm" id="c-req-ambient">&mdash;</span></td>
+        <td><span class="dval sm" id="c-req-chill">&mdash;</span></td>
+        <td><span class="dval sm" id="c-req-freezer">&mdash;</span></td>
+      </tr>
+      <tr>
+        <td class="rlab">Units/h available</td>
+        <td><span class="dval sm" id="c-avail-ambient">&mdash;</span></td>
+        <td><span class="dval sm" id="c-avail-chill">&mdash;</span></td>
+        <td><span class="dval sm" id="c-avail-freezer">&mdash;</span></td>
+      </tr>
+      </tbody>
+    </table>
 
-    <div class="result-card">
-      <div class="result-split">
-        <div class="result-col">
-          <div class="rlabel">Calculated</div>
-          <div class="rvalue" id="resultValue">&mdash;</div>
-          <div class="rsub" id="resultSub"></div>
-        </div>
-        <div class="result-divider"></div>
-        <div class="result-col">
-          <div class="rlabel">Delta</div>
-          <div class="delta-value delta-ok" id="deltaValue">&mdash;</div>
-          <div class="delta-sub ok" id="deltaSub"></div>
-        </div>
-      </div>
-    </div>
+    <div class="pknote" id="peopleNote"></div>
 
-    <div class="mgrid" id="metricsGrid" style="display:none">
-      <div class="metric"><div class="mlabel">Time remaining</div><div class="mval" id="mTime">&mdash;</div></div>
-      <div class="metric"><div class="mlabel">Effective units</div><div class="mval" id="mUnits">&mdash;</div></div>
-      <div class="metric"><div class="mlabel">Calc OGRP %</div><div class="mval" id="mCalcOgrp">&mdash;</div></div>
-      <div class="metric"><div class="mlabel">Pred OGRP %</div><div class="mval" id="mPredOgrp">&mdash;</div></div>
-      <div class="metric"><div class="mlabel">Active people</div><div class="mval" id="mActive">&mdash;</div></div>
-      <div class="metric"><div class="mlabel">People needed</div><div class="mval" id="mNeeded">&mdash;</div></div>
-    </div>
-
-    <hr class="divider">
-    <textarea class="note-field" id="noteField" placeholder="Optional note..."></textarea>
     <div class="btnrow">
       <button class="btn" onclick="resetForm()">Clear</button>
       <button class="btn primary" onclick="saveRecord()">Save record</button>
     </div>
   </div>
 
-  <!-- Time remaining calculator -->
+
+  <!-- Time to complete a quantity -->
   <div id="timecalc" class="section">
-    <label class="flabel">Zone</label>
-    <div class="zone-sel">
-      <button class="zbtn za" id="tr-zone-ambient" onclick="setTrZone('ambient')">Ambient</button>
-      <button class="zbtn" id="tr-zone-chill" onclick="setTrZone('chill')">Chill</button>
-      <button class="zbtn" id="tr-zone-freezer" onclick="setTrZone('freezer')">Freezer</button>
-    </div>
     <div class="row2">
-      <div class="fgroup"><label class="flabel">Current time</label><input type="time" id="tr-current"></div>
-      <div class="fgroup"><label class="flabel">Breaks (mins)</label><input type="number" id="tr-breaks" placeholder="0" min="0" inputmode="numeric"></div>
-    </div>
-    <div class="row2">
-      <div class="fgroup"><label class="flabel">Remaining units</label><input type="number" id="tr-units" placeholder="0" min="0" inputmode="numeric"></div>
-      <div class="fgroup"><label class="flabel">OGRP %</label><input type="number" id="tr-ogrp" placeholder="0" min="0" max="100" inputmode="numeric"></div>
-    </div>
-    <div class="row2">
-      <div class="fgroup"><label class="flabel">UPH</label><input type="number" id="tr-uph" placeholder="0" min="0" inputmode="numeric"></div>
-      <div class="fgroup"><label class="flabel">Active people</label><input type="number" id="tr-people" placeholder="0" min="0" inputmode="numeric"></div>
-    </div>
-
-    <div class="result-card">
-      <div class="result-split">
-        <div class="result-col">
-          <div class="rlabel">Time needed</div>
-          <div class="rvalue-sm" id="tr-resultTime">&mdash;</div>
-          <div class="rsub" id="tr-resultTimeSub"></div>
-        </div>
-        <div class="result-divider"></div>
-        <div class="result-col">
-          <div class="rlabel">Finish by</div>
-          <div class="rvalue-sm" id="tr-resultFinish">&mdash;</div>
-          <div class="rsub" id="tr-resultFinishSub"></div>
-        </div>
+      <div class="fgroup">
+        <div class="flabel-row"><label class="flabel">Current time</label><button class="mini" id="trTimeReset" onclick="clearTimeOverride()" style="display:none">use now</button></div>
+        <input type="time" id="tr-current">
+        <div class="fsub" id="trTimeSub"></div>
       </div>
+      <div></div>
     </div>
 
-    <div class="mgrid" id="tr-metricsGrid" style="display:none">
-      <div class="metric"><div class="mlabel">Effective units</div><div class="mval" id="tr-mUnits">&mdash;</div></div>
-      <div class="metric"><div class="mlabel">Net hours</div><div class="mval" id="tr-mHours">&mdash;</div></div>
-      <div class="metric"><div class="mlabel">Active people</div><div class="mval" id="tr-mPeople">&mdash;</div></div>
-      <div class="metric"><div class="mlabel">Breaks</div><div class="mval" id="tr-mBreaks">&mdash;</div></div>
-    </div>
+    <table class="ptbl">
+      <thead>
+        <tr>
+          <th class="rlab"></th>
+          <th><span class="pkzone ambient">Ambient</span></th>
+          <th><span class="pkzone chill">Chill</span></th>
+          <th><span class="pkzone freezer">Freezer</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="rlab">Qty to pick</td>
+          <td><input type="number" id="t-qty-ambient" placeholder="0" min="0" inputmode="numeric"></td>
+          <td><input type="number" id="t-qty-chill" placeholder="0" min="0" inputmode="numeric"></td>
+          <td><input type="number" id="t-qty-freezer" placeholder="0" min="0" inputmode="numeric"></td>
+        </tr>
+        <tr>
+          <td class="rlab">Active people</td>
+          <td><input type="number" id="t-people-ambient" placeholder="0" min="0" inputmode="numeric"></td>
+          <td><input type="number" id="t-people-chill" placeholder="0" min="0" inputmode="numeric"></td>
+          <td><input type="number" id="t-people-freezer" placeholder="0" min="0" inputmode="numeric"></td>
+        </tr>
+        <tr>
+          <td class="rlab">UPH</td>
+          <td><input type="number" id="t-uph-ambient" placeholder="0" min="0" inputmode="numeric"></td>
+          <td><input type="number" id="t-uph-chill" placeholder="0" min="0" inputmode="numeric"></td>
+          <td><input type="number" id="t-uph-freezer" placeholder="0" min="0" inputmode="numeric"></td>
+        </tr>
+        <tr>
+          <td class="rlab">Pred OGRP %</td>
+          <td><input type="number" id="t-ogrp-ambient" placeholder="0" min="0" max="100" inputmode="numeric"></td>
+          <td><input type="number" id="t-ogrp-chill" placeholder="0" min="0" max="100" inputmode="numeric"></td>
+          <td><input type="number" id="t-ogrp-freezer" placeholder="0" min="0" max="100" inputmode="numeric"></td>
+        </tr>
+        <tr>
+          <td class="rlab">Breaks (mins)</td>
+          <td><input type="number" id="t-breaks-ambient" placeholder="0" min="0" inputmode="numeric"></td>
+          <td><input type="number" id="t-breaks-chill" placeholder="0" min="0" inputmode="numeric"></td>
+          <td><input type="number" id="t-breaks-freezer" placeholder="0" min="0" inputmode="numeric"></td>
+        </tr>
+        <tr class="calcrow">
+          <td class="rlab">Effective units</td>
+          <td><span class="dval sm" id="t-eff-ambient">&mdash;</span></td>
+          <td><span class="dval sm" id="t-eff-chill">&mdash;</span></td>
+          <td><span class="dval sm" id="t-eff-freezer">&mdash;</span></td>
+        </tr>
+        <tr>
+          <td class="rlab">Time needed</td>
+          <td><span class="dval sm" id="t-need-ambient">&mdash;</span></td>
+          <td><span class="dval sm" id="t-need-chill">&mdash;</span></td>
+          <td><span class="dval sm" id="t-need-freezer">&mdash;</span></td>
+        </tr>
+        <tr>
+          <td class="rlab">Finish at</td>
+          <td><span class="dval" id="t-finish-ambient">&mdash;</span></td>
+          <td><span class="dval" id="t-finish-chill">&mdash;</span></td>
+          <td><span class="dval" id="t-finish-freezer">&mdash;</span></td>
+        </tr>
+      </tbody>
+    </table>
 
-    <div class="btnrow" style="margin-top:12px">
+    <div class="flabel-row" style="margin-top:12px">
+      <span class="fsub" id="trNote"></span>
+      <button class="mini" id="trReset" onclick="resetTrOverrides()" style="display:none">use People figures</button>
+    </div>
+    <div class="fsub" id="trOverrunNote" style="color:#c0392b"></div>
+
+    <div class="btnrow">
       <button class="btn" onclick="resetTrForm()">Clear</button>
     </div>
   </div>
@@ -484,9 +583,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
     <div class="settings-zone">
       <div class="settings-zone-label ambient">Ambient</div>
-      <div class="row2">
-        <div class="fgroup"><label class="flabel">AM pick out</label><input type="time" id="s-pickout-am-ambient"></div>
-        <div class="fgroup"><label class="flabel">PM pick out</label><input type="time" id="s-pickout-pm-ambient"></div>
+      <div class="row3 stimes">
+        <div class="fgroup"><label class="flabel">Night out</label><input type="time" id="s-pickout-night-ambient"></div>
+        <div class="fgroup"><label class="flabel">AM out</label><input type="time" id="s-pickout-am-ambient"></div>
+        <div class="fgroup"><label class="flabel">PM out</label><input type="time" id="s-pickout-pm-ambient"></div>
       </div>
       <div class="row2">
         <div class="fgroup"><label class="flabel">OGRP %</label><input type="number" id="s-ogrp-ambient" placeholder="0" min="0" max="100" inputmode="numeric"></div>
@@ -496,9 +596,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
     <div class="settings-zone">
       <div class="settings-zone-label chill">Chill</div>
-      <div class="row2">
-        <div class="fgroup"><label class="flabel">AM pick out</label><input type="time" id="s-pickout-am-chill"></div>
-        <div class="fgroup"><label class="flabel">PM pick out</label><input type="time" id="s-pickout-pm-chill"></div>
+      <div class="row3 stimes">
+        <div class="fgroup"><label class="flabel">Night out</label><input type="time" id="s-pickout-night-chill"></div>
+        <div class="fgroup"><label class="flabel">AM out</label><input type="time" id="s-pickout-am-chill"></div>
+        <div class="fgroup"><label class="flabel">PM out</label><input type="time" id="s-pickout-pm-chill"></div>
       </div>
       <div class="row2">
         <div class="fgroup"><label class="flabel">OGRP %</label><input type="number" id="s-ogrp-chill" placeholder="0" min="0" max="100" inputmode="numeric"></div>
@@ -508,9 +609,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
     <div class="settings-zone">
       <div class="settings-zone-label freezer">Freezer</div>
-      <div class="row2">
-        <div class="fgroup"><label class="flabel">AM pick out</label><input type="time" id="s-pickout-am-freezer"></div>
-        <div class="fgroup"><label class="flabel">PM pick out</label><input type="time" id="s-pickout-pm-freezer"></div>
+      <div class="row3 stimes">
+        <div class="fgroup"><label class="flabel">Night out</label><input type="time" id="s-pickout-night-freezer"></div>
+        <div class="fgroup"><label class="flabel">AM out</label><input type="time" id="s-pickout-am-freezer"></div>
+        <div class="fgroup"><label class="flabel">PM out</label><input type="time" id="s-pickout-pm-freezer"></div>
       </div>
       <div class="row2">
         <div class="fgroup"><label class="flabel">OGRP %</label><input type="number" id="s-ogrp-freezer" placeholder="0" min="0" max="100" inputmode="numeric"></div>
@@ -530,22 +632,19 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
 <script>
 const ZONES  = ['ambient','chill','freezer'];
-const SHIFTS = ['am','pm'];
+const SHIFTS = ['night','am','pm'];
 const ZLABEL = { ambient:'Ambient', chill:'Chill', freezer:'Freezer' };
-const SLABEL = { am:'AM', pm:'PM' };
-const FIELDS = ['pickout','breaks','uph','activepeople'];
-const TR_FIELDS = ['tr-current','tr-breaks','tr-units','tr-ogrp','tr-uph','tr-people'];
+const SLABEL = { am:'AM', pm:'PM', night:'Night' };
 
-let selectedZone = 'ambient';
 let selectedShift = 'am';
-let selectedTrZone = 'ambient';
 let activeFilter = 'all';
 
 const SETTINGS_V = 2;
 const DEFAULT_SETTINGS = {
   pickout: {
-    am: { ambient:'12:55', chill:'12:40', freezer:'12:00' },
-    pm: { ambient:'15:55', chill:'15:40', freezer:'14:00' }
+    am:    { ambient:'12:55', chill:'12:40', freezer:'12:00' },
+    pm:    { ambient:'15:55', chill:'15:40', freezer:'14:00' },
+    night: { ambient:'04:55', chill:'04:55', freezer:'04:55' }
   },
   ambient: { ogrp:46, uph:600 },
   chill:   { ogrp:36, uph:650 },
@@ -553,7 +652,8 @@ const DEFAULT_SETTINGS = {
 };
 
 const DEFAULT_PLAN = {
-  dailyTotal: 0,
+  dailyTotal: 0,          // split across AM and PM by shiftPct
+  nightTotal: 0,          // night stands alone and picks 100% of this
   shiftPct:   { am:75, pm:25 },
   chamberPct: { ambient:63.6, chill:32.2, freezer:4.2 }
 };
@@ -561,9 +661,24 @@ const DEFAULT_PLAN = {
 // --- Shared helpers ---
 function toMins(t) { if (!t) return null; const p = t.split(':'); return (+p[0])*60 + (+p[1]); }
 function minsToTime(m) { const h = Math.floor(m/60)%24, mm = Math.round(m%60); return String(h).padStart(2,'0')+':'+String(mm).padStart(2,'0'); }
+function minsTo12(m) {
+  const t = ((Math.round(m) % 1440) + 1440) % 1440;
+  const mm = t % 60;
+  let h = Math.floor(t / 60);
+  const ap = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  return h + ':' + String(mm).padStart(2,'0') + ' ' + ap;
+}
 function minsToHM(mins) { const h = Math.floor(mins/60), m = Math.round(mins%60); return h === 0 ? m+'m' : h+'h '+String(m).padStart(2,'0')+'m'; }
 function now() { const d = new Date(); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
 function nowMins() { const d = new Date(); return d.getHours()*60 + d.getMinutes(); }
+// Minutes from `from` until clock time `to`, for shifts that run through midnight.
+// A target more than 12 hours "behind" is read as tomorrow; anything more recent
+// stays in the past, so a pickout that has genuinely just gone still reads passed.
+function minsUntil(from, to) {
+  const d = to - from;
+  return d < -720 ? d + 1440 : d;
+}
 function todayISO() { const d = new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 function fmt(n) { return Math.round(n).toLocaleString(); }
 function numOrNull(el) { const v = el.value.trim(); return v === '' ? null : (isNaN(parseFloat(v)) ? null : parseFloat(v)); }
@@ -589,7 +704,8 @@ function getSettings() {
 }
 
 function saveSettings() {
-  const s = { v: SETTINGS_V, pickout: { am:{}, pm:{} } };
+  const s = { v: SETTINGS_V, pickout: {} };
+  SHIFTS.forEach(sh => { s.pickout[sh] = {}; });
   SHIFTS.forEach(sh => ZONES.forEach(z => {
     s.pickout[sh][z] = document.getElementById('s-pickout-'+sh+'-'+z).value || DEFAULT_SETTINGS.pickout[sh][z];
   }));
@@ -624,6 +740,7 @@ function getPlan() {
   if (saved.shiftPct)   Object.assign(base.shiftPct, saved.shiftPct);
   if (saved.chamberPct) Object.assign(base.chamberPct, saved.chamberPct);
   base.dailyTotal = saved.date === todayISO() ? (parseFloat(saved.dailyTotal) || 0) : 0;
+  base.nightTotal = saved.date === todayISO() ? (parseFloat(saved.nightTotal) || 0) : 0;
   base.date = todayISO();
   return base;
 }
@@ -632,6 +749,7 @@ function savePlan() {
   const p = {
     date: todayISO(),
     dailyTotal: parseFloat(document.getElementById('p-total').value) || 0,
+    nightTotal: parseFloat(document.getElementById('p-night').value) || 0,
     shiftPct:   { am: parseFloat(document.getElementById('p-am').value) || 0,
                   pm: parseFloat(document.getElementById('p-pm').value) || 0 },
     chamberPct: { ambient: parseFloat(document.getElementById('p-ambient').value) || 0,
@@ -645,6 +763,7 @@ function savePlan() {
 function loadPlanUI() {
   const p = getPlan();
   document.getElementById('p-total').value   = p.dailyTotal;
+  document.getElementById('p-night').value   = p.nightTotal;
   document.getElementById('p-am').value      = p.shiftPct.am;
   document.getElementById('p-pm').value      = p.shiftPct.pm;
   document.getElementById('p-ambient').value = p.chamberPct.ambient;
@@ -704,8 +823,14 @@ function updateCell(shift, zone, patch) {
 // Single source of truth for every derived figure on a shift x chamber cell.
 function computeCell(shift, zone) {
   const plan = getPlan(), prog = getProgress(), st = getSettings();
-  const chamberDayTotal = plan.dailyTotal * (plan.chamberPct[zone] || 0) / 100;
-  const plannedShare = s => chamberDayTotal * (plan.shiftPct[s] || 0) / 100;
+  const share = (plan.chamberPct[zone] || 0) / 100;
+  // AM and PM split the daily total between them; Night stands alone with its own
+  // total, of which it picks 100%. The chamber split is the same for all three.
+  const dayPool = plan.dailyTotal * share;
+  const nightPool = plan.nightTotal * share;
+  const isNight = shift === 'night';
+  const chamberDayTotal = isNight ? nightPool : dayPool;
+  const plannedShare = s => s === 'night' ? nightPool : dayPool * (plan.shiftPct[s] || 0) / 100;
   const pickedIn = s => (prog[s][zone].manual || 0) + (prog[s][zone].ogrp || 0);
 
   const cell = prog[shift][zone];
@@ -714,13 +839,20 @@ function computeCell(shift, zone) {
   const predOgrp = cell.predOgrp !== null ? cell.predOgrp
                  : (calcOgrp !== null ? calcOgrp : st[zone].ogrp);
 
-  // AM leaves its shortfall to PM, computed live so it self-corrects as AM picks.
-  // Carryover only ever adds: if AM beats its share the day's forecast was low,
-  // which is no reason to shrink PM's own target — let alone zero it out.
-  const shortfall = Math.max(0, plannedShare('am') - pickedIn('am'));
-  const amAhead   = Math.max(0, pickedIn('am') - plannedShare('am'));
-  const workingTarget = shift === 'am' ? plannedShare('am') : plannedShare('pm') + shortfall;
-  const carried = shift === 'am' ? 0 : shortfall;
+  // Whatever a shift leaves short rolls forward: Night into AM, AM into PM. Each
+  // link measures against the target that shift was actually working to, so an
+  // unpicked night quantity survives an AM that also runs short. Carryover only
+  // ever adds — a shift that beats its share means the forecast was low, which is
+  // no reason to shrink the next shift's target, let alone zero it out.
+  const nightShort = Math.max(0, plannedShare('night') - pickedIn('night'));
+  const amWorking  = plannedShare('am') + nightShort;
+  const amShort    = Math.max(0, amWorking - pickedIn('am'));
+  const working    = { night: plannedShare('night'), am: amWorking, pm: plannedShare('pm') + amShort };
+
+  const workingTarget = working[shift];
+  const carried  = shift === 'am' ? nightShort : shift === 'pm' ? amShort : 0;
+  const prevAhead = shift === 'am' ? Math.max(0, pickedIn('night') - plannedShare('night'))
+                  : shift === 'pm' ? Math.max(0, pickedIn('am') - amWorking) : 0;
 
   // Signed for display: positive is still to pick, negative is an over-pick.
   // planRemaining stays clamped because it drives the staffing maths, and you
@@ -731,10 +863,10 @@ function computeCell(shift, zone) {
   const effective = remaining * (1 - predOgrp/100);
 
   return {
-    chamberDayTotal, planned: plannedShare(shift), workingTarget, carried, amAhead,
+    chamberDayTotal, planned: plannedShare(shift), workingTarget, carried, prevAhead,
     pickedManual: cell.manual, pickedOgrp: cell.ogrp, picked,
     calcOgrp, predOgrp, planRemaining, variance, remaining, effective,
-    hasPlan: plan.dailyTotal > 0,
+    hasPlan: chamberDayTotal > 0,
     unitsOverridden: cell.unitsOv !== null,
     ogrpOverridden: cell.predOgrp !== null
   };
@@ -765,7 +897,7 @@ function cellStaffing(shift, zone) {
   const uph = (s.uph !== undefined && s.uph !== '') ? parseFloat(s.uph) : st[zone].uph;
   const active = parseFloat(s.activepeople) || 0;
   if (po === null || !(uph > 0)) return null;
-  const hrs = (po - nowMins() - breaks) / 60;
+  const hrs = (minsUntil(currentMins(), po) - breaks) / 60;
   if (hrs <= 0) return { expired: true };
   const needed = (computeCell(shift, zone).effective / uph) / hrs;
   return { needed, hrs, active, delta: active > 0 ? active - Math.ceil(needed) : null };
@@ -775,7 +907,7 @@ function cellStaffing(shift, zone) {
 function renderPlanOverview() {
   const plan = getPlan();
   const host = document.getElementById('planOverview');
-  if (!(plan.dailyTotal > 0)) {
+  if (!(plan.dailyTotal > 0) && !(plan.nightTotal > 0)) {
     host.innerHTML = '<div class="hempty">No daily total set for today.<br>Open the <strong>Plan</strong> tab above to start.</div>';
     return;
   }
@@ -786,11 +918,11 @@ function renderPlanOverview() {
     const info = getDeltaInfo(st.delta);
     return '<span class="delta-' + info.cls + '">' + formatDelta(st.delta) + '</span>';
   };
-  const deltaSum = zones => SHIFTS.map(s => {
-    const ds = zones.map(z => cellStaffing(s, z))
+  const deltaSum = zones => SHIFTS.map(sh => {
+    const ds = zones.map(z => cellStaffing(sh, z))
       .filter(st => st && !st.expired && st.delta !== null)
       .map(st => st.delta);
-    if (!ds.length) return deltaCell(zones.length === 1 ? cellStaffing(s, zones[0]) : null);
+    if (!ds.length) return deltaCell(zones.length === 1 ? cellStaffing(sh, zones[0]) : null);
     const total = ds.reduce((a, b) => a + b, 0);
     const info = getDeltaInfo(total);
     return '<span class="delta-' + info.cls + '">' + formatDelta(total) + '</span>';
@@ -799,41 +931,47 @@ function renderPlanOverview() {
   const dash = '<span class="stmuted">—</span>';
 
   const table = (zones) => {
-    const am = zones.map(z => computeCell('am', z));
-    const pm = zones.map(z => computeCell('pm', z));
+    const cols = SHIFTS.map(sh => zones.map(z => computeCell(sh, z)));
     const add = (arr, key) => arr.reduce((t, c) => t + Math.round(c[key]), 0);
-
-    const amP = add(am, 'picked'), pmP = add(pm, 'picked');
-    const dayT = add(am, 'chamberDayTotal');
+    const picked = cols.map(c => add(c, 'picked'));
+    // AM and PM share the daily pool; Night has its own. Total is both together.
+    const at = sh => cols[SHIFTS.indexOf(sh)];
+    const dayT = add(at('night'), 'chamberDayTotal') + add(at('am'), 'chamberDayTotal');
+    const dayP = picked.reduce((a, b) => a + b, 0);
     const deltas = deltaSum(zones);
-    // Target and Rem do not add across the shifts: units AM leaves short sit in
+    // Target and Rem do not add across AM and PM: units AM leaves short sit in
     // AM's target and again in PM's, so Total is the day's own figure.
     const rows = [
-      ['Target', fmt(add(am, 'workingTarget')), fmt(add(pm, 'workingTarget')), fmt(dayT)],
-      ['Picked', fmt(amP), fmt(pmP), fmt(amP + pmP)],
-      ['Rem', fmt(add(am, 'variance')), fmt(add(pm, 'variance')), fmt(dayT - amP - pmP)],
-      ['Delta', deltas[0], deltas[1], dash]
+      ['Target'].concat(cols.map(c => fmt(add(c, 'workingTarget'))), [fmt(dayT)]),
+      ['Picked'].concat(picked.map(fmt), [fmt(dayP)]),
+      ['Rem'].concat(cols.map(c => fmt(add(c, 'variance'))), [fmt(dayT - dayP)]),
+      ['Delta'].concat(deltas, [dash])
     ];
-    return '<table class="stbl"><thead><tr><th></th><th>AM</th><th>PM</th><th>Total</th></tr></thead><tbody>'
-      + rows.map(r => '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td>'
-        + '<td class="totcol">' + r[3] + '</td></tr>').join('')
+    return '<table class="stbl"><thead><tr><th></th>'
+      + SHIFTS.map(sh => '<th>' + SLABEL[sh] + '</th>').join('')
+      + '<th>Total</th></tr></thead><tbody>'
+      + rows.map(r => '<tr><td>' + r[0] + '</td>'
+        + r.slice(1, 4).map(v => '<td>' + v + '</td>').join('')
+        + '<td class="totcol">' + r[4] + '</td></tr>').join('')
       + '</tbody></table>';
   };
 
   const allCard = '<div class="pcard">'
     + '<div class="phead"><span class="stitle">All chambers</span>'
-    + '<span class="ptot">day ' + fmt(plan.dailyTotal) + '</span></div>'
+    + '<span class="ptot">total ' + fmt(plan.dailyTotal + plan.nightTotal) + '</span></div>'
     + table(ZONES)
     + '</div>';
 
   const zoneCards = ZONES.map(z => {
     const pmCell = computeCell('pm', z);
-    const carryTxt = pmCell.carried > 0 ? fmt(pmCell.carried) + ' carried into PM'
-      : pmCell.amAhead > 0 ? 'AM ahead by ' + fmt(pmCell.amAhead) + ' — PM target unchanged'
-      : 'AM on target — nothing carried';
+    const hop = (cell, from, to) => cell.carried > 0
+      ? fmt(cell.carried) + ' carried ' + from + ' → ' + to
+      : cell.prevAhead > 0 ? from + ' ahead by ' + fmt(cell.prevAhead)
+      : from + ' on target';
+    const carryTxt = hop(computeCell('am', z), 'Night', 'AM') + ' · ' + hop(pmCell, 'AM', 'PM');
     return '<div class="pcard">'
       + '<div class="phead"><span class="zbadge ' + z + '">' + ZLABEL[z] + '</span>'
-      + '<span class="ptot">day ' + fmt(pmCell.chamberDayTotal) + '</span></div>'
+      + '<span class="ptot">total ' + fmt(pmCell.chamberDayTotal + computeCell('night', z).chamberDayTotal) + '</span></div>'
       + table([z])
       + '<div class="pcarry">' + carryTxt + '</div>'
       + '</div>';
@@ -844,8 +982,9 @@ function renderPlanOverview() {
     + 'that chamber and shift. Positive means more people than needed, negative means short. It reads '
     + '<i>past pickout</i> once the pickout time has gone, or <i>N req</i> when no headcount has been entered yet.<br>'
     + '<b>Rem</b> is target minus picked: positive is still to pick, negative is an over-pick.<br>'
-    + '<b>Total</b> is the day figure. Target and Rem do not add across the shifts, because units AM leaves '
-    + 'short sit in AM’s target and again in PM’s.</div>';
+    + '<b>Total</b> is the day and night totals together. Target and Rem do not add across the shifts, '
+    + 'because whatever a shift leaves short rolls forward — Night into AM, AM into PM — and so is '
+    + 'counted in both.</div>';
 
   host.innerHTML = allCard + zoneCards + legend;
 }
@@ -864,42 +1003,41 @@ function renderPlanWarnings() {
     : '';
 }
 
-['p-total','p-am','p-pm','p-ambient','p-chill','p-freezer'].forEach(id => {
+['p-night','p-total','p-am','p-pm','p-ambient','p-chill','p-freezer'].forEach(id => {
   const el = document.getElementById(id);
   el.addEventListener('input', savePlan);
   el.addEventListener('change', savePlan);
 });
 
 // --- People calc: per shift x zone form state ---
+const FIELD_IDS = { pickout: 'c-pickout-', breaks: 'c-breaks-', uph: 'c-uph-', activepeople: 'c-active-' };
 function zKey(shift, zone) { return 'zoneState_' + shift + '_' + zone; }
+function fieldEl(key, zone) { return document.getElementById(FIELD_IDS[key] + zone); }
 
-function saveZoneState() {
+function saveZoneState(zone) {
   const st = getSettings();
   const s = {};
-  FIELDS.forEach(id => { s[id] = document.getElementById(id).value; });
+  Object.keys(FIELD_IDS).forEach(k => { s[k] = fieldEl(k, zone).value; });
   // Only persist the auto-filled fields when they genuinely differ from Settings,
   // so a later Settings change still reaches cells the user never overrode.
-  if (s.pickout === st.pickout[selectedShift][selectedZone]) delete s.pickout;
-  if (parseFloat(s.uph) === st[selectedZone].uph) delete s.uph;
-  localStorage.setItem(zKey(selectedShift, selectedZone), JSON.stringify(s));
+  if (s.pickout === st.pickout[selectedShift][zone]) delete s.pickout;
+  if (parseFloat(s.uph) === st[zone].uph) delete s.uph;
+  localStorage.setItem(zKey(selectedShift, zone), JSON.stringify(s));
 }
 
-function loadZoneState() {
+function loadZoneState(zone) {
   const st = getSettings();
-  const raw = localStorage.getItem(zKey(selectedShift, selectedZone));
+  const raw = localStorage.getItem(zKey(selectedShift, zone));
   let s = null;
   if (raw) { try { s = JSON.parse(raw); } catch (e) { s = null; } }
-  if (s) {
-    FIELDS.forEach(id => { document.getElementById(id).value = s[id] !== undefined ? s[id] : ''; });
-    if (!s.pickout) document.getElementById('pickout').value = st.pickout[selectedShift][selectedZone];
-    if (s.uph === undefined || s.uph === '') document.getElementById('uph').value = st[selectedZone].uph;
-  } else {
-    document.getElementById('pickout').value = st.pickout[selectedShift][selectedZone];
-    document.getElementById('breaks').value = '';
-    document.getElementById('uph').value = st[selectedZone].uph;
-    document.getElementById('activepeople').value = '';
-  }
+  const defaults = { pickout: st.pickout[selectedShift][zone], breaks: '', uph: st[zone].uph, activepeople: '' };
+  Object.keys(FIELD_IDS).forEach(k => {
+    const v = s && s[k] !== undefined && s[k] !== '' ? s[k] : defaults[k];
+    fieldEl(k, zone).value = v;
+  });
 }
+
+function loadAllZoneStates() { ZONES.forEach(loadZoneState); }
 
 function setShift(shift) {
   selectedShift = shift;
@@ -909,29 +1047,61 @@ function setShift(shift) {
     document.getElementById('shift-' + s).className = cls;
     document.getElementById('pk-shift-' + s).className = cls;
   });
-  loadZoneState();
-  refreshCellInputs();
+  loadAllZoneStates();
+  refreshPeopleTab();
   refreshPickedTab();
-  calculate();
 }
 
-function setZone(zone) {
-  selectedZone = zone;
-  ZONES.forEach(z => {
-    const cls = z === 'ambient' ? 'za' : z === 'chill' ? 'zc' : 'zf';
-    document.getElementById('zone-' + z).className = 'zbtn' + (z === zone ? ' ' + cls : '');
+// Current time follows the clock unless the user types over it. The override is
+// stamped with the date so it does not leak into the next day.
+// The clock, or the held time if the user has pinned one. Everything that asks
+// "what time is it" goes through here so the tabs cannot disagree.
+function currentMins() {
+  const ov = timeOverride();
+  return ov ? toMins(ov) : nowMins();
+}
+
+function timeOverride() {
+  const raw = localStorage.getItem('timeOverride');
+  if (!raw) return null;
+  try {
+    const o = JSON.parse(raw);
+    return (o.date === todayISO() && o.value) ? o.value : null;
+  } catch (e) { return null; }
+}
+
+// The People and Time tabs share one current time, so both controls stay in step.
+const TIME_CONTROLS = [
+  { input: 'currenttime', reset: 'timeReset', sub: 'timeSub' },
+  { input: 'tr-current', reset: 'trTimeReset', sub: 'trTimeSub' }
+];
+
+function syncCurrentTime() {
+  const ov = timeOverride();
+  TIME_CONTROLS.forEach(c => {
+    const el = document.getElementById(c.input);
+    if (el !== document.activeElement) el.value = ov || now();
+    document.getElementById(c.reset).style.display = ov ? 'inline' : 'none';
+    const sub = document.getElementById(c.sub);
+    sub.className = ov ? 'fsub ov' : 'fsub';
+    sub.textContent = ov ? 'held at ' + ov : 'follows the clock';
   });
-  loadZoneState();
-  refreshCellInputs();
-  calculate();
 }
 
-// PM picking runs 13:00-18:00; anything before that belongs to AM.
+function clearTimeOverride() {
+  localStorage.removeItem('timeOverride');
+  syncCurrentTime();
+  refreshPeopleTab();
+  refreshTimeTab();
+}
+
+// AM 05:00-13:00, PM 13:00-18:00, Night 20:00-05:00. The 18:00-20:00 gap falls
+// to Night, the shift about to start.
 function autoShift() {
   const m = nowMins();
   if (m >= 300 && m < 780) return 'am';
   if (m >= 780 && m < 1080) return 'pm';
-  return 'am';
+  return 'night';
 }
 
 function initShift() {
@@ -945,24 +1115,56 @@ function initShift() {
   return autoShift();
 }
 
-// Writes derived figures into the progress/units/OGRP inputs, never fighting a focused field.
-function refreshCellInputs() {
-  const c = computeCell(selectedShift, selectedZone);
+// People tab: one column per chamber for the selected shift.
+function refreshPeopleTab() {
   const active = document.activeElement;
-  const set = (id, val) => { const el = document.getElementById(id); if (el !== active) el.value = val; };
+  const set = (id, v) => { const el = document.getElementById(id); if (el !== active) el.value = v; };
+  const txt = (id, v) => { document.getElementById(id).innerHTML = v; };
+  const muted = v => '<span class="stmuted">' + v + '</span>';
+  const current = toMins(document.getElementById('currenttime').value);
+  let anyUnitsOv = false, anyOgrpOv = false, note = '';
 
-  set('units', (c.hasPlan || c.unitsOverridden) ? Math.round(c.remaining) : '');
-  set('ogrp', Math.round(c.predOgrp * 10) / 10);
+  ZONES.forEach(z => {
+    const c = computeCell(selectedShift, z);
+    set('c-units-' + z, (c.hasPlan || c.unitsOverridden) ? Math.round(c.remaining) : '');
+    set('c-ogrp-' + z, Math.round(c.predOgrp * 10) / 10);
+    document.getElementById('c-units-' + z).classList.toggle('ovr', c.unitsOverridden);
+    document.getElementById('c-ogrp-' + z).classList.toggle('ovr', c.ogrpOverridden);
+    anyUnitsOv = anyUnitsOv || c.unitsOverridden;
+    anyOgrpOv = anyOgrpOv || c.ogrpOverridden;
 
-  const uSub = document.getElementById('unitsSub');
-  document.getElementById('unitsReset').style.display = c.unitsOverridden ? 'inline' : 'none';
-  if (c.unitsOverridden) { uSub.className = 'fsub ov'; uSub.textContent = 'plan says ' + fmt(c.planRemaining); }
-  else { uSub.className = 'fsub'; uSub.textContent = c.hasPlan ? 'from plan' : 'no daily total set'; }
+    const pickout = toMins(fieldEl('pickout', z).value);
+    const breaks = parseFloat(fieldEl('breaks', z).value) || 0;
+    const uph = parseFloat(fieldEl('uph', z).value) || 0;
+    const people = parseFloat(fieldEl('activepeople', z).value) || 0;
+    const hrs = (pickout === null || current === null) ? null : (minsUntil(current, pickout) - breaks) / 60;
 
-  const oSub = document.getElementById('ogrpSub');
-  document.getElementById('ogrpReset').style.display = c.ogrpOverridden ? 'inline' : 'none';
-  if (c.ogrpOverridden) { oSub.className = 'fsub ov'; oSub.textContent = c.calcOgrp !== null ? 'calc says ' + c.calcOgrp.toFixed(1) + '%' : 'no picks yet'; }
-  else { oSub.className = 'fsub'; oSub.textContent = c.calcOgrp !== null ? 'from picked split' : 'settings default'; }
+    if (hrs === null) { txt('c-timerem-' + z, muted('—')); }
+    else if (hrs <= 0) { txt('c-timerem-' + z, muted('past')); }
+    else { txt('c-timerem-' + z, hrs.toFixed(2) + 'h'); }
+
+    // Rate required is what the chamber must run at to clear by pickout; rate
+    // available is what the people currently on it can actually do.
+    txt('c-req-' + z, hrs > 0 ? fmt(c.effective / hrs) : muted('—'));
+    txt('c-avail-' + z, uph > 0 && people > 0 ? fmt(uph * people) : muted('—'));
+
+    if (!(hrs > 0) || uph <= 0) {
+      txt('c-calc-' + z, muted('—'));
+      txt('c-delta-' + z, muted('—'));
+      if (hrs !== null && hrs <= 0) note = note || 'Chambers showing “past” are already beyond their pickout time.';
+      return;
+    }
+    const cp = (c.effective / uph) / hrs;
+    txt('c-calc-' + z, cp.toFixed(2));
+    const delta = people > 0 ? people - Math.ceil(cp) : null;
+    const info = getDeltaInfo(delta);
+    txt('c-delta-' + z, delta === null ? muted('—')
+      : '<span class="delta-' + info.cls + '">' + formatDelta(delta) + '</span>');
+  });
+
+  document.getElementById('reset-units').style.display = anyUnitsOv ? 'inline' : 'none';
+  document.getElementById('reset-ogrp').style.display = anyOgrpOv ? 'inline' : 'none';
+  document.getElementById('peopleNote').textContent = note;
 }
 
 // Picked tab: every chamber at once for the selected shift.
@@ -1002,9 +1204,10 @@ function refreshPickedTab() {
   txt('pk-pcttarget-total', pct(sum.picked, sum.target));
   txt('pk-pcttotal-total', pct(sum.picked, sum.dayTotal));
 
-  txt('pk-carry', !hasPlan ? 'No daily total set — open the Plan tab.'
-    : selectedShift === 'pm' ? 'PM targets include units carried over from AM.'
-    : 'AM targets are this shift’s planned share of the day.');
+  txt('pk-carry', !hasPlan ? 'No total set for this shift — open the Plan tab.'
+    : selectedShift === 'night' ? 'Night picks 100% of its own total. Anything left rolls into AM.'
+    : selectedShift === 'am' ? 'AM targets include anything Night left short.'
+    : 'PM targets include anything AM left short.');
 }
 
 ZONES.forEach(z => {
@@ -1015,16 +1218,16 @@ ZONES.forEach(z => {
       patch[pair[1]] = parseFloat(el.value) || 0;
       updateCell(selectedShift, z, patch);
       refreshPickedTab();
-      refreshCellInputs();
-      calculate();
+      refreshPeopleTab();
     };
     el.addEventListener('input', handler);
     el.addEventListener('change', handler);
   });
 });
 
-function clearUnitsOverride() { updateCell(selectedShift, selectedZone, { unitsOv: null }); refreshCellInputs(); calculate(); }
-function clearOgrpOverride()  { updateCell(selectedShift, selectedZone, { predOgrp: null }); refreshCellInputs(); calculate(); }
+// Row-level resets: clear the override on every chamber in that row.
+function clearUnitsOverride() { ZONES.forEach(z => updateCell(selectedShift, z, { unitsOv: null })); refreshPeopleTab(); }
+function clearOgrpOverride()  { ZONES.forEach(z => updateCell(selectedShift, z, { predOgrp: null })); refreshPeopleTab(); }
 
 // --- Tab switching ---
 // Settings lives behind the header gear rather than in the tab bar, so remember
@@ -1039,7 +1242,8 @@ function switchTab(tab) {
   document.getElementById('gearBtn').classList.toggle('on', tab === 'settings');
   if (tab === 'plan')     { loadPlanUI(); renderPlanOverview(); renderPlanWarnings(); applyPlanSub(); }
   if (tab === 'picked')   refreshPickedTab();
-  if (tab === 'calc')     { refreshCellInputs(); calculate(); }
+  if (tab === 'timecalc') { syncCurrentTime(); refreshTimeTab(); }
+  if (tab === 'calc')     { syncCurrentTime(); refreshPeopleTab(); }
   if (tab === 'history')  renderHistory();
   if (tab === 'settings') loadSettingsUI();
 }
@@ -1059,211 +1263,243 @@ function setFilter(f) {
 }
 
 // --- People calc ---
-function getVals() {
-  return {
-    pickout: toMins(document.getElementById('pickout').value),
-    current: toMins(document.getElementById('currenttime').value),
-    breaks:  parseFloat(document.getElementById('breaks').value) || 0,
-    uph:     parseFloat(document.getElementById('uph').value) || 0,
-    active:  parseFloat(document.getElementById('activepeople').value) || 0
-  };
-}
+// Form-state fields: persist per shift x zone, then re-derive the column.
+ZONES.forEach(z => {
+  Object.keys(FIELD_IDS).forEach(k => {
+    const el = fieldEl(k, z);
+    const handler = () => { saveZoneState(z); refreshPeopleTab(); renderPlanOverview(); };
+    el.addEventListener('input', handler);
+    el.addEventListener('change', handler);
+  });
 
-function calculate() {
-  const v = getVals();
-  const c = computeCell(selectedShift, selectedZone);
-  const rv = document.getElementById('resultValue');
-  const rs = document.getElementById('resultSub');
-  const dv = document.getElementById('deltaValue');
-  const ds = document.getElementById('deltaSub');
-  const mg = document.getElementById('metricsGrid');
-  const clearDelta = () => { dv.innerHTML = '&mdash;'; dv.className = 'delta-value delta-ok'; ds.textContent = ''; ds.className = 'delta-sub ok'; };
-  const fail = msg => { rv.innerHTML = '<span class="rerr">' + msg + '</span>'; rs.textContent = ''; clearDelta(); mg.style.display = 'none'; return null; };
-
-  if (!v.pickout || !v.current) return fail('Enter times');
-  const rem = (v.pickout - v.current - v.breaks) / 60;
-  if (rem <= 0) return fail('No time remaining');
-  if (v.uph <= 0) return fail('Enter UPH');
-
-  const eff = c.effective;
-  const cp = (eff / v.uph) / rem;
-  const cpCeil = Math.ceil(cp);
-  rv.textContent = cp.toFixed(2);
-  rs.textContent = '';
-
-  const delta = v.active > 0 ? v.active - cpCeil : null;
-  const info = getDeltaInfo(delta);
-  dv.textContent = formatDelta(delta);
-  dv.className = 'delta-value delta-' + info.cls;
-  ds.textContent = info.label;
-  ds.className = 'delta-sub ' + info.cls;
-
-  document.getElementById('mTime').textContent = rem.toFixed(2) + 'h';
-  document.getElementById('mUnits').textContent = fmt(eff);
-  document.getElementById('mCalcOgrp').textContent = c.calcOgrp !== null ? c.calcOgrp.toFixed(1) + '%' : '—';
-  document.getElementById('mPredOgrp').textContent = c.predOgrp.toFixed(1) + '%';
-  document.getElementById('mActive').textContent = v.active || '—';
-  document.getElementById('mNeeded').textContent = cp.toFixed(2);
-  mg.style.display = 'grid';
-  return { rem, eff, cp, cpCeil, delta, cell: c };
-}
-
-// Form-state fields: persist per shift x zone, then recalculate.
-FIELDS.forEach(id => {
-  const el = document.getElementById(id);
-  const handler = () => { saveZoneState(); calculate(); };
-  el.addEventListener('input', handler);
-  el.addEventListener('change', handler);
+  // Override fields: blank clears the override and falls back to the derived value.
+  [['c-units-' + z, 'unitsOv'], ['c-ogrp-' + z, 'predOgrp']].forEach(pair => {
+    const el = document.getElementById(pair[0]);
+    const handler = () => {
+      const patch = {};
+      patch[pair[1]] = numOrNull(el);
+      updateCell(selectedShift, z, patch);
+      refreshPeopleTab();
+    };
+    el.addEventListener('input', handler);
+    el.addEventListener('change', handler);
+    el.addEventListener('blur', refreshPeopleTab);
+  });
 });
-['input','change'].forEach(ev => document.getElementById('currenttime').addEventListener(ev, calculate));
 
-// Override fields: blank clears the override and falls back to the derived value.
-[['units','unitsOv'], ['ogrp','predOgrp']].forEach(pair => {
-  const el = document.getElementById(pair[0]);
-  const handler = () => {
-    const patch = {}; patch[pair[1]] = numOrNull(el);
-    updateCell(selectedShift, selectedZone, patch);
-    refreshCellInputs();
-    calculate();
-  };
-  el.addEventListener('input', handler);
-  el.addEventListener('change', handler);
-  el.addEventListener('blur', () => { refreshCellInputs(); calculate(); });
-});
+TIME_CONTROLS.forEach(c => ['input','change'].forEach(ev =>
+  document.getElementById(c.input).addEventListener(ev, () => {
+    const el = document.getElementById(c.input);
+    if (el.value) localStorage.setItem('timeOverride', JSON.stringify({ date: todayISO(), value: el.value }));
+    else localStorage.removeItem('timeOverride');
+    syncCurrentTime();
+    refreshPeopleTab();
+    refreshTimeTab();
+  })));
 
 function refreshAll() {
-  loadZoneState();
-  refreshCellInputs();
+  loadAllZoneStates();
+  refreshPeopleTab();
   refreshPickedTab();
-  calculate();
   renderPlanOverview();
   renderPlanWarnings();
 }
 
-// --- Time remaining calc (unchanged) ---
-function trKey(z) { return 'trZoneState_' + z; }
-function saveTrZoneState(z) {
-  const s = {};
-  TR_FIELDS.forEach(id => { s[id] = document.getElementById(id).value; });
-  localStorage.setItem(trKey(z), JSON.stringify(s));
-}
-function loadTrZoneState(z) {
-  const raw = localStorage.getItem(trKey(z));
-  if (!raw) return;
-  let s; try { s = JSON.parse(raw); } catch (e) { return; }
-  TR_FIELDS.forEach(id => { if (s[id] !== undefined) document.getElementById(id).value = s[id]; });
+// --- Time to complete a quantity ---
+// Scratchpad: pre-filled from the People tab, but edits stay here and never
+// write back, so a what-if cannot disturb the real staffing figures.
+const TR_KEYS = { people: 'activepeople', uph: 'uph', breaks: 'breaks' };
+
+function getTrState() {
+  const empty = { date: todayISO(), qty: {}, ov: {} };
+  const raw = localStorage.getItem('trState');
+  if (!raw) return empty;
+  try {
+    const s = JSON.parse(raw);
+    if (s.date !== todayISO()) return empty;
+    return { date: s.date, qty: s.qty || {}, ov: s.ov || {} };
+  } catch (e) { return empty; }
 }
 
-function setTrZone(zone) {
-  saveTrZoneState(selectedTrZone);
-  selectedTrZone = zone;
-  ZONES.forEach(z => {
-    const cls = z === 'ambient' ? 'za' : z === 'chill' ? 'zc' : 'zf';
-    document.getElementById('tr-zone-' + z).className = 'zbtn' + (z === zone ? ' ' + cls : '');
-  });
-  loadTrZoneState(zone);
-  calculateTime();
+function saveTrState(s) {
+  s.date = todayISO();
+  localStorage.setItem('trState', JSON.stringify(s));
 }
 
-function getTrVals() {
+// What the People tab would say for this chamber, before any scratch edits.
+function trBase(zone) {
+  const c = computeCell(selectedShift, zone);
   return {
-    current: toMins(document.getElementById('tr-current').value),
-    breaks:  parseFloat(document.getElementById('tr-breaks').value) || 0,
-    units:   parseFloat(document.getElementById('tr-units').value) || 0,
-    ogrp:    parseFloat(document.getElementById('tr-ogrp').value) || 0,
-    uph:     parseFloat(document.getElementById('tr-uph').value) || 0,
-    people:  parseFloat(document.getElementById('tr-people').value) || 0
+    people: parseFloat(fieldEl('activepeople', zone).value) || 0,
+    uph: parseFloat(fieldEl('uph', zone).value) || 0,
+    breaks: parseFloat(fieldEl('breaks', zone).value) || 0,
+    ogrp: Math.round(c.predOgrp * 10) / 10
   };
 }
 
-function calculateTime() {
-  const v = getTrVals();
-  const rt = document.getElementById('tr-resultTime');
-  const rts = document.getElementById('tr-resultTimeSub');
-  const rf = document.getElementById('tr-resultFinish');
-  const rfs = document.getElementById('tr-resultFinishSub');
-  const mg = document.getElementById('tr-metricsGrid');
-
-  if (v.uph <= 0)    { rt.innerHTML = '<span class="rerr">Enter UPH</span>';    rf.innerHTML = '&mdash;'; rts.textContent = ''; rfs.textContent = ''; mg.style.display = 'none'; return; }
-  if (v.people <= 0) { rt.innerHTML = '<span class="rerr">Enter people</span>'; rf.innerHTML = '&mdash;'; rts.textContent = ''; rfs.textContent = ''; mg.style.display = 'none'; return; }
-
-  const eff = v.units - (v.units * v.ogrp / 100);
-  const netHours = eff / (v.uph * v.people);
-  const netMins = netHours * 60;
-  const totalMins = netMins + v.breaks;
-
-  rt.textContent = minsToHM(netMins);
-  rts.textContent = netHours.toFixed(2) + 'h net';
-
-  if (v.current !== null) {
-    rf.textContent = minsToTime(v.current + totalMins);
-    rfs.textContent = v.breaks > 0 ? 'incl. ' + v.breaks + 'm breaks' : 'no breaks';
-  } else {
-    rf.innerHTML = '&mdash;';
-    rfs.textContent = 'enter current time';
-  }
-
-  document.getElementById('tr-mUnits').textContent = fmt(eff);
-  document.getElementById('tr-mHours').textContent = netHours.toFixed(2) + 'h';
-  document.getElementById('tr-mPeople').textContent = v.people;
-  document.getElementById('tr-mBreaks').textContent = v.breaks ? v.breaks + 'm' : '—';
-  mg.style.display = 'grid';
+function trValues(zone, st) {
+  const base = trBase(zone);
+  const ov = st.ov[zone] || {};
+  return {
+    people: ov.people !== undefined ? ov.people : base.people,
+    uph: ov.uph !== undefined ? ov.uph : base.uph,
+    breaks: ov.breaks !== undefined ? ov.breaks : base.breaks,
+    ogrp: ov.ogrp !== undefined ? ov.ogrp : base.ogrp
+  };
 }
 
-TR_FIELDS.forEach(id => {
-  const el = document.getElementById(id);
-  const handler = () => { saveTrZoneState(selectedTrZone); calculateTime(); };
-  el.addEventListener('input', handler);
-  el.addEventListener('change', handler);
+function refreshTimeTab() {
+  const st = getTrState();
+  const activeEl = document.activeElement;
+  const set = (id, v) => { const el = document.getElementById(id); if (el !== activeEl) el.value = v; };
+  const txt = (id, v) => { document.getElementById(id).innerHTML = v; };
+  const muted = v => '<span class="stmuted">' + v + '</span>';
+  const current = toMins(document.getElementById('tr-current').value);
+  let edited = false, anyOverrun = false;
+
+  ZONES.forEach(z => {
+    const v = trValues(z, st);
+    const ov = st.ov[z] || {};
+    const qty = st.qty[z];
+    set('t-qty-' + z, qty === undefined || qty === null ? '' : qty);
+    ['people','uph','breaks','ogrp'].forEach(k => {
+      set('t-' + k + '-' + z, v[k]);
+      document.getElementById('t-' + k + '-' + z).classList.toggle('ovr', ov[k] !== undefined);
+      if (ov[k] !== undefined) edited = true;
+    });
+
+    const q = parseFloat(qty) || 0;
+    const eff = q * (1 - v.ogrp / 100);
+    txt('t-eff-' + z, q > 0 ? fmt(eff) : muted('—'));
+
+    if (!(q > 0) || !(v.uph > 0) || !(v.people > 0)) {
+      txt('t-need-' + z, muted('—'));
+      txt('t-finish-' + z, muted('—'));
+      return;
+    }
+    const netMins = (eff / (v.uph * v.people)) * 60;
+    txt('t-need-' + z, minsToHM(netMins));
+    if (current === null) { txt('t-finish-' + z, muted('—')); return; }
+
+    // Flag a finish that lands after this chamber's pickout for the shift.
+    const finish = current + netMins + v.breaks;
+    const pickout = toMins(fieldEl('pickout', z).value);
+    // Resolve the pickout into the same forward-running frame as `finish`, so the
+    // comparison holds when either lands on the far side of midnight.
+    const pickoutAbs = pickout === null ? null : current + minsUntil(current, pickout);
+    const over = pickoutAbs !== null && finish > pickoutAbs;
+    if (over) anyOverrun = true;
+    txt('t-finish-' + z, '<span class="' + (over ? 'delta-crit' : '') + '">' + minsTo12(finish) + '</span>'
+      + (finish >= 1440 ? '<span class="stmuted"> +1d</span>' : '')
+      + (over ? '<div class="overrun">+' + minsToHM(finish - pickoutAbs) + '</div>' : ''));
+  });
+
+  document.getElementById('trReset').style.display = edited ? 'inline' : 'none';
+  const note = document.getElementById('trNote');
+  note.className = edited ? 'fsub ov' : 'fsub';
+  note.textContent = edited ? 'edited — People tab unchanged' : 'people, UPH, OGRP and breaks from the People tab';
+  document.getElementById('trOverrunNote').textContent = anyOverrun
+    ? 'Red finish times land after that chamber’s pickout, by the amount shown.' : '';
+}
+
+ZONES.forEach(z => {
+  const qtyEl = document.getElementById('t-qty-' + z);
+  const qtyHandler = () => {
+    const st = getTrState();
+    const v = numOrNull(qtyEl);
+    if (v === null) delete st.qty[z]; else st.qty[z] = v;
+    saveTrState(st);
+    refreshTimeTab();
+  };
+  qtyEl.addEventListener('input', qtyHandler);
+  qtyEl.addEventListener('change', qtyHandler);
+
+  ['people','uph','breaks','ogrp'].forEach(k => {
+    const el = document.getElementById('t-' + k + '-' + z);
+    const handler = () => {
+      const st = getTrState();
+      st.ov[z] = st.ov[z] || {};
+      const v = numOrNull(el);
+      if (v === null) delete st.ov[z][k]; else st.ov[z][k] = v;
+      if (!Object.keys(st.ov[z]).length) delete st.ov[z];
+      saveTrState(st);
+      refreshTimeTab();
+    };
+    el.addEventListener('input', handler);
+    el.addEventListener('change', handler);
+    el.addEventListener('blur', refreshTimeTab);
+  });
 });
 
-// --- People calc actions ---
+function resetTrOverrides() {
+  const st = getTrState();
+  st.ov = {};
+  saveTrState(st);
+  refreshTimeTab();
+}
+
+function resetTrForm() {
+  localStorage.removeItem('trState');
+  refreshTimeTab();
+}
+
+// Saves one history entry per chamber that has active people entered, so the
+// list is not padded with rows for chambers nobody is working.
 function saveRecord() {
-  const result = calculate();
-  if (!result) { alert('Fix errors before saving.'); return; }
-  const v = getVals();
-  const c = result.cell;
+  const current = toMins(document.getElementById('currenttime').value);
+  const stamp = new Date();
   const records = JSON.parse(localStorage.getItem('pickRecords') || '[]');
-  records.unshift({
-    id: Date.now(),
-    savedAt: new Date().toLocaleString('en-AU', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }),
-    savedDate: new Date().toLocaleString('en-AU', { day:'2-digit', month:'2-digit', year:'numeric' }),
-    zone: selectedZone,
-    shift: selectedShift,
-    pickout: v.pickout !== null ? minsToTime(v.pickout) : '—',
-    current: v.current !== null ? minsToTime(v.current) : '—',
-    breaks: v.breaks, uph: v.uph, active: v.active,
-    units: c.remaining, ogrp: c.predOgrp,
-    plannedTarget: c.planned, workingTarget: c.workingTarget, carried: c.carried,
-    pickedManual: c.pickedManual, pickedOgrp: c.pickedOgrp,
-    calcOgrpPct: c.calcOgrp, predOgrpPct: c.predOgrp,
-    timeRemH: result.rem, effectiveUnits: result.eff, calcPeople: result.cp,
-    delta: result.delta,
-    note: document.getElementById('noteField').value.trim()
+  let saved = 0, skipped = [];
+
+  ZONES.forEach(z => {
+    const people = parseFloat(fieldEl('activepeople', z).value) || 0;
+    if (people <= 0) { skipped.push(ZLABEL[z]); return; }
+    const c = computeCell(selectedShift, z);
+    const pickout = toMins(fieldEl('pickout', z).value);
+    const breaks = parseFloat(fieldEl('breaks', z).value) || 0;
+    const uph = parseFloat(fieldEl('uph', z).value) || 0;
+    const hrs = (pickout === null || current === null) ? null : (minsUntil(current, pickout) - breaks) / 60;
+    if (!(hrs > 0) || uph <= 0) { skipped.push(ZLABEL[z]); return; }
+    const cp = (c.effective / uph) / hrs;
+    records.unshift({
+      id: Date.now() + saved,
+      savedTs: stamp.getTime(),
+      savedAt: stamp.toLocaleString('en-AU', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }),
+      savedDate: stamp.toLocaleString('en-AU', { day:'2-digit', month:'2-digit', year:'numeric' }),
+      zone: z,
+      shift: selectedShift,
+      pickout: minsToTime(pickout),
+      current: minsToTime(current),
+      breaks: breaks, uph: uph, active: people,
+      units: c.remaining, ogrp: c.predOgrp,
+      plannedTarget: c.planned, workingTarget: c.workingTarget, carried: c.carried,
+      pickedManual: c.pickedManual, pickedOgrp: c.pickedOgrp,
+      calcOgrpPct: c.calcOgrp, predOgrpPct: c.predOgrp,
+      timeRemH: hrs, effectiveUnits: c.effective, calcPeople: cp,
+      delta: people - Math.ceil(cp)
+    });
+    saveZoneState(z);
+    saved++;
   });
+
+  if (!saved) { alert('Nothing to save — enter active people, UPH and a pickout still ahead of the current time.'); return; }
   localStorage.setItem('pickRecords', JSON.stringify(records));
-  saveZoneState();
-  document.getElementById('noteField').value = '';
+  if (skipped.length) alert('Saved ' + saved + ' of 3 chambers. Skipped: ' + skipped.join(', ') + '.');
   switchTab('history');
 }
 
 function resetForm() {
   // Clears this tab's fields and overrides only — picked quantities belong to the
   // Picked tab and are left alone.
-  localStorage.removeItem(zKey(selectedShift, selectedZone));
-  updateCell(selectedShift, selectedZone, { predOgrp: null, unitsOv: null });
-  document.getElementById('currenttime').value = now();
-  document.getElementById('noteField').value = '';
-  loadZoneState();
-  refreshCellInputs();
-  calculate();
-}
-
-function resetTrForm() {
-  TR_FIELDS.forEach(id => { document.getElementById(id).value = ''; });
-  document.getElementById('tr-current').value = now();
-  localStorage.removeItem(trKey(selectedTrZone));
-  calculateTime();
+  ZONES.forEach(z => {
+    localStorage.removeItem(zKey(selectedShift, z));
+    updateCell(selectedShift, z, { predOgrp: null, unitsOv: null });
+  });
+  localStorage.removeItem('timeOverride');
+  syncCurrentTime();
+  loadAllZoneStates();
+  refreshPeopleTab();
+  renderPlanOverview();
 }
 
 function resetDay() {
@@ -1291,14 +1527,26 @@ function clearHistory() {
   renderHistory();
 }
 
+// Records now carry a numeric savedTs. Older ones only have the display string
+// "19/08/2026, 08:11 pm", which sorted as text puts 08:11 pm before 11:30 am —
+// so parse it back into a real timestamp instead.
+function recordSortKey(r) {
+  if (typeof r.savedTs === 'number') return r.savedTs;
+  const m = /^(\d{2})\/(\d{2})\/(\d{4}),?\s*(\d{1,2}):(\d{2})\s*([ap])?/i.exec(r.savedAt || '');
+  if (!m) return 0;
+  let h = +m[4];
+  const ap = (m[6] || '').toLowerCase();
+  if (ap === 'p' && h < 12) h += 12;
+  if (ap === 'a' && h === 12) h = 0;
+  return new Date(+m[3], +m[2] - 1, +m[1], h, +m[5]).getTime();
+}
+
 function renderHistory() {
   let records = JSON.parse(localStorage.getItem('pickRecords') || '[]');
   if (activeFilter !== 'all') records = records.filter(r => (r.zone || 'ambient') === activeFilter);
-  const toSortKey = r => {
-    const ds = r.savedAt.replace(/(\d{2})\/(\d{2})\/(\d{4}),?\s*/, '$3-$2-$1 ');
-    return ds + (r.current || '00:00');
-  };
-  records.sort((a, b) => toSortKey(b).localeCompare(toSortKey(a)));
+  // Newest first. Records saved together share a timestamp, so id keeps them in
+  // chamber order underneath it.
+  records.sort((a, b) => recordSortKey(b) - recordSortKey(a) || (a.id || 0) - (b.id || 0));
   const el = document.getElementById('historyList');
   if (!records.length) {
     el.innerHTML = '<div class="hempty">No saved records' + (activeFilter !== 'all' ? ' for ' + activeFilter : '') + '.</div>';
@@ -1374,17 +1622,13 @@ function renderHistory() {
 }
 
 // --- Boot ---
-document.getElementById('currenttime').value = now();
-document.getElementById('tr-current').value = now();
+syncCurrentTime();
 loadPlanUI();
-loadTrZoneState(selectedTrZone);
 setShift(initShift());
-setZone(selectedZone);
-refreshPickedTab();
 renderPlanOverview();
 renderPlanWarnings();
 applyPlanSub();
-calculateTime();
+refreshTimeTab();
 
 SHIFTS.forEach(sh => ZONES.forEach(z => {
   const el = document.getElementById('s-pickout-' + sh + '-' + z);
