@@ -487,7 +487,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   <div id="timecalc" class="section">
     <div class="row2">
       <div class="fgroup">
-        <div class="flabel-row"><label class="flabel">Current time</label><button class="mini" id="trTimeReset" onclick="clearTimeOverride()" style="display:none">use now</button></div>
+        <div class="flabel-row"><label class="flabel">Current time</label><button class="mini" id="trTimeReset" onclick="clearTrTime()" style="display:none">use People time</button></div>
         <input type="time" id="tr-current">
         <div class="fsub" id="trTimeSub"></div>
       </div>
@@ -939,10 +939,12 @@ function renderPlanOverview() {
     const dayT = add(at('night'), 'chamberDayTotal') + add(at('am'), 'chamberDayTotal');
     const dayP = picked.reduce((a, b) => a + b, 0);
     const deltas = deltaSum(zones);
-    // Target and Rem do not add across AM and PM: units AM leaves short sit in
-    // AM's target and again in PM's, so Total is the day's own figure.
+    // Target is the plan's own split, so it adds across to the Total. Working and
+    // Rem do not: units a shift leaves short sit in its target and again in the
+    // next one's, so their Total stays the day's own figure.
     const rows = [
-      ['Target'].concat(cols.map(c => fmt(add(c, 'workingTarget'))), [fmt(dayT)]),
+      ['Target'].concat(cols.map(c => fmt(add(c, 'planned'))), [fmt(dayT)]),
+      ['Working'].concat(cols.map(c => fmt(add(c, 'workingTarget'))), [fmt(dayT)]),
       ['Picked'].concat(picked.map(fmt), [fmt(dayP)]),
       ['Rem'].concat(cols.map(c => fmt(add(c, 'variance'))), [fmt(dayT - dayP)]),
       ['Delta'].concat(deltas, [dash])
@@ -982,9 +984,10 @@ function renderPlanOverview() {
     + 'that chamber and shift. Positive means more people than needed, negative means short. It reads '
     + '<i>past pickout</i> once the pickout time has gone, or <i>N req</i> when no headcount has been entered yet.<br>'
     + '<b>Rem</b> is target minus picked: positive is still to pick, negative is an over-pick.<br>'
-    + '<b>Total</b> is the day and night totals together. Target and Rem do not add across the shifts, '
-    + 'because whatever a shift leaves short rolls forward — Night into AM, AM into PM — and so is '
-    + 'counted in both.</div>';
+    + '<b>Target</b> is each shift’s planned share, before any carryover, so it adds across to the Total. '
+    + '<b>Working</b> is what the shift is actually picking to — its target plus anything the shift before '
+    + 'it left short. Working and Rem do not add across, because carried units are counted in both shifts. '
+    + '<b>Total</b> is the day and night totals together.</div>';
 
   host.innerHTML = allCard + zoneCards + legend;
 }
@@ -1071,9 +1074,10 @@ function timeOverride() {
 }
 
 // The People and Time tabs share one current time, so both controls stay in step.
+// Only the People tab drives the app-wide current time. The Time tab keeps its
+// own, so a what-if there cannot move anything else.
 const TIME_CONTROLS = [
-  { input: 'currenttime', reset: 'timeReset', sub: 'timeSub' },
-  { input: 'tr-current', reset: 'trTimeReset', sub: 'trTimeSub' }
+  { input: 'currenttime', reset: 'timeReset', sub: 'timeSub' }
 ];
 
 function syncCurrentTime() {
@@ -1311,13 +1315,13 @@ function refreshAll() {
 const TR_KEYS = { people: 'activepeople', uph: 'uph', breaks: 'breaks' };
 
 function getTrState() {
-  const empty = { date: todayISO(), qty: {}, ov: {} };
+  const empty = { date: todayISO(), qty: {}, ov: {}, cur: null };
   const raw = localStorage.getItem('trState');
   if (!raw) return empty;
   try {
     const s = JSON.parse(raw);
     if (s.date !== todayISO()) return empty;
-    return { date: s.date, qty: s.qty || {}, ov: s.ov || {} };
+    return { date: s.date, qty: s.qty || {}, ov: s.ov || {}, cur: s.cur || null };
   } catch (e) { return empty; }
 }
 
@@ -1354,7 +1358,15 @@ function refreshTimeTab() {
   const set = (id, v) => { const el = document.getElementById(id); if (el !== activeEl) el.value = v; };
   const txt = (id, v) => { document.getElementById(id).innerHTML = v; };
   const muted = v => '<span class="stmuted">' + v + '</span>';
-  const current = toMins(document.getElementById('tr-current').value);
+  // Its own clock: the shared current time unless this tab has been given one.
+  const curEl = document.getElementById('tr-current');
+  const shared = timeOverride() || now();
+  if (curEl !== activeEl) curEl.value = st.cur || shared;
+  document.getElementById('trTimeReset').style.display = st.cur ? 'inline' : 'none';
+  const curSub = document.getElementById('trTimeSub');
+  curSub.className = st.cur ? 'fsub ov' : 'fsub';
+  curSub.textContent = st.cur ? 'what-if — People tab unchanged' : 'following the People tab';
+  const current = toMins(curEl.value);
   let edited = false, anyOverrun = false;
 
   ZONES.forEach(z => {
@@ -1430,6 +1442,26 @@ ZONES.forEach(z => {
     el.addEventListener('blur', refreshTimeTab);
   });
 });
+
+document.getElementById('tr-current').addEventListener('input', function () {
+  const st = getTrState();
+  st.cur = this.value || null;
+  saveTrState(st);
+  refreshTimeTab();
+});
+document.getElementById('tr-current').addEventListener('change', function () {
+  const st = getTrState();
+  st.cur = this.value || null;
+  saveTrState(st);
+  refreshTimeTab();
+});
+
+function clearTrTime() {
+  const st = getTrState();
+  st.cur = null;
+  saveTrState(st);
+  refreshTimeTab();
+}
 
 function resetTrOverrides() {
   const st = getTrState();
