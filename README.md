@@ -2,6 +2,19 @@
 
 Warehouse workforce planning PWA.
 
+## How it works
+
+The app plans a day against a target and tracks progress towards it.
+
+1. **Plan tab** — enter the **daily total** units, the **AM / PM** shift split (%), and the **chamber split** (%) across Ambient / Chill / Freezer. The chamber split applies to the whole day. The overview shows every chamber's AM and PM target, picked, remaining and staffing delta.
+2. **People tab** — pick a shift and a chamber, then enter **units picked manually** and **units picked by OGRP**. From those the app derives remaining units and a **calculated OGRP %**. The **predicted OGRP %** is pre-filled from that calculation but stays editable, and both figures are kept and shown separately.
+3. **Pick out times** are set per shift and chamber in Settings, and auto-fill on the People tab.
+4. **Carryover** — anything AM leaves unpicked rolls into PM's working target automatically.
+
+Shifts are AM 05:00-13:00 and PM 10:00-18:00. During the 10:00-13:00 overlap the app defaults to AM; you can switch manually at any time and the choice sticks for the day.
+
+The Time tab is an independent manual calculator and is unaffected by the plan.
+
 ## Files
 
 - `index.html` — the app
