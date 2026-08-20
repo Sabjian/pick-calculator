@@ -102,6 +102,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .pkcell:first-child { text-align: left; font-weight: 600; }
 .pkhead .pkcell { font-size: 8.5px; font-weight: 500; color: #666; text-transform: uppercase; letter-spacing: 0.2px; }
 .pktotal { font-weight: 600; }
+.qtyfill { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.qtyfill .flabel { margin-bottom: 0; }
+.qtyfill .fsub { margin-top: 0; min-height: 0; }
+.qbtn { font-size: 11px; font-weight: 500; padding: 5px 11px; border: 0.5px solid rgba(0,0,0,0.25); border-radius: 7px; background: transparent; color: #666; cursor: pointer; }
+.qbtn:active { transform: scale(0.98); }
 .pknote { font-size: 11px; color: #666; text-align: center; margin-top: 10px; min-height: 14px; }
 .ptbl { width: 100%; border-collapse: collapse; table-layout: fixed; }
 .ptbl th, .ptbl td { padding: 3px 2px; text-align: center; }
@@ -206,6 +211,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   .fbtn.fall { background: #f0f0f0; color: #1a1a1a; }
   .note-field { background: #242424; border-color: rgba(255,255,255,0.2); color: #f0f0f0; }
   .pcard, .pkstats { background: #242424; border-color: rgba(255,255,255,0.1); }
+  .qbtn { border-color: rgba(255,255,255,0.2); color: #999; }
   .pkgrid input { background: #242424; border-color: rgba(255,255,255,0.2); color: #f0f0f0; }
   .pkcell { color: #f0f0f0; }
   .pkhead .pkcell, .pknote { color: #999; }
@@ -492,6 +498,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
         <div class="fsub" id="trTimeSub"></div>
       </div>
       <div></div>
+    </div>
+
+    <div class="qtyfill">
+      <span class="flabel">Fill qty from</span>
+      <button class="qbtn" onclick="fillQtyFrom('night')">Night</button>
+      <button class="qbtn" onclick="fillQtyFrom('am')">AM</button>
+      <button class="qbtn" onclick="fillQtyFrom('pm')">PM</button>
+      <span class="fsub" id="qtyFillNote"></span>
     </div>
 
     <table class="ptbl">
@@ -1315,13 +1329,13 @@ function refreshAll() {
 const TR_KEYS = { people: 'activepeople', uph: 'uph', breaks: 'breaks' };
 
 function getTrState() {
-  const empty = { date: todayISO(), qty: {}, ov: {}, cur: null };
+  const empty = { date: todayISO(), qty: {}, ov: {}, cur: null, qtyFrom: null };
   const raw = localStorage.getItem('trState');
   if (!raw) return empty;
   try {
     const s = JSON.parse(raw);
     if (s.date !== todayISO()) return empty;
-    return { date: s.date, qty: s.qty || {}, ov: s.ov || {}, cur: s.cur || null };
+    return { date: s.date, qty: s.qty || {}, ov: s.ov || {}, cur: s.cur || null, qtyFrom: s.qtyFrom || null };
   } catch (e) { return empty; }
 }
 
@@ -1410,6 +1424,8 @@ function refreshTimeTab() {
   const note = document.getElementById('trNote');
   note.className = edited ? 'fsub ov' : 'fsub';
   note.textContent = edited ? 'edited — People tab unchanged' : 'people, UPH, OGRP and breaks from the People tab';
+  document.getElementById('qtyFillNote').textContent = st.qtyFrom
+    ? 'showing ' + SLABEL[st.qtyFrom] + ' remaining' : '';
   document.getElementById('trOverrunNote').textContent = anyOverrun
     ? 'Red finish times land after that chamber’s pickout, by the amount shown.' : '';
 }
@@ -1420,6 +1436,7 @@ ZONES.forEach(z => {
     const st = getTrState();
     const v = numOrNull(qtyEl);
     if (v === null) delete st.qty[z]; else st.qty[z] = v;
+    st.qtyFrom = null;   // hand-typed, so it no longer mirrors a shift
     saveTrState(st);
     refreshTimeTab();
   };
@@ -1455,6 +1472,17 @@ document.getElementById('tr-current').addEventListener('change', function () {
   saveTrState(st);
   refreshTimeTab();
 });
+
+// Load each chamber's outstanding units for a chosen shift into the qty row.
+// Uses the same remaining figure the People tab works to, clamped at zero — an
+// over-picked chamber has nothing left to pick.
+function fillQtyFrom(shift) {
+  const st = getTrState();
+  ZONES.forEach(z => { st.qty[z] = Math.max(0, Math.round(computeCell(shift, z).remaining)); });
+  st.qtyFrom = shift;
+  saveTrState(st);
+  refreshTimeTab();
+}
 
 function clearTrTime() {
   const st = getTrState();
