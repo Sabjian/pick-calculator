@@ -96,12 +96,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .pkgrid input { width: 100%; height: 44px; padding: 0 10px; font-size: 16px; border: 0.5px solid rgba(0,0,0,0.25); border-radius: 8px; background: #fff; color: #1a1a1a; -webkit-appearance: none; }
 .pkgrid input:focus { outline: none; border-color: rgba(0,0,0,0.5); box-shadow: 0 0 0 2px rgba(0,0,0,0.06); }
 .pkstats { background: #fff; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 12px; padding: 12px 10px; }
-.pkrow { display: grid; grid-template-columns: 0.95fr 0.9fr 0.9fr 0.9fr 0.78fr 0.72fr 0.72fr; align-items: center; gap: 2px; }
-.pkrow + .pkrow { border-top: 0.5px solid rgba(0,0,0,0.08); margin-top: 6px; padding-top: 6px; }
-.pkcell { text-align: right; font-size: 11px; font-weight: 500; color: #1a1a1a; }
-.pkcell:first-child { text-align: left; font-weight: 600; }
-.pkhead .pkcell { font-size: 8.5px; font-weight: 500; color: #666; text-transform: uppercase; letter-spacing: 0.2px; }
-.pktotal { font-weight: 600; }
 .qtyfill { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
 .qtyfill .flabel { margin-bottom: 0; }
 .qtyfill .fsub { margin-top: 0; min-height: 0; }
@@ -123,6 +117,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .dval.sm { font-size: 13px; font-weight: 500; }
 .remrow td { padding-bottom: 8px; border-bottom: 0.5px solid rgba(0,0,0,0.12); }
 .calcrow td { padding-top: 10px; border-top: 0.5px solid rgba(0,0,0,0.12); }
+.zname { font-weight: 600; background: none; padding: 0; }
+.zname.ambient { color: #854F0B; }
+.zname.chill   { color: #185FA5; }
+.zname.freezer { color: #0F6E56; }
+.zname.total   { color: #666; }
 .stitle { font-size: 13px; font-weight: 600; color: #1a1a1a; }
 .stbl { width: 100%; border-collapse: collapse; table-layout: fixed; }
 .stbl th:first-child, .stbl td:first-child { width: 22%; }
@@ -213,15 +212,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   .pcard, .pkstats { background: #242424; border-color: rgba(255,255,255,0.1); }
   .qbtn { border-color: rgba(255,255,255,0.2); color: #999; }
   .pkgrid input { background: #242424; border-color: rgba(255,255,255,0.2); color: #f0f0f0; }
-  .pkcell { color: #f0f0f0; }
-  .pkhead .pkcell, .pknote { color: #999; }
-  .pkrow + .pkrow { border-color: rgba(255,255,255,0.1); }
+  .pknote { color: #999; }
   .ptot, .pshift, .pcarry, .crosscheck { color: #999; }
   .ptbl input { background: #242424; border-color: rgba(255,255,255,0.2); color: #f0f0f0; }
   .ptbl input.ovr { border-color: #BA7517; color: #E0A040; }
   .rlab { color: #999; }
   .dval { color: #f0f0f0; }
   .remrow td, .calcrow td { border-color: rgba(255,255,255,0.12); }
+  .zname.ambient { color: #EF9F27; }
+  .zname.chill   { color: #6BB0EE; }
+  .zname.freezer { color: #2FBF8F; }
+  .zname.total   { color: #999; }
   .stitle { color: #f0f0f0; }
   .stbl th, .stbl th:first-child, .stbl td:first-child, .slegend { color: #999; }
   .stbl tbody td, .slegend b { color: #f0f0f0; }
@@ -334,51 +335,82 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     </div>
 
     <div class="pkstats">
-      <div class="pkrow pkhead">
-        <div class="pkcell"></div>
-        <div class="pkcell">Target</div>
-        <div class="pkcell">Picked</div>
-        <div class="pkcell">Rem</div>
-        <div class="pkcell">OGRP</div>
-        <div class="pkcell">% tgt</div>
-        <div class="pkcell">% tot</div>
-      </div>
-      <div class="pkrow">
-        <div class="pkcell">Ambient</div>
-        <div class="pkcell" id="pk-target-ambient">&mdash;</div>
-        <div class="pkcell" id="pk-picked-ambient">&mdash;</div>
-        <div class="pkcell" id="pk-rem-ambient">&mdash;</div>
-        <div class="pkcell" id="pk-ogrppct-ambient">&mdash;</div>
-        <div class="pkcell" id="pk-pcttarget-ambient">&mdash;</div>
-        <div class="pkcell" id="pk-pcttotal-ambient">&mdash;</div>
-      </div>
-      <div class="pkrow">
-        <div class="pkcell">Chill</div>
-        <div class="pkcell" id="pk-target-chill">&mdash;</div>
-        <div class="pkcell" id="pk-picked-chill">&mdash;</div>
-        <div class="pkcell" id="pk-rem-chill">&mdash;</div>
-        <div class="pkcell" id="pk-ogrppct-chill">&mdash;</div>
-        <div class="pkcell" id="pk-pcttarget-chill">&mdash;</div>
-        <div class="pkcell" id="pk-pcttotal-chill">&mdash;</div>
-      </div>
-      <div class="pkrow">
-        <div class="pkcell">Freezer</div>
-        <div class="pkcell" id="pk-target-freezer">&mdash;</div>
-        <div class="pkcell" id="pk-picked-freezer">&mdash;</div>
-        <div class="pkcell" id="pk-rem-freezer">&mdash;</div>
-        <div class="pkcell" id="pk-ogrppct-freezer">&mdash;</div>
-        <div class="pkcell" id="pk-pcttarget-freezer">&mdash;</div>
-        <div class="pkcell" id="pk-pcttotal-freezer">&mdash;</div>
-      </div>
-      <div class="pkrow pktotal">
-        <div class="pkcell">Total</div>
-        <div class="pkcell" id="pk-target-total">&mdash;</div>
-        <div class="pkcell" id="pk-picked-total">&mdash;</div>
-        <div class="pkcell" id="pk-rem-total">&mdash;</div>
-        <div class="pkcell" id="pk-ogrppct-total">&mdash;</div>
-        <div class="pkcell" id="pk-pcttarget-total">&mdash;</div>
-        <div class="pkcell" id="pk-pcttotal-total">&mdash;</div>
-      </div>
+      <table class="stbl">
+        <thead>
+          <tr>
+            <th></th>
+            <th><span class="zname ambient">Ambient</span></th>
+            <th><span class="zname chill">Chill</span></th>
+            <th><span class="zname freezer">Freezer</span></th>
+            <th><span class="zname total">Total</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Target</td>
+            <td id="pk-target-ambient">&mdash;</td>
+            <td id="pk-target-chill">&mdash;</td>
+            <td id="pk-target-freezer">&mdash;</td>
+            <td class="totcol" id="pk-target-total">&mdash;</td>
+          </tr>
+          <tr>
+            <td>Picked</td>
+            <td id="pk-picked-ambient">&mdash;</td>
+            <td id="pk-picked-chill">&mdash;</td>
+            <td id="pk-picked-freezer">&mdash;</td>
+            <td class="totcol" id="pk-picked-total">&mdash;</td>
+          </tr>
+          <tr>
+            <td>Rem</td>
+            <td id="pk-rem-ambient">&mdash;</td>
+            <td id="pk-rem-chill">&mdash;</td>
+            <td id="pk-rem-freezer">&mdash;</td>
+            <td class="totcol" id="pk-rem-total">&mdash;</td>
+          </tr>
+          <tr>
+            <td>OGRP %</td>
+            <td id="pk-ogrppct-ambient">&mdash;</td>
+            <td id="pk-ogrppct-chill">&mdash;</td>
+            <td id="pk-ogrppct-freezer">&mdash;</td>
+            <td class="totcol" id="pk-ogrppct-total">&mdash;</td>
+          </tr>
+          <tr>
+            <td>% of target</td>
+            <td id="pk-pcttarget-ambient">&mdash;</td>
+            <td id="pk-pcttarget-chill">&mdash;</td>
+            <td id="pk-pcttarget-freezer">&mdash;</td>
+            <td class="totcol" id="pk-pcttarget-total">&mdash;</td>
+          </tr>
+          <tr>
+            <td>% of total</td>
+            <td id="pk-pcttotal-ambient">&mdash;</td>
+            <td id="pk-pcttotal-chill">&mdash;</td>
+            <td id="pk-pcttotal-freezer">&mdash;</td>
+            <td class="totcol" id="pk-pcttotal-total">&mdash;</td>
+          </tr>
+          <tr>
+            <td>UPH</td>
+            <td id="pk-uph-ambient">&mdash;</td>
+            <td id="pk-uph-chill">&mdash;</td>
+            <td id="pk-uph-freezer">&mdash;</td>
+            <td class="totcol" id="pk-uph-total">&mdash;</td>
+          </tr>
+          <tr>
+            <td>Active ppl</td>
+            <td id="pk-active-ambient">&mdash;</td>
+            <td id="pk-active-chill">&mdash;</td>
+            <td id="pk-active-freezer">&mdash;</td>
+            <td class="totcol" id="pk-active-total">&mdash;</td>
+          </tr>
+          <tr>
+            <td>Calc ppl</td>
+            <td id="pk-calcpeople-ambient">&mdash;</td>
+            <td id="pk-calcpeople-chill">&mdash;</td>
+            <td id="pk-calcpeople-freezer">&mdash;</td>
+            <td class="totcol" id="pk-calcpeople-total">&mdash;</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
     <div class="pknote" id="pk-carry"></div>
   </div>
@@ -912,9 +944,11 @@ function cellStaffing(shift, zone) {
   const active = parseFloat(s.activepeople) || 0;
   if (po === null || !(uph > 0)) return null;
   const hrs = (minsUntil(currentMins(), po) - breaks) / 60;
-  if (hrs <= 0) return { expired: true };
+  // uph and active are reported either way, so callers can show the inputs even
+  // when the pickout has gone and there is no requirement left to calculate.
+  if (hrs <= 0) return { expired: true, uph, active };
   const needed = (computeCell(shift, zone).effective / uph) / hrs;
-  return { needed, hrs, active, delta: active > 0 ? active - Math.ceil(needed) : null };
+  return { needed, hrs, uph, active, delta: active > 0 ? active - Math.ceil(needed) : null };
 }
 
 // --- Plan tab rendering ---
@@ -1214,6 +1248,23 @@ function refreshPickedTab() {
     sum.ogrp += Math.round(c.pickedOgrp);
     sum.dayTotal += Math.round(c.chamberDayTotal);
   });
+
+  // Staffing figures come from the People tab's saved state for this shift.
+  const staff = { uph: 0, active: 0, needed: 0, anyNeeded: false };
+  ZONES.forEach(z => {
+    const cs = cellStaffing(selectedShift, z);
+    txt('pk-uph-' + z, cs ? fmt(cs.uph) : '—');
+    txt('pk-active-' + z, cs && cs.active > 0 ? fmt(cs.active) : '—');
+    txt('pk-calcpeople-' + z, cs && !cs.expired ? cs.needed.toFixed(2) : '—');
+    if (cs) {
+      staff.active += cs.active;
+      if (!cs.expired) { staff.needed += cs.needed; staff.anyNeeded = true; }
+    }
+  });
+  // UPH is a per-chamber rate, so a column sum would be meaningless.
+  txt('pk-uph-total', '—');
+  txt('pk-active-total', staff.active > 0 ? fmt(staff.active) : '—');
+  txt('pk-calcpeople-total', staff.anyNeeded ? staff.needed.toFixed(2) : '—');
 
   txt('pk-target-total', hasPlan ? fmt(sum.target) : '—');
   txt('pk-picked-total', fmt(sum.picked));
