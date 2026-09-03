@@ -30,6 +30,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .fgroup { margin-bottom: 12px; }
 .fgroup input { width: 100%; height: 44px; padding: 0 12px; font-size: 16px; border: 0.5px solid rgba(0,0,0,0.25); border-radius: 8px; background: #fff; color: #1a1a1a; -webkit-appearance: none; }
 .fgroup input:focus { outline: none; border-color: rgba(0,0,0,0.5); box-shadow: 0 0 0 2px rgba(0,0,0,0.06); }
+.fgroup input[readonly] { background: #f0efe8; color: #666; }
 .flabel-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; gap: 6px; }
 .flabel-row .flabel { margin-bottom: 0; }
 .mini { font-size: 10px; font-weight: 500; color: #666; background: none; border: none; cursor: pointer; text-decoration: underline; padding: 0; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; }
@@ -189,6 +190,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   .tab { border-color: rgba(255,255,255,0.2); color: #999; }
   .tab.active { background: #2e2e2e; color: #f0f0f0; border-color: rgba(255,255,255,0.4); }
   .fgroup input { background: #242424; border-color: rgba(255,255,255,0.2); color: #f0f0f0; }
+  .fgroup input[readonly] { background: #2a2a2a; color: #999; }
   .zbtn { border-color: rgba(255,255,255,0.2); color: #999; }
   .sbtn { border-color: rgba(255,255,255,0.2); color: #999; }
   .sbtn.on { background: #f0f0f0; color: #1a1a1a; }
@@ -277,6 +279,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     </div>
 
     <div id="planEdit" style="display:none">
+      <label class="flabel">Daily total units by chamber</label>
+      <div class="row3">
+        <div class="fgroup"><label class="flabel">Ambient</label><input type="number" id="p-total-ambient" placeholder="0" min="0" inputmode="numeric"></div>
+        <div class="fgroup"><label class="flabel">Chill</label><input type="number" id="p-total-chill" placeholder="0" min="0" inputmode="numeric"></div>
+        <div class="fgroup"><label class="flabel">Freezer</label><input type="number" id="p-total-freezer" placeholder="0" min="0" inputmode="numeric"></div>
+      </div>
+
       <div class="row2">
         <div class="fgroup">
           <label class="flabel">Night total units</label>
@@ -284,10 +293,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
         </div>
         <div class="fgroup">
           <label class="flabel">Daily total units</label>
-          <input type="number" id="p-total" placeholder="0" min="0" inputmode="numeric">
+          <input type="number" id="p-total" placeholder="0" readonly tabindex="-1">
         </div>
       </div>
-      <div class="crosscheck">Night picks 100% of its own total and runs first; the daily total splits across AM and PM.</div>
+      <div class="crosscheck">The daily total is the three chambers added up. Night picks 100% of its own total and runs first.</div>
 
       <label class="flabel">Shift split %</label>
       <div class="row2">
@@ -296,14 +305,42 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
       </div>
       <div class="warn-line" id="shiftPctWarn"></div>
 
-      <label class="flabel">Chamber split % &mdash; whole day</label>
+      <label class="flabel">Targets &mdash; AM &amp; PM by chamber</label>
+      <table class="ptbl">
+        <thead>
+          <tr>
+            <th class="rlab"></th>
+            <th><span class="pkzone ambient">Ambient</span></th>
+            <th><span class="pkzone chill">Chill</span></th>
+            <th><span class="pkzone freezer">Freezer</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="rlab"><span class="rowlab">AM</span><button class="mini rowreset" id="reset-tgt-am" onclick="clearTargetOverride('am')" style="display:none" title="use calculated figure">&#8634;</button></td>
+            <td><input type="number" id="p-tgt-am-ambient" placeholder="0" min="0" inputmode="numeric"></td>
+            <td><input type="number" id="p-tgt-am-chill" placeholder="0" min="0" inputmode="numeric"></td>
+            <td><input type="number" id="p-tgt-am-freezer" placeholder="0" min="0" inputmode="numeric"></td>
+          </tr>
+          <tr>
+            <td class="rlab"><span class="rowlab">PM</span><button class="mini rowreset" id="reset-tgt-pm" onclick="clearTargetOverride('pm')" style="display:none" title="use calculated figure">&#8634;</button></td>
+            <td><input type="number" id="p-tgt-pm-ambient" placeholder="0" min="0" inputmode="numeric"></td>
+            <td><input type="number" id="p-tgt-pm-chill" placeholder="0" min="0" inputmode="numeric"></td>
+            <td><input type="number" id="p-tgt-pm-freezer" placeholder="0" min="0" inputmode="numeric"></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="crosscheck" id="planCrosscheck"></div>
+
+      <label class="flabel">Chamber split % &mdash; night total</label>
       <div class="row3">
         <div class="fgroup"><label class="flabel">Ambient</label><input type="number" id="p-ambient" placeholder="0" min="0" max="100" inputmode="numeric"></div>
         <div class="fgroup"><label class="flabel">Chill</label><input type="number" id="p-chill" placeholder="0" min="0" max="100" inputmode="numeric"></div>
         <div class="fgroup"><label class="flabel">Freezer</label><input type="number" id="p-freezer" placeholder="0" min="0" max="100" inputmode="numeric"></div>
       </div>
       <div class="warn-line" id="chamberPctWarn"></div>
-      <div class="crosscheck" id="planCrosscheck"></div>
+      <div class="crosscheck" id="nightCrosscheck"></div>
+      <div class="crosscheck" id="daySplitLine"></div>
     </div>
   </div>
 
@@ -679,6 +716,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 <script>
 const ZONES  = ['ambient','chill','freezer'];
 const SHIFTS = ['night','am','pm'];
+const OVSHIFTS = ['am','pm'];   // shifts whose target can be overridden on the Plan page
 const ZLABEL = { ambient:'Ambient', chill:'Chill', freezer:'Freezer' };
 const SLABEL = { am:'AM', pm:'PM', night:'Night' };
 
@@ -698,10 +736,12 @@ const DEFAULT_SETTINGS = {
 };
 
 const DEFAULT_PLAN = {
-  dailyTotal: 0,          // split across AM and PM by shiftPct
+  chamberTotal: { ambient:0, chill:0, freezer:0 },  // entered per chamber; the daily total is their sum
   nightTotal: 0,          // night stands alone and picks 100% of this
   shiftPct:   { am:75, pm:25 },
-  chamberPct: { ambient:63.6, chill:32.2, freezer:4.2 }
+  chamberPct: { ambient:63.6, chill:32.2, freezer:4.2 },  // splits the night total only
+  targetOv:   { am: { ambient:null, chill:null, freezer:null },   // null follows the shift split
+                pm: { ambient:null, chill:null, freezer:null } }
 };
 
 // --- Shared helpers ---
@@ -779,42 +819,76 @@ function loadSettingsUI() {
 // --- Day plan ---
 function getPlan() {
   const base = JSON.parse(JSON.stringify(DEFAULT_PLAN));
+  // The daily total is no longer entered or stored: it is the three chambers added up.
+  const stamp = p => {
+    p.dailyTotal = ZONES.reduce((t, z) => t + (p.chamberTotal[z] || 0), 0);
+    p.date = todayISO();
+    return p;
+  };
   const raw = localStorage.getItem('dayPlan');
-  if (!raw) return Object.assign(base, { date: todayISO() });
-  let saved; try { saved = JSON.parse(raw); } catch (e) { return Object.assign(base, { date: todayISO() }); }
-  // Percentages carry over day to day; the daily total does not.
+  if (!raw) return stamp(base);
+  let saved; try { saved = JSON.parse(raw); } catch (e) { return stamp(base); }
+  // Percentages carry over day to day; unit figures and target overrides do not.
   if (saved.shiftPct)   Object.assign(base.shiftPct, saved.shiftPct);
   if (saved.chamberPct) Object.assign(base.chamberPct, saved.chamberPct);
-  base.dailyTotal = saved.date === todayISO() ? (parseFloat(saved.dailyTotal) || 0) : 0;
-  base.nightTotal = saved.date === todayISO() ? (parseFloat(saved.nightTotal) || 0) : 0;
-  base.date = todayISO();
-  return base;
+  if (saved.date === todayISO()) {
+    base.nightTotal = parseFloat(saved.nightTotal) || 0;
+    if (saved.chamberTotal) {
+      ZONES.forEach(z => { base.chamberTotal[z] = parseFloat(saved.chamberTotal[z]) || 0; });
+    } else {
+      // Plans written before the day total was entered per chamber held one figure for
+      // the whole day; split it once by the chamber percentages that were in force.
+      const legacy = parseFloat(saved.dailyTotal) || 0;
+      ZONES.forEach(z => { base.chamberTotal[z] = Math.round(legacy * base.chamberPct[z] / 100); });
+    }
+    if (saved.targetOv) OVSHIFTS.forEach(s => ZONES.forEach(z => {
+      const v = saved.targetOv[s] ? saved.targetOv[s][z] : null;
+      base.targetOv[s][z] = (v === null || v === undefined) ? null : (parseFloat(v) || 0);
+    }));
+  }
+  return stamp(base);
 }
 
-function savePlan() {
-  const p = {
-    date: todayISO(),
-    dailyTotal: parseFloat(document.getElementById('p-total').value) || 0,
-    nightTotal: parseFloat(document.getElementById('p-night').value) || 0,
-    shiftPct:   { am: parseFloat(document.getElementById('p-am').value) || 0,
-                  pm: parseFloat(document.getElementById('p-pm').value) || 0 },
-    chamberPct: { ambient: parseFloat(document.getElementById('p-ambient').value) || 0,
-                  chill:   parseFloat(document.getElementById('p-chill').value)   || 0,
-                  freezer: parseFloat(document.getElementById('p-freezer').value) || 0 }
-  };
+// Every write goes through here, so no writer can drop a field it does not own.
+function writePlan(mutate) {
+  const p = getPlan();
+  delete p.dailyTotal;   // derived on read, never stored
+  mutate(p);
+  p.date = todayISO();
   localStorage.setItem('dayPlan', JSON.stringify(p));
   refreshAll();
 }
 
+function savePlan() {
+  const num = id => parseFloat(document.getElementById(id).value) || 0;
+  writePlan(p => {
+    ZONES.forEach(z => { p.chamberTotal[z] = num('p-total-' + z); });
+    p.nightTotal = num('p-night');
+    p.shiftPct   = { am: num('p-am'), pm: num('p-pm') };
+    p.chamberPct = { ambient: num('p-ambient'), chill: num('p-chill'), freezer: num('p-freezer') };
+  });
+}
+
+// Blank clears the override and falls back to the calculated target.
+function saveTargetOv(shift, zone) {
+  const el = document.getElementById('p-tgt-' + shift + '-' + zone);
+  writePlan(p => { p.targetOv[shift][zone] = numOrNull(el); });
+}
+
+function clearTargetOverride(shift) {
+  writePlan(p => ZONES.forEach(z => { p.targetOv[shift][z] = null; }));
+}
+
 function loadPlanUI() {
   const p = getPlan();
-  document.getElementById('p-total').value   = p.dailyTotal;
+  ZONES.forEach(z => { document.getElementById('p-total-' + z).value = p.chamberTotal[z]; });
   document.getElementById('p-night').value   = p.nightTotal;
   document.getElementById('p-am').value      = p.shiftPct.am;
   document.getElementById('p-pm').value      = p.shiftPct.pm;
   document.getElementById('p-ambient').value = p.chamberPct.ambient;
   document.getElementById('p-chill').value   = p.chamberPct.chill;
   document.getElementById('p-freezer').value = p.chamberPct.freezer;
+  renderPlanDerived();
 }
 
 // Plan section sub-tabs. Null until the user picks one, so entering the section
@@ -869,14 +943,22 @@ function updateCell(shift, zone, patch) {
 // Single source of truth for every derived figure on a shift x chamber cell.
 function computeCell(shift, zone) {
   const plan = getPlan(), prog = getProgress(), st = getSettings();
-  const share = (plan.chamberPct[zone] || 0) / 100;
-  // AM and PM split the daily total between them; Night stands alone with its own
-  // total, of which it picks 100%. The chamber split is the same for all three.
-  const dayPool = plan.dailyTotal * share;
-  const nightPool = plan.nightTotal * share;
+  // The day total is entered per chamber, so AM and PM split that chamber's own
+  // figure between them. Night stands alone with one total for the whole night, of
+  // which it picks 100%, shared out by the chamber percentages.
+  const dayPool = plan.chamberTotal[zone] || 0;
+  const nightPool = plan.nightTotal * (plan.chamberPct[zone] || 0) / 100;
   const isNight = shift === 'night';
   const chamberDayTotal = isNight ? nightPool : dayPool;
-  const plannedShare = s => s === 'night' ? nightPool : dayPool * (plan.shiftPct[s] || 0) / 100;
+  // An AM or PM target can be overridden on the Plan page; null follows the split.
+  const targetOv = s => {
+    const row = plan.targetOv && plan.targetOv[s];
+    const v = row ? row[zone] : null;
+    return (v === null || v === undefined) ? null : v;
+  };
+  const plannedShare = s => s === 'night' ? nightPool
+                     : targetOv(s) !== null ? targetOv(s)
+                     : dayPool * (plan.shiftPct[s] || 0) / 100;
   const pickedIn = s => (prog[s][zone].manual || 0) + (prog[s][zone].ogrp || 0);
 
   const cell = prog[shift][zone];
@@ -913,6 +995,7 @@ function computeCell(shift, zone) {
     pickedManual: cell.manual, pickedOgrp: cell.ogrp, picked,
     calcOgrp, predOgrp, planRemaining, variance, remaining, effective,
     hasPlan: chamberDayTotal > 0,
+    plannedOverridden: targetOv(shift) !== null,
     unitsOverridden: cell.unitsOv !== null,
     ogrpOverridden: cell.predOgrp !== null
   };
@@ -984,7 +1067,9 @@ function renderPlanOverview() {
     const picked = cols.map(c => add(c, 'picked'));
     // AM and PM share the daily pool; Night has its own. Total is both together.
     const at = sh => cols[SHIFTS.indexOf(sh)];
-    const dayT = add(at('night'), 'chamberDayTotal') + add(at('am'), 'chamberDayTotal');
+    // The targets in force, not the entered totals: an override changes what the day
+    // is working to, and the Target row still has to add across to its own Total.
+    const dayT = SHIFTS.reduce((t, sh) => t + add(at(sh), 'planned'), 0);
     const dayP = picked.reduce((a, b) => a + b, 0);
     const deltas = deltaSum(zones);
     // Target is the plan's own split, so it adds across to the Total. Working and
@@ -1035,7 +1120,7 @@ function renderPlanOverview() {
     + '<b>Target</b> is each shift’s planned share, before any carryover, so it adds across to the Total. '
     + '<b>Working</b> is what the shift is actually picking to — its target plus anything the shift before '
     + 'it left short. Working and Rem do not add across, because carried units are counted in both shifts. '
-    + '<b>Total</b> is the day and night totals together.</div>';
+    + '<b>Total</b> is the day and night targets together.</div>';
 
   host.innerHTML = allCard + zoneCards + legend;
 }
@@ -1047,18 +1132,61 @@ function renderPlanWarnings() {
   document.getElementById('shiftPctWarn').textContent =
     Math.abs(sSum - 100) < 0.01 ? '' : 'Shift split is ' + sSum + '% — should total 100%.';
   document.getElementById('chamberPctWarn').textContent =
-    Math.abs(cSum - 100) < 0.01 ? '' : 'Chamber split is ' + cSum + '% — should total 100%.';
-  const allocated = ZONES.reduce((t, z) => t + plan.dailyTotal * plan.chamberPct[z] / 100, 0);
-  document.getElementById('planCrosscheck').textContent = plan.dailyTotal > 0
-    ? 'Chambers allocate ' + fmt(allocated) + ' of ' + fmt(plan.dailyTotal) + ' units.'
+    Math.abs(cSum - 100) < 0.01 ? '' : 'Night chamber split is ' + cSum + '% — should total 100%.';
+
+  // The chamber percentages now share out the night total only.
+  const allocated = ZONES.reduce((t, z) => t + plan.nightTotal * plan.chamberPct[z] / 100, 0);
+  document.getElementById('nightCrosscheck').textContent = plan.nightTotal > 0
+    ? 'Chambers allocate ' + fmt(allocated) + ' of ' + fmt(plan.nightTotal) + ' night units.'
     : '';
+
+  // The day's own split is whatever the three entered totals come to.
+  document.getElementById('daySplitLine').textContent = plan.dailyTotal > 0
+    ? 'Day split: ' + ZONES.map(z => ZLABEL[z] + ' ' + (plan.chamberTotal[z] / plan.dailyTotal * 100).toFixed(1) + '%').join(' · ')
+    : '';
+
+  // An overridden target is allowed to pull a chamber away from its entered total,
+  // so the difference is reported rather than corrected.
+  const off = ZONES.map(z => ({ z: z, tgt: computeCell('am', z).planned + computeCell('pm', z).planned, tot: plan.chamberTotal[z] }))
+                   .filter(r => Math.abs(r.tgt - r.tot) >= 1);
+  document.getElementById('planCrosscheck').textContent = !(plan.dailyTotal > 0) ? ''
+    : off.length ? 'Targets: ' + off.map(r => ZLABEL[r.z] + ' ' + fmt(r.tgt) + ' of ' + fmt(r.tot)).join(' · ') + '.'
+    : 'AM + PM targets match the chamber totals.';
 }
 
-['p-night','p-total','p-am','p-pm','p-ambient','p-chill','p-freezer'].forEach(id => {
+// The Plan page's calculated fields: the daily total and the six shift targets. The
+// targets are live inputs, so this skips whichever one the user is typing into.
+function renderPlanDerived() {
+  const active = document.activeElement;
+  const set = (el, v) => { if (el !== active) el.value = v; };
+  set(document.getElementById('p-total'), getPlan().dailyTotal || '');
+  OVSHIFTS.forEach(sh => {
+    let anyOv = false;
+    ZONES.forEach(z => {
+      const c = computeCell(sh, z);
+      const el = document.getElementById('p-tgt-' + sh + '-' + z);
+      set(el, (c.hasPlan || c.plannedOverridden) ? Math.round(c.planned) : '');
+      el.classList.toggle('ovr', c.plannedOverridden);
+      anyOv = anyOv || c.plannedOverridden;
+    });
+    document.getElementById('reset-tgt-' + sh).style.display = anyOv ? 'inline' : 'none';
+  });
+}
+
+['p-night','p-total-ambient','p-total-chill','p-total-freezer','p-am','p-pm','p-ambient','p-chill','p-freezer'].forEach(id => {
   const el = document.getElementById(id);
   el.addEventListener('input', savePlan);
   el.addEventListener('change', savePlan);
 });
+
+// Target overrides: blank clears the override and falls back to the calculated split.
+OVSHIFTS.forEach(sh => ZONES.forEach(z => {
+  const el = document.getElementById('p-tgt-' + sh + '-' + z);
+  const handler = () => saveTargetOv(sh, z);
+  el.addEventListener('input', handler);
+  el.addEventListener('change', handler);
+  el.addEventListener('blur', renderPlanDerived);
+}));
 
 // --- People calc: per shift x zone form state ---
 const FIELD_IDS = { pickout: 'c-pickout-', breaks: 'c-breaks-', uph: 'c-uph-', activepeople: 'c-active-' };
@@ -1372,6 +1500,7 @@ function refreshAll() {
   refreshPickedTab();
   renderPlanOverview();
   renderPlanWarnings();
+  renderPlanDerived();
 }
 
 // --- Time to complete a quantity ---
@@ -1616,11 +1745,11 @@ function resetForm() {
 function resetDay() {
   if (!confirm("Reset today's daily total and all picked progress? Percentages and settings are kept.")) return;
   localStorage.removeItem('dayProgress');
-  const p = getPlan();
-  p.dailyTotal = 0;
-  localStorage.setItem('dayPlan', JSON.stringify(p));
+  writePlan(p => {
+    ZONES.forEach(z => { p.chamberTotal[z] = 0; });
+    OVSHIFTS.forEach(sh => ZONES.forEach(z => { p.targetOv[sh][z] = null; }));
+  });
   loadPlanUI();
-  refreshAll();
   alert('Today reset.');
 }
 
