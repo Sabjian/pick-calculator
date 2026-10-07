@@ -1,4 +1,4 @@
-const CACHE = 'pick-calc-v1.09';
+const CACHE = 'pick-calc-v1.10';
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
 self.addEventListener('install', e => {

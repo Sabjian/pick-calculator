@@ -991,7 +991,18 @@ function minsUntil(from, to) {
   const d = to - from;
   return d < -720 ? d + 1440 : d;
 }
-function todayISO() { const d = new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+// The working day runs Night -> AM -> PM. It starts at 18:00, when the app moves
+// on to the Night about to start (autoShift() uses the same 18:00), and ends when
+// that PM finishes the next day. Everything that resets daily is stamped with
+// this date rather than the calendar date, so a Night keeps its figures past
+// midnight. It follows the real clock, not a held time.
+const DAY_START = 18 * 60;
+function workdayOf(d) {
+  const w = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  if (d.getHours() * 60 + d.getMinutes() >= DAY_START) w.setDate(w.getDate() + 1);
+  return w.getFullYear()+'-'+String(w.getMonth()+1).padStart(2,'0')+'-'+String(w.getDate()).padStart(2,'0');
+}
+function workdayISO() { return workdayOf(new Date()); }
 function fmt(n) { return Math.round(n).toLocaleString(); }
 function numOrNull(el) { const v = el.value.trim(); return v === '' ? null : (isNaN(parseFloat(v)) ? null : parseFloat(v)); }
 
@@ -1049,7 +1060,7 @@ function getPlan() {
   // The daily total is no longer entered or stored: it is the three chambers added up.
   const stamp = p => {
     p.dailyTotal = ZONES.reduce((t, z) => t + (p.chamberTotal[z] || 0), 0);
-    p.date = todayISO();
+    p.date = workdayISO();
     return p;
   };
   const raw = localStorage.getItem('dayPlan');
@@ -1058,7 +1069,7 @@ function getPlan() {
   // Percentages carry over day to day; unit figures and target overrides do not.
   if (saved.shiftPct)   Object.assign(base.shiftPct, saved.shiftPct);
   if (saved.chamberPct) Object.assign(base.chamberPct, saved.chamberPct);
-  if (saved.date === todayISO()) {
+  if (saved.date === workdayISO()) {
     base.nightTotal = parseFloat(saved.nightTotal) || 0;
     if (saved.chamberTotal) {
       ZONES.forEach(z => { base.chamberTotal[z] = parseFloat(saved.chamberTotal[z]) || 0; });
@@ -1081,7 +1092,7 @@ function writePlan(mutate) {
   const p = getPlan();
   delete p.dailyTotal;   // derived on read, never stored
   mutate(p);
-  p.date = todayISO();
+  p.date = workdayISO();
   localStorage.setItem('dayPlan', JSON.stringify(p));
   refreshAll();
 }
@@ -1137,7 +1148,7 @@ function setPlanSub(which) {
 
 // --- Day progress ---
 function emptyProgress() {
-  const p = { date: todayISO() };
+  const p = { date: workdayISO() };
   SHIFTS.forEach(s => { p[s] = {}; ZONES.forEach(z => { p[s][z] = { manual:0, ogrp:0, predOgrp:null, unitsOv:null }; }); });
   return p;
 }
@@ -1146,7 +1157,7 @@ function getProgress() {
   const raw = localStorage.getItem('dayProgress');
   if (!raw) return emptyProgress();
   let saved; try { saved = JSON.parse(raw); } catch (e) { return emptyProgress(); }
-  if (saved.date !== todayISO()) return emptyProgress();
+  if (saved.date !== workdayISO()) return emptyProgress();
   const p = emptyProgress();
   SHIFTS.forEach(s => ZONES.forEach(z => {
     const c = saved[s] && saved[s][z];
@@ -1162,7 +1173,7 @@ function getProgress() {
 function updateCell(shift, zone, patch) {
   const p = getProgress();
   Object.assign(p[shift][zone], patch);
-  p.date = todayISO();
+  p.date = workdayISO();
   localStorage.setItem('dayProgress', JSON.stringify(p));
 }
 
@@ -1449,7 +1460,7 @@ function loadAllZoneStates() { ZONES.forEach(loadZoneState); }
 
 function setShift(shift) {
   selectedShift = shift;
-  localStorage.setItem('shiftChoice', JSON.stringify({ date: todayISO(), shift: shift }));
+  localStorage.setItem('shiftChoice', JSON.stringify(stamped({ shift: shift })));
   SHIFTS.forEach(s => {
     const cls = 'sbtn' + (s === shift ? ' on' : '');
     document.getElementById('shift-' + s).className = cls;
@@ -1461,8 +1472,6 @@ function setShift(shift) {
   refreshInboundTab();
 }
 
-// Current time follows the clock unless the user types over it. The override is
-// stamped with the date so it does not leak into the next day.
 // The clock, or the held time if the user has pinned one. Everything that asks
 // "what time is it" goes through here so the tabs cannot disagree.
 function currentMins() {
@@ -1470,12 +1479,19 @@ function currentMins() {
   return ov ? toMins(ov) : nowMins();
 }
 
+// The held time and the chosen shift are stamped with the working day and the
+// shift the clock was in when they were set. They last until the clock moves into
+// another shift: a Night keeps them past midnight, but neither leaks into the
+// morning, where a held 21:00 would read AM as over and the app would open on Night.
+function stamped(extra) { return Object.assign({ date: workdayISO(), from: autoShift() }, extra); }
+function stillCurrent(o) { return o.date === workdayISO() && o.from === autoShift(); }
+
 function timeOverride() {
   const raw = localStorage.getItem('timeOverride');
   if (!raw) return null;
   try {
     const o = JSON.parse(raw);
-    return (o.date === todayISO() && o.value) ? o.value : null;
+    return (stillCurrent(o) && o.value) ? o.value : null;
   } catch (e) { return null; }
 }
 
@@ -1512,7 +1528,7 @@ function clearTimeOverride() {
 function autoShift() {
   const m = nowMins();
   if (m >= 300 && m < 780) return 'am';
-  if (m >= 780 && m < 1080) return 'pm';
+  if (m >= 780 && m < DAY_START) return 'pm';
   return 'night';
 }
 
@@ -1521,7 +1537,7 @@ function initShift() {
   if (raw) {
     try {
       const c = JSON.parse(raw);
-      if (c.date === todayISO() && SHIFTS.indexOf(c.shift) !== -1) return c.shift;
+      if (stillCurrent(c) && SHIFTS.indexOf(c.shift) !== -1) return c.shift;
     } catch (e) { /* fall through */ }
   }
   return autoShift();
@@ -1725,7 +1741,7 @@ ZONES.forEach(z => {
 
 // Blank follows the clock again. Text that is not a time goes back to what was held.
 TIME_CONTROLS.forEach(c => wireTimeBox(document.getElementById(c.input), t => {
-  if (t) localStorage.setItem('timeOverride', JSON.stringify({ date: todayISO(), value: t }));
+  if (t) localStorage.setItem('timeOverride', JSON.stringify(stamped({ value: t })));
   else localStorage.removeItem('timeOverride');
   syncCurrentTime();
   refreshPeopleTab();
@@ -1748,18 +1764,18 @@ function refreshAll() {
 const TR_KEYS = { people: 'activepeople', uph: 'uph', breaks: 'breaks' };
 
 function getTrState() {
-  const empty = { date: todayISO(), qty: {}, ov: {}, cur: null, qtyFrom: null };
+  const empty = { date: workdayISO(), qty: {}, ov: {}, cur: null, qtyFrom: null };
   const raw = localStorage.getItem('trState');
   if (!raw) return empty;
   try {
     const s = JSON.parse(raw);
-    if (s.date !== todayISO()) return empty;
+    if (s.date !== workdayISO()) return empty;
     return { date: s.date, qty: s.qty || {}, ov: s.ov || {}, cur: s.cur || null, qtyFrom: s.qtyFrom || null };
   } catch (e) { return empty; }
 }
 
 function saveTrState(s) {
-  s.date = todayISO();
+  s.date = workdayISO();
   localStorage.setItem('trState', JSON.stringify(s));
 }
 
@@ -2127,7 +2143,7 @@ function emptyInboundShift() {
 // each day. Floor stock stays null when blank, so an empty field cannot warn.
 function getInbound() {
   const ib = JSON.parse(JSON.stringify(IB_DEFAULT));
-  ib.date = todayISO();
+  ib.date = workdayISO();
   IB_SHIFTS.forEach(sh => { ib[sh] = emptyInboundShift(); });
   const raw = localStorage.getItem('inboundState');
   if (!raw) return ib;
@@ -2135,7 +2151,7 @@ function getInbound() {
   ['split','uph'].forEach(k => IB_ZONES.forEach(z => {
     if (saved[k] && saved[k][z] !== undefined) ib[k][z] = parseFloat(saved[k][z]) || 0;
   }));
-  if (saved.date !== todayISO()) return ib;
+  if (saved.date !== workdayISO()) return ib;
   IB_SHIFTS.forEach(sh => {
     const s = saved[sh];
     if (!s) return;
@@ -2155,7 +2171,7 @@ function getInbound() {
 function writeInbound(mutate) {
   const ib = getInbound();
   mutate(ib);
-  ib.date = todayISO();
+  ib.date = workdayISO();
   localStorage.setItem('inboundState', JSON.stringify(ib));
   refreshInboundTab();
 }

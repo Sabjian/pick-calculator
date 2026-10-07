@@ -14,7 +14,7 @@ run in order:
 | PM | 13:00-18:00 | Its % share of the **daily total** |
 
 The app picks the shift from the clock; you can switch manually and the choice
-sticks for the day.
+sticks until the clock moves into the next shift.
 
 1. **Plan tab** — *Plan* holds the night total, the daily total, the AM/PM split
    (%) and the chamber split (%) across Ambient / Chill / Freezer. The chamber
@@ -94,8 +94,13 @@ Quick option: generate free icons at https://favicon.io or https://realfaviconge
   sync. It is per-browser, so a phone and a laptop keep separate data, and
   clearing site data wipes it including history.
 - Plan totals, picked quantities, the Time tab's scratch figures and the Inbound
-  shift figures are date-stamped and reset each day. Percentages, pickout times,
-  the per-chamber OGRP/UPH defaults, and the Inbound split and UPH carry over.
+  shift figures reset each **working day**. A working day runs Night → AM → PM
+  and starts at 18:00, not midnight, so a Night keeps its figures through to the
+  morning and AM inherits what it left short. Enter tonight's night total from
+  18:00. Percentages, pickout times, the per-chamber OGRP/UPH defaults, and the
+  Inbound split and UPH carry over.
+- A shift you pick by hand, and a held current time, last until the clock moves
+  into the next shift.
 - The service worker enables offline use. The page itself is fetched
   network-first, so a new build always wins when online.
 - Dark mode is supported automatically
