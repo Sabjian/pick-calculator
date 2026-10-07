@@ -2,10 +2,11 @@
   "name": "Pick Calculator",
   "short_name": "Pick Calc",
   "description": "Warehouse workforce planning calculator",
-  "start_url": "/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "theme_color": "#3949AB",
   "orientation": "portrait",
   "icons": [
     {
