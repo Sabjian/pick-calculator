@@ -21,6 +21,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .gear { background: none; border: none; cursor: pointer; padding: 5px; color: #666; line-height: 0; border-radius: 8px; flex: none; }
 .gear svg { width: 22px; height: 22px; display: block; }
 .gear.on { color: #1a1a1a; background: rgba(0,0,0,0.07); }
+.hdr-right { display: flex; align-items: center; gap: 6px; flex: none; }
+.modesel { display: flex; gap: 2px; padding: 2px; border: 0.5px solid rgba(0,0,0,0.25); border-radius: 8px; }
+.mbtn { font-size: 12px; font-weight: 500; padding: 5px 10px; border: none; border-radius: 6px; background: transparent; color: #666; cursor: pointer; }
+.mbtn.on { background: #1a1a1a; color: #fff; }
+.app.inbound #gearBtn { display: none; }
+.app.inbound .tab[data-mode=pick], .app:not(.inbound) .tab[data-mode=inbound] { display: none; }
 .tabs { display: flex; gap: 3px; padding: 12px 20px 0; }
 .tab { flex: 1; padding: 8px 2px; font-size: 11px; font-weight: 500; border: 0.5px solid rgba(0,0,0,0.25); border-radius: 8px; background: transparent; color: #666; cursor: pointer; transition: all 0.15s; }
 .tab.active { background: #fff; color: #1a1a1a; border-color: rgba(0,0,0,0.4); }
@@ -86,8 +92,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .divider { border: none; border-top: 0.5px solid rgba(0,0,0,0.1); margin: 12px 0; }
 .note-field { width: 100%; padding: 10px 12px; font-size: 14px; border: 0.5px solid rgba(0,0,0,0.25); border-radius: 8px; background: #fff; color: #1a1a1a; resize: none; height: 64px; font-family: inherit; margin-bottom: 10px; }
 .note-field:focus { outline: none; border-color: rgba(0,0,0,0.5); }
-.stimes input[type=time] { font-size: 12.5px; padding: 0 2px; text-align: center; }
-.stimes input[type=time]::-webkit-calendar-picker-indicator { display: none; }
 .pkgrid { display: grid; grid-template-columns: auto 1fr 1fr; gap: 8px; align-items: center; margin-bottom: 14px; }
 .pkcolhead { text-align: center; margin-bottom: 0; }
 .pkzone { font-size: 12px; font-weight: 600; padding: 7px 6px; border-radius: 6px; text-align: center; }
@@ -111,8 +115,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .rowreset { margin-left: 4px; text-decoration: none; font-size: 12px; }
 .ptbl input { width: 100%; height: 38px; padding: 0 4px; font-size: 14px; text-align: center; border: 0.5px solid rgba(0,0,0,0.25); border-radius: 7px; background: #fff; color: #1a1a1a; -webkit-appearance: none; }
 .ptbl input:focus { outline: none; border-color: rgba(0,0,0,0.5); box-shadow: 0 0 0 2px rgba(0,0,0,0.06); }
-.ptbl input::-webkit-calendar-picker-indicator { display: none; }
-.ptbl input[type=time] { font-size: 12.5px; padding: 0 2px; }
 .ptbl input.ovr { border-color: #BA7517; color: #BA7517; }
 .dval { font-size: 15px; font-weight: 600; color: #1a1a1a; }
 .dval.sm { font-size: 13px; font-weight: 500; }
@@ -206,6 +208,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   .tscol + .tscol, .tsrow + .tsrow { border-color: rgba(255,255,255,0.1); }
   .gear { color: #999; }
   .gear.on { color: #f0f0f0; background: rgba(255,255,255,0.12); }
+  .modesel { border-color: rgba(255,255,255,0.2); }
+  .mbtn { color: #999; }
+  .mbtn.on { background: #f0f0f0; color: #1a1a1a; }
   .btn { border-color: rgba(255,255,255,0.2); color: #f0f0f0; }
   .btn.primary { background: #f0f0f0; color: #1a1a1a; }
   .fbtn { border-color: rgba(255,255,255,0.2); color: #999; }
@@ -251,20 +256,28 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   <div class="header">
     <div class="header-row">
       <div>
-        <h1>Pick calculator</h1>
+        <h1 id="appTitle">Pick calculator</h1>
         <p>Workforce planning tool</p>
       </div>
-      <button class="gear" id="gearBtn" onclick="toggleSettings()" aria-label="Settings" title="Settings">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      </button>
+      <div class="hdr-right">
+        <div class="modesel">
+          <button class="mbtn on" id="mode-pick" onclick="setMode('pick')">Pick</button>
+          <button class="mbtn" id="mode-inbound" onclick="setMode('inbound')">Inbound</button>
+        </div>
+        <button class="gear" id="gearBtn" onclick="toggleSettings()" aria-label="Settings" title="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+      </div>
     </div>
   </div>
   <div class="tabs">
-    <button class="tab active" data-tab="plan" onclick="switchTab('plan')">Plan</button>
-    <button class="tab" data-tab="picked" onclick="switchTab('picked')">Picked</button>
-    <button class="tab" data-tab="calc" onclick="switchTab('calc')">People</button>
-    <button class="tab" data-tab="timecalc" onclick="switchTab('timecalc')">Time</button>
-    <button class="tab" data-tab="history" onclick="switchTab('history')">History</button>
+    <button class="tab active" data-mode="pick" data-tab="plan" onclick="switchTab('plan')">Plan</button>
+    <button class="tab" data-mode="pick" data-tab="picked" onclick="switchTab('picked')">Picked</button>
+    <button class="tab" data-mode="pick" data-tab="calc" onclick="switchTab('calc')">People</button>
+    <button class="tab" data-mode="pick" data-tab="timecalc" onclick="switchTab('timecalc')">Time</button>
+    <button class="tab" data-mode="pick" data-tab="history" onclick="switchTab('history')">History</button>
+    <button class="tab" data-mode="inbound" data-tab="inbound" onclick="switchTab('inbound')">Decant</button>
+    <button class="tab" data-mode="inbound" data-tab="ibhistory" onclick="switchTab('ibhistory')">History</button>
   </div>
 
   <!-- Day plan + overview -->
@@ -464,7 +477,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     <div class="row2">
       <div class="fgroup">
         <div class="flabel-row"><label class="flabel">Current time</label><button class="mini" id="timeReset" onclick="clearTimeOverride()" style="display:none">use now</button></div>
-        <input type="time" id="currenttime">
+        <input type="text" id="currenttime">
         <div class="fsub" id="timeSub"></div>
       </div>
       <div></div>
@@ -488,9 +501,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
       </tr>
       <tr>
         <td class="rlab">Pickout time</td>
-        <td><input type="time" id="c-pickout-ambient" ></td>
-        <td><input type="time" id="c-pickout-chill" ></td>
-        <td><input type="time" id="c-pickout-freezer" ></td>
+        <td><input type="text" id="c-pickout-ambient"></td>
+        <td><input type="text" id="c-pickout-chill"></td>
+        <td><input type="text" id="c-pickout-freezer"></td>
       </tr>
       <tr>
         <td class="rlab"><span class="rowlab">Remaining units</span><button class="mini rowreset" id="reset-units" onclick="clearUnitsOverride()" style="display:none" title="use plan figure">&#8634;</button></td>
@@ -563,7 +576,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     <div class="row2">
       <div class="fgroup">
         <div class="flabel-row"><label class="flabel">Current time</label><button class="mini" id="trTimeReset" onclick="clearTrTime()" style="display:none">use People time</button></div>
-        <input type="time" id="tr-current">
+        <input type="text" id="tr-current">
         <div class="fsub" id="trTimeSub"></div>
       </div>
       <div></div>
@@ -649,6 +662,165 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
     </div>
   </div>
 
+  <!-- Inbound: decanting to the shift target -->
+  <div id="inbound" class="section">
+    <label class="flabel">Shift</label>
+    <div class="shift-sel">
+      <button class="sbtn" id="ib-shift-am" onclick="setShift('am')">AM<small>05:00&ndash;13:00</small></button>
+      <button class="sbtn" id="ib-shift-pm" onclick="setShift('pm')">PM<small>13:00&ndash;18:00</small></button>
+    </div>
+
+    <div class="row2">
+      <div class="fgroup">
+        <div class="flabel-row"><label class="flabel">Current time</label><button class="mini" id="ibTimeReset" onclick="clearTimeOverride()" style="display:none">use now</button></div>
+        <input type="text" id="ib-current">
+        <div class="fsub" id="ibTimeSub"></div>
+      </div>
+      <div class="fgroup">
+        <label class="flabel">Shift target units</label>
+        <input type="number" id="ib-target" placeholder="0" min="0" inputmode="numeric">
+        <div class="fsub" id="ibEndSub"></div>
+      </div>
+    </div>
+
+    <table class="ptbl">
+      <thead>
+        <tr>
+          <th class="rlab"></th>
+          <th><span class="pkzone ambient">Ambient</span></th>
+          <th><span class="pkzone chill">Chill</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="remrow">
+          <td class="rlab">Time remaining</td>
+          <td><span class="dval sm" id="ib-timerem-ambient">&mdash;</span></td>
+          <td><span class="dval sm" id="ib-timerem-chill">&mdash;</span></td>
+        </tr>
+        <tr>
+          <td class="rlab">Split %</td>
+          <td><input type="number" id="ib-split-ambient" placeholder="0" min="0" max="100" inputmode="numeric"></td>
+          <td><input type="number" id="ib-split-chill" placeholder="0" min="0" max="100" inputmode="numeric"></td>
+        </tr>
+        <tr>
+          <td class="rlab">Decanted so far</td>
+          <td><input type="number" id="ib-decanted-ambient" placeholder="0" min="0" inputmode="numeric"></td>
+          <td><input type="number" id="ib-decanted-chill" placeholder="0" min="0" inputmode="numeric"></td>
+        </tr>
+        <tr>
+          <td class="rlab">Floor stock</td>
+          <td><input type="number" id="ib-floor-ambient" placeholder="0" min="0" inputmode="numeric"></td>
+          <td><input type="number" id="ib-floor-chill" placeholder="0" min="0" inputmode="numeric"></td>
+        </tr>
+        <tr>
+          <td class="rlab">UPH</td>
+          <td><input type="number" id="ib-uph-ambient" placeholder="0" min="0" inputmode="numeric"></td>
+          <td><input type="number" id="ib-uph-chill" placeholder="0" min="0" inputmode="numeric"></td>
+        </tr>
+        <tr>
+          <td class="rlab">Breaks (mins)</td>
+          <td><input type="number" id="ib-breaks-ambient" placeholder="0" min="0" inputmode="numeric"></td>
+          <td><input type="number" id="ib-breaks-chill" placeholder="0" min="0" inputmode="numeric"></td>
+        </tr>
+        <tr>
+          <td class="rlab">Active people</td>
+          <td><input type="number" id="ib-people-ambient" placeholder="0" min="0" inputmode="numeric"></td>
+          <td><input type="number" id="ib-people-chill" placeholder="0" min="0" inputmode="numeric"></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="warn-line" id="ibSplitWarn"></div>
+
+    <div class="pkstats">
+      <table class="stbl">
+        <thead>
+          <tr>
+            <th></th>
+            <th><span class="zname ambient">Ambient</span></th>
+            <th><span class="zname chill">Chill</span></th>
+            <th><span class="zname total">Total</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Target</td>
+            <td id="ib-r-target-ambient">&mdash;</td>
+            <td id="ib-r-target-chill">&mdash;</td>
+            <td class="totcol" id="ib-r-target-total">&mdash;</td>
+          </tr>
+          <tr>
+            <td>Decanted</td>
+            <td id="ib-r-decanted-ambient">&mdash;</td>
+            <td id="ib-r-decanted-chill">&mdash;</td>
+            <td class="totcol" id="ib-r-decanted-total">&mdash;</td>
+          </tr>
+          <tr>
+            <td>Rem</td>
+            <td id="ib-r-rem-ambient">&mdash;</td>
+            <td id="ib-r-rem-chill">&mdash;</td>
+            <td class="totcol" id="ib-r-rem-total">&mdash;</td>
+          </tr>
+          <tr>
+            <td>Calc ppl</td>
+            <td id="ib-r-needed-ambient">&mdash;</td>
+            <td id="ib-r-needed-chill">&mdash;</td>
+            <td class="totcol" id="ib-r-needed-total">&mdash;</td>
+          </tr>
+          <tr>
+            <td>Active ppl</td>
+            <td id="ib-r-active-ambient">&mdash;</td>
+            <td id="ib-r-active-chill">&mdash;</td>
+            <td class="totcol" id="ib-r-active-total">&mdash;</td>
+          </tr>
+          <tr>
+            <td>Delta</td>
+            <td id="ib-r-delta-ambient">&mdash;</td>
+            <td id="ib-r-delta-chill">&mdash;</td>
+            <td class="totcol" id="ib-r-delta-total">&mdash;</td>
+          </tr>
+          <tr>
+            <td>Will decant</td>
+            <td id="ib-r-will-ambient">&mdash;</td>
+            <td id="ib-r-will-chill">&mdash;</td>
+            <td class="totcol" id="ib-r-will-total">&mdash;</td>
+          </tr>
+          <tr>
+            <td>Forecast</td>
+            <td id="ib-r-forecast-ambient">&mdash;</td>
+            <td id="ib-r-forecast-chill">&mdash;</td>
+            <td class="totcol" id="ib-r-forecast-total">&mdash;</td>
+          </tr>
+          <tr>
+            <td>vs target</td>
+            <td id="ib-r-gap-ambient">&mdash;</td>
+            <td id="ib-r-gap-chill">&mdash;</td>
+            <td class="totcol" id="ib-r-gap-total">&mdash;</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pknote" id="ibNote"></div>
+
+    <div class="btnrow" style="margin-top:12px">
+      <button class="btn" onclick="resetInbound()">Clear</button>
+      <button class="btn primary" onclick="saveInboundRecord()">Save record</button>
+    </div>
+  </div>
+
+  <!-- Inbound history -->
+  <div id="ibhistory" class="section">
+    <div class="filter-bar">
+      <button class="fbtn fall" id="ibfilter-all" onclick="setIbFilter('all')">All</button>
+      <button class="fbtn" id="ibfilter-ambient" onclick="setIbFilter('ambient')">Ambient</button>
+      <button class="fbtn" id="ibfilter-chill" onclick="setIbFilter('chill')">Chill</button>
+    </div>
+    <div id="ibHistoryList"></div>
+    <hr class="divider">
+    <div class="btnrow">
+      <button class="btn danger" onclick="clearInboundHistory()">Clear inbound history</button>
+    </div>
+  </div>
+
   <!-- History -->
   <div id="history" class="section">
     <div class="filter-bar">
@@ -666,10 +838,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
     <div class="settings-zone">
       <div class="settings-zone-label ambient">Ambient</div>
-      <div class="row3 stimes">
-        <div class="fgroup"><label class="flabel">Night out</label><input type="time" id="s-pickout-night-ambient"></div>
-        <div class="fgroup"><label class="flabel">AM out</label><input type="time" id="s-pickout-am-ambient"></div>
-        <div class="fgroup"><label class="flabel">PM out</label><input type="time" id="s-pickout-pm-ambient"></div>
+      <div class="row3">
+        <div class="fgroup"><label class="flabel">Night out</label><input type="text" id="s-pickout-night-ambient"></div>
+        <div class="fgroup"><label class="flabel">AM out</label><input type="text" id="s-pickout-am-ambient"></div>
+        <div class="fgroup"><label class="flabel">PM out</label><input type="text" id="s-pickout-pm-ambient"></div>
       </div>
       <div class="row2">
         <div class="fgroup"><label class="flabel">OGRP %</label><input type="number" id="s-ogrp-ambient" placeholder="0" min="0" max="100" inputmode="numeric"></div>
@@ -679,10 +851,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
     <div class="settings-zone">
       <div class="settings-zone-label chill">Chill</div>
-      <div class="row3 stimes">
-        <div class="fgroup"><label class="flabel">Night out</label><input type="time" id="s-pickout-night-chill"></div>
-        <div class="fgroup"><label class="flabel">AM out</label><input type="time" id="s-pickout-am-chill"></div>
-        <div class="fgroup"><label class="flabel">PM out</label><input type="time" id="s-pickout-pm-chill"></div>
+      <div class="row3">
+        <div class="fgroup"><label class="flabel">Night out</label><input type="text" id="s-pickout-night-chill"></div>
+        <div class="fgroup"><label class="flabel">AM out</label><input type="text" id="s-pickout-am-chill"></div>
+        <div class="fgroup"><label class="flabel">PM out</label><input type="text" id="s-pickout-pm-chill"></div>
       </div>
       <div class="row2">
         <div class="fgroup"><label class="flabel">OGRP %</label><input type="number" id="s-ogrp-chill" placeholder="0" min="0" max="100" inputmode="numeric"></div>
@@ -692,10 +864,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
     <div class="settings-zone">
       <div class="settings-zone-label freezer">Freezer</div>
-      <div class="row3 stimes">
-        <div class="fgroup"><label class="flabel">Night out</label><input type="time" id="s-pickout-night-freezer"></div>
-        <div class="fgroup"><label class="flabel">AM out</label><input type="time" id="s-pickout-am-freezer"></div>
-        <div class="fgroup"><label class="flabel">PM out</label><input type="time" id="s-pickout-pm-freezer"></div>
+      <div class="row3">
+        <div class="fgroup"><label class="flabel">Night out</label><input type="text" id="s-pickout-night-freezer"></div>
+        <div class="fgroup"><label class="flabel">AM out</label><input type="text" id="s-pickout-am-freezer"></div>
+        <div class="fgroup"><label class="flabel">PM out</label><input type="text" id="s-pickout-pm-freezer"></div>
       </div>
       <div class="row2">
         <div class="fgroup"><label class="flabel">OGRP %</label><input type="number" id="s-ogrp-freezer" placeholder="0" min="0" max="100" inputmode="numeric"></div>
@@ -719,9 +891,14 @@ const SHIFTS = ['night','am','pm'];
 const OVSHIFTS = ['am','pm'];   // shifts whose target can be overridden on the Plan page
 const ZLABEL = { ambient:'Ambient', chill:'Chill', freezer:'Freezer' };
 const SLABEL = { am:'AM', pm:'PM', night:'Night' };
+const IB_ZONES = ['ambient','chill'];   // inbound decants into two chambers; Freezer has none
+const IB_SHIFTS = ['am','pm'];          // inbound has no night shift
+// Inbound works to the end of the shift window. Must match autoShift() and the button labels.
+const IB_WIN = { am:['05:00','13:00'], pm:['13:00','18:00'] };
 
 let selectedShift = 'am';
 let activeFilter = 'all';
+let ibActiveFilter = 'all';
 
 const SETTINGS_V = 2;
 const DEFAULT_SETTINGS = {
@@ -745,15 +922,64 @@ const DEFAULT_PLAN = {
 };
 
 // --- Shared helpers ---
-function toMins(t) { if (!t) return null; const p = t.split(':'); return (+p[0])*60 + (+p[1]); }
-function minsToTime(m) { const h = Math.floor(m/60)%24, mm = Math.round(m%60); return String(h).padStart(2,'0')+':'+String(mm).padStart(2,'0'); }
-function minsTo12(m) {
+// Reads a 24-hour time typed as 05:00, 5:00, 05.00 or 0500 and, once the box is
+// left, as 500 or a bare hour like 5. Returns "HH:MM", or null when the text is
+// not a time (or not one yet).
+function parseHHMM(raw, commit) {
+  let m = /^(\d{1,2})[:.](\d{2})$/.exec(raw) || /^(\d{2})(\d{2})$/.exec(raw);
+  if (!m && commit) m = /^(\d)(\d{2})$/.exec(raw) || /^(\d{1,2})()$/.exec(raw);
+  if (!m) return null;
+  const h = +m[1], mm = m[2] === '' ? 0 : +m[2];
+  if (h > 23 || mm > 59) return null;
+  return String(h).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
+}
+// Takes any form parseHHMM does, so a box read mid-edit (0500) still reads right.
+function toMins(t) {
+  const n = t ? parseHHMM(String(t).trim(), true) : null;
+  if (!n) return null;
+  const p = n.split(':');
+  return (+p[0])*60 + (+p[1]);
+}
+
+// Every time box in the app is a 24-hour text box rather than <input type="time">.
+// A 12-hour time box keeps its AM/PM when only the hours are typed over, so 05:00
+// typed over an afternoon time was saved as 17:00. Here 0500 can only mean 05:00.
+// onTime gets "HH:MM", or null when the box is emptied. Half-typed text is ignored
+// until the box is left, so 050 on the way to 0500 never lands as 00:50. Text
+// that is still not a time then goes to onBad to put back.
+function wireTimeBox(el, onTime, onBad) {
+  el.setAttribute('inputmode', 'numeric');
+  el.maxLength = 5;
+  el.placeholder = 'HH:MM';
+  el.autocomplete = 'off';
+  el.spellcheck = false;
+  const apply = commit => {
+    const raw = el.value.trim();
+    if (raw === '') return onTime(null);
+    const t = parseHHMM(raw, commit);
+    if (t) { if (commit) el.value = t; onTime(t); }
+    else if (commit) onBad();
+  };
+  el.addEventListener('input', () => apply(false));
+  el.addEventListener('change', () => apply(true));
+  el.addEventListener('blur', () => apply(true));
+  // Select on focus, so typing replaces the time the way the old time box did.
+  // Only while it still has focus: select() on a box that has been left pulls
+  // focus back into it, and leaving it again would re-save what it holds.
+  el.addEventListener('focus', () => setTimeout(() => { if (document.activeElement === el) el.select(); }, 0));
+}
+
+// Puts a "not a time" hint on a box's caption after onBad has put the box back.
+function timeHint(subId) {
+  const sub = document.getElementById(subId);
+  sub.className = 'fsub ov';
+  sub.textContent = 'not a time — use 24-hour, e.g. 05:00';
+}
+// 24-hour HH:MM, wrapped to the day. Rounds before splitting, so 299.6 reads
+// 05:00 rather than 04:60.
+function minsToTime(m) {
   const t = ((Math.round(m) % 1440) + 1440) % 1440;
-  const mm = t % 60;
-  let h = Math.floor(t / 60);
-  const ap = h >= 12 ? 'PM' : 'AM';
-  h = h % 12 || 12;
-  return h + ':' + String(mm).padStart(2,'0') + ' ' + ap;
+  return String(Math.floor(t / 60)).padStart(2,'0') + ':' + String(t % 60).padStart(2,'0');
 }
 function minsToHM(mins) { const h = Math.floor(mins/60), m = Math.round(mins%60); return h === 0 ? m+'m' : h+'h '+String(m).padStart(2,'0')+'m'; }
 function now() { const d = new Date(); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
@@ -792,8 +1018,9 @@ function getSettings() {
 function saveSettings() {
   const s = { v: SETTINGS_V, pickout: {} };
   SHIFTS.forEach(sh => { s.pickout[sh] = {}; });
+  // A box mid-edit may read 0500; store it as 05:00.
   SHIFTS.forEach(sh => ZONES.forEach(z => {
-    s.pickout[sh][z] = document.getElementById('s-pickout-'+sh+'-'+z).value || DEFAULT_SETTINGS.pickout[sh][z];
+    s.pickout[sh][z] = parseHHMM(document.getElementById('s-pickout-'+sh+'-'+z).value.trim(), true) || DEFAULT_SETTINGS.pickout[sh][z];
   }));
   ZONES.forEach(z => {
     const og = document.getElementById('s-ogrp-'+z).value;
@@ -1197,6 +1424,8 @@ function saveZoneState(zone) {
   const st = getSettings();
   const s = {};
   Object.keys(FIELD_IDS).forEach(k => { s[k] = fieldEl(k, zone).value; });
+  // The pickout box may still read 0500 mid-edit; store it as 05:00.
+  if (s.pickout) s.pickout = parseHHMM(s.pickout.trim(), true) || '';
   // Only persist the auto-filled fields when they genuinely differ from Settings,
   // so a later Settings change still reaches cells the user never overrode.
   if (s.pickout === st.pickout[selectedShift][zone]) delete s.pickout;
@@ -1229,6 +1458,7 @@ function setShift(shift) {
   loadAllZoneStates();
   refreshPeopleTab();
   refreshPickedTab();
+  refreshInboundTab();
 }
 
 // Current time follows the clock unless the user types over it. The override is
@@ -1249,11 +1479,12 @@ function timeOverride() {
   } catch (e) { return null; }
 }
 
-// The People and Time tabs share one current time, so both controls stay in step.
-// Only the People tab drives the app-wide current time. The Time tab keeps its
-// own, so a what-if there cannot move anything else.
+// The People tab and the Inbound screen share one current time, so both controls
+// stay in step. The Time tab keeps its own, so a what-if there cannot move
+// anything else.
 const TIME_CONTROLS = [
-  { input: 'currenttime', reset: 'timeReset', sub: 'timeSub' }
+  { input: 'currenttime', reset: 'timeReset', sub: 'timeSub' },
+  { input: 'ib-current', reset: 'ibTimeReset', sub: 'ibTimeSub' }
 ];
 
 function syncCurrentTime() {
@@ -1273,6 +1504,7 @@ function clearTimeOverride() {
   syncCurrentTime();
   refreshPeopleTab();
   refreshTimeTab();
+  refreshInboundTab();
 }
 
 // AM 05:00-13:00, PM 13:00-18:00, Night 20:00-05:00. The 18:00-20:00 gap falls
@@ -1301,7 +1533,7 @@ function refreshPeopleTab() {
   const set = (id, v) => { const el = document.getElementById(id); if (el !== active) el.value = v; };
   const txt = (id, v) => { document.getElementById(id).innerHTML = v; };
   const muted = v => '<span class="stmuted">' + v + '</span>';
-  const current = toMins(document.getElementById('currenttime').value);
+  const current = currentMins();
   let anyUnitsOv = false, anyOgrpOv = false, note = '';
 
   ZONES.forEach(z => {
@@ -1428,11 +1660,14 @@ function clearOgrpOverride()  { ZONES.forEach(z => updateCell(selectedShift, z, 
 
 // --- Tab switching ---
 // Settings lives behind the header gear rather than in the tab bar, so remember
-// which tab to come back to.
+// which tab to come back to. Each mode remembers its own last tab.
+const IB_TABS = ['inbound','ibhistory'];
 let lastMainTab = 'plan';
+let lastInboundTab = 'inbound';
 
 function switchTab(tab) {
-  if (tab !== 'settings') lastMainTab = tab;
+  if (IB_TABS.indexOf(tab) !== -1) lastInboundTab = tab;
+  else if (tab !== 'settings') lastMainTab = tab;
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.getElementById(tab).classList.add('active');
@@ -1443,6 +1678,8 @@ function switchTab(tab) {
   if (tab === 'calc')     { syncCurrentTime(); refreshPeopleTab(); }
   if (tab === 'history')  renderHistory();
   if (tab === 'settings') loadSettingsUI();
+  if (tab === 'inbound')  { syncCurrentTime(); refreshInboundTab(); }
+  if (tab === 'ibhistory') renderInboundHistory();
 }
 
 function toggleSettings() {
@@ -1465,6 +1702,8 @@ ZONES.forEach(z => {
   Object.keys(FIELD_IDS).forEach(k => {
     const el = fieldEl(k, z);
     const handler = () => { saveZoneState(z); refreshPeopleTab(); renderPlanOverview(); };
+    // A pickout that is not a time goes back to the one saved.
+    if (k === 'pickout') { wireTimeBox(el, handler, () => { loadZoneState(z); refreshPeopleTab(); }); return; }
     el.addEventListener('input', handler);
     el.addEventListener('change', handler);
   });
@@ -1484,15 +1723,15 @@ ZONES.forEach(z => {
   });
 });
 
-TIME_CONTROLS.forEach(c => ['input','change'].forEach(ev =>
-  document.getElementById(c.input).addEventListener(ev, () => {
-    const el = document.getElementById(c.input);
-    if (el.value) localStorage.setItem('timeOverride', JSON.stringify({ date: todayISO(), value: el.value }));
-    else localStorage.removeItem('timeOverride');
-    syncCurrentTime();
-    refreshPeopleTab();
-    refreshTimeTab();
-  })));
+// Blank follows the clock again. Text that is not a time goes back to what was held.
+TIME_CONTROLS.forEach(c => wireTimeBox(document.getElementById(c.input), t => {
+  if (t) localStorage.setItem('timeOverride', JSON.stringify({ date: todayISO(), value: t }));
+  else localStorage.removeItem('timeOverride');
+  syncCurrentTime();
+  refreshPeopleTab();
+  refreshTimeTab();
+  refreshInboundTab();
+}, () => { syncCurrentTime(); timeHint(c.sub); }));
 
 function refreshAll() {
   loadAllZoneStates();
@@ -1560,7 +1799,8 @@ function refreshTimeTab() {
   const curSub = document.getElementById('trTimeSub');
   curSub.className = st.cur ? 'fsub ov' : 'fsub';
   curSub.textContent = st.cur ? 'what-if — People tab unchanged' : 'following the People tab';
-  const current = toMins(curEl.value);
+  // From what is saved, not the box, which can hold half-typed text.
+  const current = toMins(st.cur || shared);
   let edited = false, anyOverrun = false;
 
   ZONES.forEach(z => {
@@ -1595,7 +1835,7 @@ function refreshTimeTab() {
     const pickoutAbs = pickout === null ? null : current + minsUntil(current, pickout);
     const over = pickoutAbs !== null && finish > pickoutAbs;
     if (over) anyOverrun = true;
-    txt('t-finish-' + z, '<span class="' + (over ? 'delta-crit' : '') + '">' + minsTo12(finish) + '</span>'
+    txt('t-finish-' + z, '<span class="' + (over ? 'delta-crit' : '') + '">' + minsToTime(finish) + '</span>'
       + (finish >= 1440 ? '<span class="stmuted"> +1d</span>' : '')
       + (over ? '<div class="overrun">+' + minsToHM(finish - pickoutAbs) + '</div>' : ''));
   });
@@ -1640,18 +1880,13 @@ ZONES.forEach(z => {
   });
 });
 
-document.getElementById('tr-current').addEventListener('input', function () {
+// Blank goes back to following the People tab's time.
+wireTimeBox(document.getElementById('tr-current'), t => {
   const st = getTrState();
-  st.cur = this.value || null;
+  st.cur = t;
   saveTrState(st);
   refreshTimeTab();
-});
-document.getElementById('tr-current').addEventListener('change', function () {
-  const st = getTrState();
-  st.cur = this.value || null;
-  saveTrState(st);
-  refreshTimeTab();
-});
+}, () => { refreshTimeTab(); timeHint('trTimeSub'); });
 
 // Load each chamber's outstanding units for a chosen shift into the qty row.
 // Uses the same remaining figure the People tab works to, clamped at zero — an
@@ -1683,11 +1918,21 @@ function resetTrForm() {
   refreshTimeTab();
 }
 
+// The time fields every history record carries. savedTs is what sorts; the two
+// strings are for display only.
+function recordStamp(d) {
+  return {
+    savedTs: d.getTime(),
+    savedAt: d.toLocaleString('en-AU', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }),
+    savedDate: d.toLocaleString('en-AU', { day:'2-digit', month:'2-digit', year:'numeric' })
+  };
+}
+
 // Saves one history entry per chamber that has active people entered, so the
 // list is not padded with rows for chambers nobody is working.
 function saveRecord() {
-  const current = toMins(document.getElementById('currenttime').value);
-  const stamp = new Date();
+  const current = currentMins();
+  const stamp = recordStamp(new Date());
   const records = JSON.parse(localStorage.getItem('pickRecords') || '[]');
   let saved = 0, skipped = [];
 
@@ -1701,11 +1946,7 @@ function saveRecord() {
     const hrs = (pickout === null || current === null) ? null : (minsUntil(current, pickout) - breaks) / 60;
     if (!(hrs > 0) || uph <= 0) { skipped.push(ZLABEL[z]); return; }
     const cp = (c.effective / uph) / hrs;
-    records.unshift({
-      id: Date.now() + saved,
-      savedTs: stamp.getTime(),
-      savedAt: stamp.toLocaleString('en-AU', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }),
-      savedDate: stamp.toLocaleString('en-AU', { day:'2-digit', month:'2-digit', year:'numeric' }),
+    records.unshift(Object.assign({ id: Date.now() + saved }, stamp, {
       zone: z,
       shift: selectedShift,
       pickout: minsToTime(pickout),
@@ -1717,7 +1958,7 @@ function saveRecord() {
       calcOgrpPct: c.calcOgrp, predOgrpPct: c.predOgrp,
       timeRemH: hrs, effectiveUnits: c.effective, calcPeople: cp,
       delta: people - Math.ceil(cp)
-    });
+    }));
     saveZoneState(z);
     saved++;
   });
@@ -1861,6 +2102,347 @@ function renderHistory() {
   }).join('');
 }
 
+// --- Inbound ---
+// Decanting to a shift target in Ambient and Chill. Shares the selected shift and
+// the app-wide current time with Pick, and nothing else: it never reads or writes
+// dayPlan, dayProgress or zoneState.
+const IB_CELL = { decanted: 'ib-decanted-', floor: 'ib-floor-', people: 'ib-people-', breaks: 'ib-breaks-' };
+const IB_DEFAULT = { split: { ambient:66, chill:34 }, uph: { ambient:0, chill:0 } };
+
+// The shift Inbound shows. It follows the shared selection, but inbound has no
+// night shift, so while Pick is on Night it falls back to the clock: AM before
+// 13:00, PM from then on.
+function ibShift() {
+  if (IB_SHIFTS.indexOf(selectedShift) !== -1) return selectedShift;
+  return currentMins() < toMins(IB_WIN.pm[0]) ? 'am' : 'pm';
+}
+
+function emptyInboundShift() {
+  const s = { target: 0 };
+  IB_ZONES.forEach(z => { s[z] = { decanted:0, floor:null, people:0, breaks:0 }; });
+  return s;
+}
+
+// The split and UPH carry over day to day; the shift figures are entered fresh
+// each day. Floor stock stays null when blank, so an empty field cannot warn.
+function getInbound() {
+  const ib = JSON.parse(JSON.stringify(IB_DEFAULT));
+  ib.date = todayISO();
+  IB_SHIFTS.forEach(sh => { ib[sh] = emptyInboundShift(); });
+  const raw = localStorage.getItem('inboundState');
+  if (!raw) return ib;
+  let saved; try { saved = JSON.parse(raw); } catch (e) { return ib; }
+  ['split','uph'].forEach(k => IB_ZONES.forEach(z => {
+    if (saved[k] && saved[k][z] !== undefined) ib[k][z] = parseFloat(saved[k][z]) || 0;
+  }));
+  if (saved.date !== todayISO()) return ib;
+  IB_SHIFTS.forEach(sh => {
+    const s = saved[sh];
+    if (!s) return;
+    ib[sh].target = parseFloat(s.target) || 0;
+    IB_ZONES.forEach(z => {
+      const c = s[z];
+      if (!c) return;
+      ib[sh][z].decanted = parseFloat(c.decanted) || 0;
+      ib[sh][z].floor    = (c.floor === null || c.floor === undefined) ? null : (parseFloat(c.floor) || 0);
+      ib[sh][z].people   = parseFloat(c.people) || 0;
+      ib[sh][z].breaks   = parseFloat(c.breaks) || 0;
+    });
+  });
+  return ib;
+}
+
+function writeInbound(mutate) {
+  const ib = getInbound();
+  mutate(ib);
+  ib.date = todayISO();
+  localStorage.setItem('inboundState', JSON.stringify(ib));
+  refreshInboundTab();
+}
+
+// Single source of truth for every inbound figure on a shift x chamber.
+function computeInbound(shift, zone) {
+  const ib = getInbound();
+  const cell = ib[shift][zone];
+  const uph = ib.uph[zone] || 0;
+  const splitPct = ib.split[zone] || 0;
+  const target = ib[shift].target * splitPct / 100;
+  // Signed for display; remaining stays clamped because it drives the staffing.
+  const variance = target - cell.decanted;
+  const remaining = Math.max(0, variance);
+  // Works to the end of the shift. Before the shift starts, count the whole
+  // shift rather than the wait for it.
+  const start = toMins(IB_WIN[shift][0]), end = toMins(IB_WIN[shift][1]);
+  const mins = Math.min(minsUntil(currentMins(), end), minsUntil(start, end));
+  const hrs = (mins - cell.breaks) / 60;
+  const live = hrs > 0;
+  const needed = live && uph > 0 ? remaining / (uph * hrs) : null;
+  // What the people on it now will get through by the end of the shift.
+  const willDecant = live ? cell.people * uph * hrs : 0;
+  const forecast = cell.decanted + willDecant;
+  return {
+    shiftTarget: ib[shift].target, splitPct, target,
+    decanted: cell.decanted, floor: cell.floor, people: cell.people, breaks: cell.breaks, uph,
+    // minsLeft is before breaks, so a caller can tell a shift that has ended from
+    // one where breaks take up the time that is left.
+    variance, remaining, minsLeft: mins, hrs, expired: !live, needed,
+    delta: needed !== null && cell.people > 0 ? cell.people - Math.ceil(needed) : null,
+    willDecant, forecast, gap: forecast - target,
+    // The floor only warns; it never changes the people needed.
+    floorShort: cell.floor === null ? 0 : Math.max(0, remaining - cell.floor),
+    hasTarget: target > 0
+  };
+}
+
+function refreshInboundTab() {
+  const ib = getInbound();
+  const shift = ibShift();
+  const sh = ib[shift];
+  const activeEl = document.activeElement;
+  const set = (id, v) => { const el = document.getElementById(id); if (el !== activeEl) el.value = v; };
+  const txt = (id, v) => { document.getElementById(id).innerHTML = v; };
+  const muted = v => '<span class="stmuted">' + v + '</span>';
+  const dash = muted('—');
+  const signed = n => '<span class="' + (Math.round(n) < 0 ? 'delta-crit' : '') + '">'
+    + (Math.round(n) > 0 ? '+' : '') + fmt(n) + '</span>';
+  const deltaHtml = d => { const info = getDeltaInfo(d); return '<span class="delta-' + info.cls + '">' + formatDelta(d) + '</span>'; };
+
+  IB_SHIFTS.forEach(s => { document.getElementById('ib-shift-' + s).className = 'sbtn' + (s === shift ? ' on' : ''); });
+  set('ib-target', sh.target || '');
+  document.getElementById('ibEndSub').textContent = 'shift ends ' + IB_WIN[shift][1];
+
+  // Sum what is displayed, so the Total column always adds up on screen.
+  const sum = { target:0, decanted:0, rem:0, needed:0, active:0, delta:0, will:0, forecast:0, gap:0 };
+  const any = { needed:false, delta:false, will:false };
+  let allForecast = true, anyTarget = false, shiftOver = false;
+  const floorLines = [], squeezed = [], noUph = [], noPeople = [];
+
+  IB_ZONES.forEach(z => {
+    set('ib-split-' + z, ib.split[z]);
+    set('ib-uph-' + z, ib.uph[z] || '');
+    set('ib-decanted-' + z, sh[z].decanted || '');
+    set('ib-floor-' + z, sh[z].floor === null ? '' : sh[z].floor);
+    set('ib-people-' + z, sh[z].people || '');
+    set('ib-breaks-' + z, sh[z].breaks || '');
+
+    const c = computeInbound(shift, z);
+    anyTarget = anyTarget || c.hasTarget;
+    // With no working time left, say why in the cells that cannot be worked out:
+    // the shift is over, or the breaks still entered use up what is left of it.
+    const stop = !c.expired ? null : c.minsLeft <= 0 ? 'past' : 'no time';
+    if (stop === 'past') shiftOver = true;
+    if (stop === 'no time') squeezed.push(ZLABEL[z]);
+    if (c.hasTarget && !stop && !(c.uph > 0)) noUph.push(ZLABEL[z]);
+    if (c.hasTarget && !stop && !(c.people > 0)) noPeople.push(ZLABEL[z]);
+    const blank = stop ? muted(stop) : dash;
+    txt('ib-timerem-' + z, stop ? muted(stop) : c.hrs.toFixed(2) + 'h');
+
+    txt('ib-r-target-' + z, c.hasTarget ? fmt(c.target) : dash);
+    txt('ib-r-decanted-' + z, fmt(c.decanted));
+    txt('ib-r-rem-' + z, c.hasTarget ? fmt(c.variance) : dash);
+    sum.decanted += Math.round(c.decanted);
+    if (c.hasTarget) { sum.target += Math.round(c.target); sum.rem += Math.round(c.variance); }
+
+    const showNeeded = c.hasTarget && c.needed !== null;
+    txt('ib-r-needed-' + z, showNeeded ? c.needed.toFixed(2) : blank);
+    if (showNeeded) { sum.needed += c.needed; any.needed = true; }
+
+    txt('ib-r-active-' + z, c.people > 0 ? fmt(c.people) : dash);
+    sum.active += c.people;
+
+    const showDelta = c.hasTarget && c.delta !== null;
+    txt('ib-r-delta-' + z, showDelta ? deltaHtml(c.delta) : blank);
+    if (showDelta) { sum.delta += c.delta; any.delta = true; }
+
+    // A forecast needs a rate and a headcount, unless the shift is over, when it
+    // is simply what was decanted.
+    const showWill = !c.expired && c.uph > 0 && c.people > 0;
+    const showForecast = c.hasTarget && (c.expired || showWill);
+    txt('ib-r-will-' + z, showWill ? fmt(c.willDecant) : blank);
+    txt('ib-r-forecast-' + z, showForecast ? fmt(c.forecast) : dash);
+    txt('ib-r-gap-' + z, showForecast ? signed(c.gap) : dash);
+    if (showWill) { sum.will += Math.round(c.willDecant); any.will = true; }
+    if (showForecast) { sum.forecast += Math.round(c.forecast); sum.gap += Math.round(c.forecast) - Math.round(c.target); }
+    else allForecast = false;
+
+    if (c.hasTarget && c.floorShort >= 1) {
+      floorLines.push(ZLABEL[z] + ' floor stock is ' + fmt(c.floorShort) + ' short of what it still needs to reach target.');
+    }
+  });
+
+  txt('ib-r-target-total', anyTarget ? fmt(sum.target) : dash);
+  txt('ib-r-decanted-total', fmt(sum.decanted));
+  txt('ib-r-rem-total', anyTarget ? fmt(sum.rem) : dash);
+  txt('ib-r-needed-total', any.needed ? sum.needed.toFixed(2) : dash);
+  txt('ib-r-active-total', sum.active > 0 ? fmt(sum.active) : dash);
+  txt('ib-r-delta-total', any.delta ? deltaHtml(sum.delta) : dash);
+  txt('ib-r-will-total', any.will ? fmt(sum.will) : dash);
+  // A part-forecast total would read as the whole shift, so it needs every chamber.
+  txt('ib-r-forecast-total', allForecast ? fmt(sum.forecast) : dash);
+  txt('ib-r-gap-total', allForecast ? signed(sum.gap) : dash);
+
+  const splitSum = IB_ZONES.reduce((t, z) => t + ib.split[z], 0);
+  document.getElementById('ibSplitWarn').textContent =
+    Math.abs(splitSum - 100) < 0.01 ? '' : 'Split is ' + splitSum + '% — should total 100%.';
+
+  // Say what is stopping a figure from showing, and what to change.
+  const both = list => list.join(' and ');
+  const notes = [];
+  if (!(sh.target > 0)) notes.push('Enter a shift target to start.');
+  if (shiftOver) {
+    const held = timeOverride();
+    const fix = [held ? 'press “use now” to follow the clock (held at ' + held + ')' : null,
+                 shift === 'am' ? 'pick PM' : null].filter(Boolean).join(', or ');
+    notes.push('The ' + SLABEL[shift] + ' shift ended at ' + IB_WIN[shift][1]
+      + ', so there is no time left to staff or forecast' + (fix ? ' — ' + fix : '') + '.');
+  }
+  if (squeezed.length) notes.push('Breaks take up all the time left before ' + IB_WIN[shift][1] + ' in '
+    + both(squeezed) + ' — enter only the breaks still to be taken.');
+  if (noUph.length) notes.push('Enter UPH for ' + both(noUph) + ' to work out the people needed.');
+  if (noPeople.length) notes.push('Enter active people for ' + both(noPeople) + ' to forecast.');
+  floorLines.forEach(l => notes.push('<span class="delta-crit">' + l + '</span>'));
+  document.getElementById('ibNote').innerHTML = notes.join('<br>');
+}
+
+const ibTargetEl = document.getElementById('ib-target');
+['input','change'].forEach(ev => ibTargetEl.addEventListener(ev, () => {
+  const v = parseFloat(ibTargetEl.value) || 0;
+  writeInbound(ib => { ib[ibShift()].target = v; });
+}));
+ibTargetEl.addEventListener('blur', refreshInboundTab);
+
+IB_ZONES.forEach(z => {
+  // Split and UPH are kept across shifts and days; the rest belong to the shift.
+  ['split','uph'].forEach(k => {
+    const el = document.getElementById('ib-' + k + '-' + z);
+    const handler = () => writeInbound(ib => { ib[k][z] = parseFloat(el.value) || 0; });
+    el.addEventListener('input', handler);
+    el.addEventListener('change', handler);
+    el.addEventListener('blur', refreshInboundTab);
+  });
+  Object.keys(IB_CELL).forEach(k => {
+    const el = document.getElementById(IB_CELL[k] + z);
+    const handler = () => writeInbound(ib => {
+      ib[ibShift()][z][k] = k === 'floor' ? numOrNull(el) : (parseFloat(el.value) || 0);
+    });
+    el.addEventListener('input', handler);
+    el.addEventListener('change', handler);
+    el.addEventListener('blur', refreshInboundTab);
+  });
+});
+
+// Clears this shift's figures; the split and UPH are kept.
+function resetInbound() {
+  writeInbound(ib => { ib[ibShift()] = emptyInboundShift(); });
+}
+
+// One history entry per chamber, skipping any with nobody on it or nothing left
+// to calculate, the same as the pick Save record.
+function saveInboundRecord() {
+  const stamp = recordStamp(new Date());
+  const current = minsToTime(currentMins());
+  const records = JSON.parse(localStorage.getItem('inboundRecords') || '[]');
+  const shift = ibShift();
+  let saved = 0;
+  const skipped = [];
+
+  IB_ZONES.forEach(z => {
+    const c = computeInbound(shift, z);
+    if (!c.hasTarget || !(c.people > 0) || c.needed === null) { skipped.push(ZLABEL[z]); return; }
+    records.unshift(Object.assign({ id: Date.now() + saved }, stamp, {
+      zone: z, shift: shift, current: current, end: IB_WIN[shift][1],
+      shiftTarget: c.shiftTarget, splitPct: c.splitPct, target: c.target,
+      decanted: c.decanted, remaining: c.remaining, floor: c.floor,
+      uph: c.uph, breaks: c.breaks, people: c.people, timeRemH: c.hrs,
+      needed: c.needed, delta: c.delta, willDecant: c.willDecant, forecast: c.forecast, gap: c.gap
+    }));
+    saved++;
+  });
+
+  if (!saved) { alert('Nothing to save — enter a shift target, active people, UPH and a shift that has not ended yet.'); return; }
+  localStorage.setItem('inboundRecords', JSON.stringify(records));
+  if (skipped.length) alert('Saved ' + saved + ' of ' + IB_ZONES.length + ' chambers. Skipped: ' + skipped.join(', ') + '.');
+  switchTab('ibhistory');
+}
+
+function setIbFilter(f) {
+  ibActiveFilter = f;
+  ['all'].concat(IB_ZONES).forEach(x => {
+    const cls = x === 'all' ? 'fall' : x === 'ambient' ? 'famb' : 'fchi';
+    document.getElementById('ibfilter-' + x).className = 'fbtn' + (x === f ? ' ' + cls : '');
+  });
+  renderInboundHistory();
+}
+
+function deleteInboundRecord(id) {
+  if (!confirm('Delete this record?')) return;
+  const records = JSON.parse(localStorage.getItem('inboundRecords') || '[]').filter(r => r.id !== id);
+  localStorage.setItem('inboundRecords', JSON.stringify(records));
+  renderInboundHistory();
+}
+
+function clearInboundHistory() {
+  if (!confirm('Clear all inbound history? This cannot be undone.')) return;
+  localStorage.removeItem('inboundRecords');
+  renderInboundHistory();
+}
+
+function renderInboundHistory() {
+  let records = JSON.parse(localStorage.getItem('inboundRecords') || '[]');
+  if (ibActiveFilter !== 'all') records = records.filter(r => r.zone === ibActiveFilter);
+  // Newest first; records saved together share a timestamp, so id keeps chamber order.
+  records.sort((a, b) => recordSortKey(b) - recordSortKey(a) || (a.id || 0) - (b.id || 0));
+  const el = document.getElementById('ibHistoryList');
+  if (!records.length) {
+    el.innerHTML = '<div class="hempty">No saved records' + (ibActiveFilter !== 'all' ? ' for ' + ibActiveFilter : '') + '.</div>';
+    return;
+  }
+  const num = x => (x === undefined || x === null) ? '—' : fmt(x);
+  const signed = x => (x === undefined || x === null) ? '—' : (Math.round(x) > 0 ? '+' : '') + fmt(x);
+  const col = (label, val, cls) => '<div class="hgcol"><div class="hglabel">' + label + '</div>'
+    + '<div class="hgval' + (cls ? ' ' + cls : '') + '">' + val + '</div></div>';
+
+  el.innerHTML = records.map(r => {
+    const delta = r.delta === undefined ? null : r.delta;
+    const info = getDeltaInfo(delta);
+    const deltaDisplay = delta !== null ? formatDelta(delta) + ' (' + info.label + ')' : '—';
+    return '<div class="hitem">'
+      + '<div class="hhead">'
+      + '<div class="hdate">' + r.savedDate + ' ' + r.current
+      + '<span class="zbadge ' + r.zone + '">' + (ZLABEL[r.zone] || r.zone) + '</span>'
+      + '<span class="sbadge">' + (SLABEL[r.shift] || r.shift) + '</span></div>'
+      + '<button onclick="deleteInboundRecord(' + r.id + ')" style="font-size:10px;color:#999;background:none;border:none;cursor:pointer;white-space:nowrap;margin-left:6px;">delete</button>'
+      + '</div>'
+      + '<div class="hgrid hgrid-3e">' + col('Target', num(r.target)) + col('Decanted', num(r.decanted)) + col('Rem units', num(r.remaining)) + '</div>'
+      + '<div class="hgrid hgrid-4">' + col('Floor', num(r.floor)) + col('UPH', num(r.uph))
+      + col('Breaks', (r.breaks || 0) + 'm') + col('Time rem', parseFloat(r.timeRemH).toFixed(2)) + '</div>'
+      + '<div class="hgrid hgrid-3e">' + col('Will decant', num(r.willDecant)) + col('Forecast', num(r.forecast))
+      + col('vs target', signed(r.gap), Math.round(r.gap) < 0 ? 'delta-crit' : '') + '</div>'
+      + '<div class="hgrid hgrid-3">' + col('Active', r.people || '—') + col('Calc', parseFloat(r.needed).toFixed(2))
+      + col('Delta', deltaDisplay, 'delta-' + info.cls) + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+// --- Mode ---
+// Pick and Inbound share the selected shift and the clock; each keeps its own
+// tabs. The mode is remembered between visits.
+function getMode() { return localStorage.getItem('appMode') === 'inbound' ? 'inbound' : 'pick'; }
+
+function setMode(mode) {
+  localStorage.setItem('appMode', mode);
+  applyMode(mode);
+}
+
+function applyMode(mode) {
+  const inbound = mode === 'inbound';
+  document.querySelector('.app').classList.toggle('inbound', inbound);
+  ['pick','inbound'].forEach(m => document.getElementById('mode-' + m).classList.toggle('on', m === mode));
+  document.getElementById('appTitle').textContent = inbound ? 'Inbound calculator' : 'Pick calculator';
+  document.title = inbound ? 'Inbound Calculator' : 'Pick Calculator';
+  switchTab(inbound ? lastInboundTab : lastMainTab);
+}
+
 // --- Boot ---
 syncCurrentTime();
 loadPlanUI();
@@ -1869,11 +2451,11 @@ renderPlanOverview();
 renderPlanWarnings();
 applyPlanSub();
 refreshTimeTab();
+applyMode(getMode());
 
+// A pickout that is not a time goes back to the one saved; blank uses the default.
 SHIFTS.forEach(sh => ZONES.forEach(z => {
-  const el = document.getElementById('s-pickout-' + sh + '-' + z);
-  el.addEventListener('input', saveSettings);
-  el.addEventListener('change', saveSettings);
+  wireTimeBox(document.getElementById('s-pickout-' + sh + '-' + z), saveSettings, loadSettingsUI);
 }));
 ZONES.forEach(z => ['s-ogrp-' + z, 's-uph-' + z].forEach(id => {
   const el = document.getElementById(id);

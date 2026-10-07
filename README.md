@@ -39,6 +39,26 @@ its share means the forecast was low, so the next shift's target is left alone.
 the header) and auto-fill on the People tab, where you can override them for the
 day.
 
+## Inbound mode
+
+The **Pick | Inbound** switch in the header changes mode, and the app remembers
+the choice. Inbound plans decanting into Ambient and Chill over the **AM and PM
+shifts only**, and hides everything pick-related. It shares only the selected
+shift and the current time with Pick. While Pick is on Night, Inbound shows AM
+before 13:00 and PM after.
+
+1. **Decant tab** — enter the shift's target units and how they split between
+   Ambient and Chill. For each chamber, enter the units decanted so far, the stock
+   on the floor, UPH, breaks and active people. It works to the end of the shift
+   (AM 13:00, PM 18:00) and shows the people needed to reach target,
+   the delta against active people, the units the current staff will decant by
+   the end of the shift, and the forecast against target. When the floor holds
+   less than a chamber still needs, a warning appears. Floor stock never changes
+   the people needed.
+2. **History tab** — **Save record** on the Decant tab stores one snapshot per
+   chamber. History is kept separate from pick history and has its own clear
+   button.
+
 ## Files
 
 - `index.html` — the app
@@ -73,9 +93,9 @@ Quick option: generate free icons at https://favicon.io or https://realfaviconge
 - All data is stored in localStorage on the device — no server, no account, no
   sync. It is per-browser, so a phone and a laptop keep separate data, and
   clearing site data wipes it including history.
-- Plan totals, picked quantities and the Time tab's scratch figures are
-  date-stamped and reset each day. Percentages, pickout times and the per-chamber
-  OGRP/UPH defaults carry over.
+- Plan totals, picked quantities, the Time tab's scratch figures and the Inbound
+  shift figures are date-stamped and reset each day. Percentages, pickout times,
+  the per-chamber OGRP/UPH defaults, and the Inbound split and UPH carry over.
 - The service worker enables offline use. The page itself is fetched
   network-first, so a new build always wins when online.
 - Dark mode is supported automatically
