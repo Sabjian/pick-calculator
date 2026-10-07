@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#3949AB">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Pick Calc">
@@ -14,17 +14,21 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f3; min-height: 100vh; color: #1a1a1a; }
 .app { max-width: 480px; margin: 0 auto; padding: 0 0 80px 0; }
-.header { background: #fff; border-bottom: 0.5px solid rgba(0,0,0,0.12); padding: 16px 20px 12px; position: sticky; top: 0; z-index: 10; }
-.header h1 { font-size: 18px; font-weight: 500; letter-spacing: -0.3px; }
-.header p { font-size: 12px; color: #666; margin-top: 2px; }
+/* The header is coloured by mode, so which one you are in shows at a glance. Kept
+   clear of the chamber colours (orange, blue, green) and of warning red. */
+.app { --hdr: #3949AB; }
+.app.inbound { --hdr: #8A3D8F; }
+.header { background: var(--hdr); border-bottom: 0.5px solid rgba(0,0,0,0.12); padding: 16px 20px 12px; position: sticky; top: 0; z-index: 10; }
+.header h1 { font-size: 18px; font-weight: 500; letter-spacing: -0.3px; color: #fff; }
+.header p { font-size: 12px; color: rgba(255,255,255,0.78); margin-top: 2px; }
 .header-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
-.gear { background: none; border: none; cursor: pointer; padding: 5px; color: #666; line-height: 0; border-radius: 8px; flex: none; }
+.gear { background: none; border: none; cursor: pointer; padding: 5px; color: rgba(255,255,255,0.85); line-height: 0; border-radius: 8px; flex: none; }
 .gear svg { width: 22px; height: 22px; display: block; }
-.gear.on { color: #1a1a1a; background: rgba(0,0,0,0.07); }
+.gear.on { color: #fff; background: rgba(255,255,255,0.18); }
 .hdr-right { display: flex; align-items: center; gap: 6px; flex: none; }
-.modesel { display: flex; gap: 2px; padding: 2px; border: 0.5px solid rgba(0,0,0,0.25); border-radius: 8px; }
-.mbtn { font-size: 12px; font-weight: 500; padding: 5px 10px; border: none; border-radius: 6px; background: transparent; color: #666; cursor: pointer; }
-.mbtn.on { background: #1a1a1a; color: #fff; }
+.modesel { display: flex; gap: 2px; padding: 2px; border: 0.5px solid rgba(255,255,255,0.45); border-radius: 8px; }
+.mbtn { font-size: 12px; font-weight: 500; padding: 5px 10px; border: none; border-radius: 6px; background: transparent; color: rgba(255,255,255,0.8); cursor: pointer; }
+.mbtn.on { background: #fff; color: var(--hdr); }
 .app.inbound #gearBtn { display: none; }
 .app.inbound .tab[data-mode=pick], .app:not(.inbound) .tab[data-mode=inbound] { display: none; }
 .tabs { display: flex; gap: 3px; padding: 12px 20px 0; }
@@ -125,6 +129,19 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .zname.chill   { color: #185FA5; }
 .zname.freezer { color: #0F6E56; }
 .zname.total   { color: #666; }
+.splitbox { margin-bottom: 14px; }
+.splitbox .flabel-row { align-items: center; margin-bottom: 2px; }
+.splitbox .zname { font-size: 13px; }
+/* The input is tall so the thumb is easy to catch on a phone; the 10px track is
+   drawn inside it, Ambient up to the thumb and Chill after (--amb is set in JS). */
+.splitrange { -webkit-appearance: none; appearance: none; display: block; width: 100%; height: 30px; margin: 0; background: transparent; cursor: pointer; }
+.splitrange:focus { outline: none; }
+.splitrange::-webkit-slider-runnable-track { height: 10px; border-radius: 5px; background: linear-gradient(to right, #EF9F27 var(--amb, 50%), #378ADD var(--amb, 50%)); }
+.splitrange::-moz-range-track { height: 10px; border-radius: 5px; background: linear-gradient(to right, #EF9F27 var(--amb, 50%), #378ADD var(--amb, 50%)); }
+.splitrange::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 26px; height: 26px; margin-top: -8px; border-radius: 50%; background: #fff; border: 0.5px solid rgba(0,0,0,0.3); box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+.splitrange::-moz-range-thumb { width: 26px; height: 26px; border-radius: 50%; background: #fff; border: 0.5px solid rgba(0,0,0,0.3); box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+.splitrange:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px rgba(0,0,0,0.15); }
+.splitrange:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px rgba(0,0,0,0.15); }
 .stitle { font-size: 13px; font-weight: 600; color: #1a1a1a; }
 .stbl { width: 100%; border-collapse: collapse; table-layout: fixed; }
 .stbl th:first-child, .stbl td:first-child { width: 22%; }
@@ -135,6 +152,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .stbl tbody tr + tr td { border-top: 0.5px solid rgba(0,0,0,0.08); }
 .stbl .totcol { font-weight: 600; }
 .stmuted { color: #999; font-size: 10px; }
+.stbl.htbl th:first-child, .stbl.htbl td:first-child { width: 36%; }
 .overrun { font-size: 9px; font-weight: 600; color: #c0392b; margin-top: 2px; }
 .slegend { font-size: 11px; color: #666; line-height: 1.5; padding: 0 2px; }
 .slegend b { color: #1a1a1a; font-weight: 600; }
@@ -184,11 +202,18 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .settings-zone-label.freezer { background: #E1F5EE; color: #0F6E56; }
 .settings-zone-label.shift   { background: #e6e6e1; color: #555; }
 .settings-hint { font-size: 12px; color: #999; margin-bottom: 16px; }
+.dlg { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 20px; background: rgba(0,0,0,0.45); }
+.dlg[hidden] { display: none; }
+.dlgbox { width: 100%; max-width: 340px; background: #fff; border-radius: 12px; padding: 18px; box-shadow: 0 8px 30px rgba(0,0,0,0.25); }
+.dlgbox p { font-size: 14px; line-height: 1.45; color: #1a1a1a; margin-bottom: 14px; }
 @media (prefers-color-scheme: dark) {
   body { background: #1a1a1a; color: #f0f0f0; }
-  .header { background: #242424; border-color: rgba(255,255,255,0.1); }
+  .app { --hdr: #2B3576; }
+  .app.inbound { --hdr: #5E2A63; }
+  .header { border-color: rgba(255,255,255,0.1); }
   .header h1 { color: #f0f0f0; }
-  .header p, .flabel { color: #999; }
+  .header p { color: rgba(240,240,240,0.72); }
+  .flabel { color: #999; }
   .tab { border-color: rgba(255,255,255,0.2); color: #999; }
   .tab.active { background: #2e2e2e; color: #f0f0f0; border-color: rgba(255,255,255,0.4); }
   .fgroup input { background: #242424; border-color: rgba(255,255,255,0.2); color: #f0f0f0; }
@@ -206,11 +231,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   .mlabel, .tslabel, .carry { color: #999; }
   .mval, .tsval { color: #f0f0f0; }
   .tscol + .tscol, .tsrow + .tsrow { border-color: rgba(255,255,255,0.1); }
-  .gear { color: #999; }
-  .gear.on { color: #f0f0f0; background: rgba(255,255,255,0.12); }
-  .modesel { border-color: rgba(255,255,255,0.2); }
-  .mbtn { color: #999; }
-  .mbtn.on { background: #f0f0f0; color: #1a1a1a; }
+  .gear { color: rgba(240,240,240,0.8); }
+  .gear.on { color: #f0f0f0; background: rgba(255,255,255,0.16); }
+  .modesel { border-color: rgba(255,255,255,0.35); }
+  .mbtn { color: rgba(240,240,240,0.75); }
+  .mbtn.on { background: #f0f0f0; color: var(--hdr); }
   .btn { border-color: rgba(255,255,255,0.2); color: #f0f0f0; }
   .btn.primary { background: #f0f0f0; color: #1a1a1a; }
   .fbtn { border-color: rgba(255,255,255,0.2); color: #999; }
@@ -230,6 +255,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   .zname.chill   { color: #6BB0EE; }
   .zname.freezer { color: #2FBF8F; }
   .zname.total   { color: #999; }
+  .splitrange::-webkit-slider-thumb { background: #f0f0f0; border-color: rgba(255,255,255,0.3); box-shadow: 0 1px 3px rgba(0,0,0,0.6); }
+  .splitrange::-moz-range-thumb { background: #f0f0f0; border-color: rgba(255,255,255,0.3); box-shadow: 0 1px 3px rgba(0,0,0,0.6); }
+  .splitrange:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px rgba(255,255,255,0.25); }
+  .splitrange:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px rgba(255,255,255,0.25); }
   .stitle { color: #f0f0f0; }
   .stbl th, .stbl th:first-child, .stbl td:first-child, .slegend { color: #999; }
   .stbl tbody td, .slegend b { color: #f0f0f0; }
@@ -248,6 +277,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   .divider { border-color: rgba(255,255,255,0.1); }
   .hempty { color: #999; }
   .settings-hint { color: #666; }
+  .dlgbox { background: #242424; box-shadow: 0 8px 30px rgba(0,0,0,0.6); }
+  .dlgbox p { color: #f0f0f0; }
 }
 </style>
 </head>
@@ -683,6 +714,24 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
       </div>
     </div>
 
+    <div class="splitbox">
+      <div class="flabel-row">
+        <span class="zname ambient" id="ibSplitAmb">Ambient</span>
+        <label class="flabel" for="ib-split">Split</label>
+        <span class="zname chill" id="ibSplitChl">Chill</span>
+      </div>
+      <input type="range" class="splitrange" id="ib-split" min="0" max="100" step="1">
+    </div>
+
+    <div class="row2">
+      <div class="fgroup">
+        <label class="flabel" for="ib-people-total">Total people</label>
+        <input type="number" id="ib-people-total" placeholder="0" min="0" step="1" inputmode="numeric">
+        <div class="fsub">shared out by the split</div>
+      </div>
+      <div></div>
+    </div>
+
     <table class="ptbl">
       <thead>
         <tr>
@@ -698,11 +747,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
           <td><span class="dval sm" id="ib-timerem-chill">&mdash;</span></td>
         </tr>
         <tr>
-          <td class="rlab">Split %</td>
-          <td><input type="number" id="ib-split-ambient" placeholder="0" min="0" max="100" inputmode="numeric"></td>
-          <td><input type="number" id="ib-split-chill" placeholder="0" min="0" max="100" inputmode="numeric"></td>
-        </tr>
-        <tr>
           <td class="rlab">Decanted so far</td>
           <td><input type="number" id="ib-decanted-ambient" placeholder="0" min="0" inputmode="numeric"></td>
           <td><input type="number" id="ib-decanted-chill" placeholder="0" min="0" inputmode="numeric"></td>
@@ -711,6 +755,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
           <td class="rlab">Floor stock</td>
           <td><input type="number" id="ib-floor-ambient" placeholder="0" min="0" inputmode="numeric"></td>
           <td><input type="number" id="ib-floor-chill" placeholder="0" min="0" inputmode="numeric"></td>
+        </tr>
+        <tr>
+          <td class="rlab">Incoming stock</td>
+          <td><input type="number" id="ib-incoming-ambient" placeholder="0" min="0" inputmode="numeric"></td>
+          <td><input type="number" id="ib-incoming-chill" placeholder="0" min="0" inputmode="numeric"></td>
         </tr>
         <tr>
           <td class="rlab">UPH</td>
@@ -796,6 +845,18 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
             <td id="ib-r-gap-chill">&mdash;</td>
             <td class="totcol" id="ib-r-gap-total">&mdash;</td>
           </tr>
+          <tr>
+            <td>Floor at target</td>
+            <td id="ib-r-floortgt-ambient">&mdash;</td>
+            <td id="ib-r-floortgt-chill">&mdash;</td>
+            <td class="totcol" id="ib-r-floortgt-total">&mdash;</td>
+          </tr>
+          <tr>
+            <td>Floor at end</td>
+            <td id="ib-r-floorend-ambient">&mdash;</td>
+            <td id="ib-r-floorend-chill">&mdash;</td>
+            <td class="totcol" id="ib-r-floorend-total">&mdash;</td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -809,11 +870,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
   <!-- Inbound history -->
   <div id="ibhistory" class="section">
-    <div class="filter-bar">
-      <button class="fbtn fall" id="ibfilter-all" onclick="setIbFilter('all')">All</button>
-      <button class="fbtn" id="ibfilter-ambient" onclick="setIbFilter('ambient')">Ambient</button>
-      <button class="fbtn" id="ibfilter-chill" onclick="setIbFilter('chill')">Chill</button>
-    </div>
     <div id="ibHistoryList"></div>
     <hr class="divider">
     <div class="btnrow">
@@ -885,6 +941,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   </div>
 </div>
 
+<!-- In-page confirm / notice, used instead of confirm() and alert() -->
+<div id="dlg" class="dlg" hidden>
+  <div class="dlgbox" role="dialog" aria-modal="true" aria-labelledby="dlgMsg">
+    <p id="dlgMsg"></p>
+    <div class="btnrow">
+      <button class="btn" id="dlgCancel">Cancel</button>
+      <button class="btn primary" id="dlgOk">OK</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const ZONES  = ['ambient','chill','freezer'];
 const SHIFTS = ['night','am','pm'];
@@ -898,7 +965,6 @@ const IB_WIN = { am:['05:00','13:00'], pm:['13:00','18:00'] };
 
 let selectedShift = 'am';
 let activeFilter = 'all';
-let ibActiveFilter = 'all';
 
 const SETTINGS_V = 2;
 const DEFAULT_SETTINGS = {
@@ -1005,6 +1071,36 @@ function workdayOf(d) {
 function workdayISO() { return workdayOf(new Date()); }
 function fmt(n) { return Math.round(n).toLocaleString(); }
 function numOrNull(el) { const v = el.value.trim(); return v === '' ? null : (isNaN(parseFloat(v)) ? null : parseFloat(v)); }
+
+// In-page stand-ins for confirm() and alert(). Some browsers, the desktop app's
+// preview pane among them, dismiss native dialogs without showing them: confirm()
+// came straight back false, so Clear inbound history silently did nothing and
+// messages like "Nothing to save" were never seen. These cannot block the way
+// confirm() did, so the action to take goes in as onYes.
+function askConfirm(message, okLabel, onYes) { openDialog(message, okLabel, onYes); }
+function showNotice(message) { openDialog(message, 'OK', null); }
+function openDialog(message, okLabel, onYes) {
+  const dlg = document.getElementById('dlg');
+  const ok = document.getElementById('dlgOk'), cancel = document.getElementById('dlgCancel');
+  const asking = typeof onYes === 'function';
+  document.getElementById('dlgMsg').textContent = message;
+  ok.textContent = okLabel;
+  ok.className = 'btn ' + (asking ? 'danger' : 'primary');   // every question guards something destructive
+  cancel.style.display = asking ? '' : 'none';
+  const close = () => {
+    dlg.hidden = true;
+    ok.onclick = cancel.onclick = dlg.onclick = null;
+    document.removeEventListener('keydown', onKey);
+  };
+  const onKey = e => { if (e.key === 'Escape') close(); };
+  ok.onclick = () => { close(); if (asking) onYes(); };
+  cancel.onclick = close;
+  dlg.onclick = e => { if (e.target === dlg) close(); };   // tapping outside cancels
+  document.addEventListener('keydown', onKey);
+  dlg.hidden = false;
+  // Start on Cancel for a question, so a stray Enter cannot clear anything.
+  (asking ? cancel : ok).focus();
+}
 
 // --- Settings ---
 function getSettings() {
@@ -1979,9 +2075,9 @@ function saveRecord() {
     saved++;
   });
 
-  if (!saved) { alert('Nothing to save — enter active people, UPH and a pickout still ahead of the current time.'); return; }
+  if (!saved) { showNotice('Nothing to save — enter active people, UPH and a pickout still ahead of the current time.'); return; }
   localStorage.setItem('pickRecords', JSON.stringify(records));
-  if (skipped.length) alert('Saved ' + saved + ' of 3 chambers. Skipped: ' + skipped.join(', ') + '.');
+  if (skipped.length) showNotice('Saved ' + saved + ' of 3 chambers. Skipped: ' + skipped.join(', ') + '.');
   switchTab('history');
 }
 
@@ -2000,28 +2096,31 @@ function resetForm() {
 }
 
 function resetDay() {
-  if (!confirm("Reset today's daily total and all picked progress? Percentages and settings are kept.")) return;
-  localStorage.removeItem('dayProgress');
-  writePlan(p => {
-    ZONES.forEach(z => { p.chamberTotal[z] = 0; });
-    OVSHIFTS.forEach(sh => ZONES.forEach(z => { p.targetOv[sh][z] = null; }));
+  askConfirm("Reset today's daily total and all picked progress? Percentages and settings are kept.", 'Reset', () => {
+    localStorage.removeItem('dayProgress');
+    writePlan(p => {
+      ZONES.forEach(z => { p.chamberTotal[z] = 0; });
+      OVSHIFTS.forEach(sh => ZONES.forEach(z => { p.targetOv[sh][z] = null; }));
+    });
+    loadPlanUI();
+    showNotice('Today reset.');
   });
-  loadPlanUI();
-  alert('Today reset.');
 }
 
 function deleteRecord(id) {
-  if (!confirm('Delete this record?')) return;
-  const records = JSON.parse(localStorage.getItem('pickRecords') || '[]').filter(r => r.id !== id);
-  localStorage.setItem('pickRecords', JSON.stringify(records));
-  renderHistory();
+  askConfirm('Delete this record?', 'Delete', () => {
+    const records = JSON.parse(localStorage.getItem('pickRecords') || '[]').filter(r => r.id !== id);
+    localStorage.setItem('pickRecords', JSON.stringify(records));
+    renderHistory();
+  });
 }
 
 function clearHistory() {
-  if (!confirm('Clear all history data? This cannot be undone.')) return;
-  localStorage.removeItem('pickRecords');
-  alert('History cleared.');
-  renderHistory();
+  askConfirm('Clear all history data? This cannot be undone.', 'Clear', () => {
+    localStorage.removeItem('pickRecords');
+    renderHistory();
+    showNotice('History cleared.');
+  });
 }
 
 // Records now carry a numeric savedTs. Older ones only have the display string
@@ -2122,7 +2221,7 @@ function renderHistory() {
 // Decanting to a shift target in Ambient and Chill. Shares the selected shift and
 // the app-wide current time with Pick, and nothing else: it never reads or writes
 // dayPlan, dayProgress or zoneState.
-const IB_CELL = { decanted: 'ib-decanted-', floor: 'ib-floor-', people: 'ib-people-', breaks: 'ib-breaks-' };
+const IB_CELL = { decanted: 'ib-decanted-', floor: 'ib-floor-', incoming: 'ib-incoming-', people: 'ib-people-', breaks: 'ib-breaks-' };
 const IB_DEFAULT = { split: { ambient:66, chill:34 }, uph: { ambient:0, chill:0 } };
 
 // The shift Inbound shows. It follows the shared selection, but inbound has no
@@ -2135,7 +2234,7 @@ function ibShift() {
 
 function emptyInboundShift() {
   const s = { target: 0 };
-  IB_ZONES.forEach(z => { s[z] = { decanted:0, floor:null, people:0, breaks:0 }; });
+  IB_ZONES.forEach(z => { s[z] = { decanted:0, floor:null, incoming:0, people:0, breaks:0 }; });
   return s;
 }
 
@@ -2161,6 +2260,7 @@ function getInbound() {
       if (!c) return;
       ib[sh][z].decanted = parseFloat(c.decanted) || 0;
       ib[sh][z].floor    = (c.floor === null || c.floor === undefined) ? null : (parseFloat(c.floor) || 0);
+      ib[sh][z].incoming = parseFloat(c.incoming) || 0;
       ib[sh][z].people   = parseFloat(c.people) || 0;
       ib[sh][z].breaks   = parseFloat(c.breaks) || 0;
     });
@@ -2196,16 +2296,28 @@ function computeInbound(shift, zone) {
   // What the people on it now will get through by the end of the shift.
   const willDecant = live ? cell.people * uph * hrs : 0;
   const forecast = cell.decanted + willDecant;
+  // Stock there is to decant this shift: what is on the floor now plus what is due
+  // in. Incoming is taken as arriving in time to be decanted. Without a floor
+  // count there is nothing to measure, so the floor figures stay blank.
+  const stock = cell.floor === null ? null : cell.floor + cell.incoming;
   return {
     shiftTarget: ib[shift].target, splitPct, target,
-    decanted: cell.decanted, floor: cell.floor, people: cell.people, breaks: cell.breaks, uph,
+    decanted: cell.decanted, floor: cell.floor, incoming: cell.incoming,
+    people: cell.people, breaks: cell.breaks, uph,
     // minsLeft is before breaks, so a caller can tell a shift that has ended from
     // one where breaks take up the time that is left.
     variance, remaining, minsLeft: mins, hrs, expired: !live, needed,
     delta: needed !== null && cell.people > 0 ? cell.people - Math.ceil(needed) : null,
     willDecant, forecast, gap: forecast - target,
-    // The floor only warns; it never changes the people needed.
-    floorShort: cell.floor === null ? 0 : Math.max(0, remaining - cell.floor),
+    // The floor only warns; it never changes the people needed. What is left on it
+    // if the target is reached (negative: the stock cannot cover the target), and
+    // at shift end with the people on now (never below 0; floorRunsOut says the
+    // staff would run out of stock first).
+    stock,
+    floorShort: stock === null ? 0 : Math.max(0, remaining - stock),
+    floorAtTarget: stock === null ? null : stock - remaining,
+    floorAtEnd: stock === null ? null : Math.max(0, stock - willDecant),
+    floorRunsOut: stock !== null && willDecant > stock,
     hasTarget: target > 0
   };
 }
@@ -2228,16 +2340,17 @@ function refreshInboundTab() {
   document.getElementById('ibEndSub').textContent = 'shift ends ' + IB_WIN[shift][1];
 
   // Sum what is displayed, so the Total column always adds up on screen.
-  const sum = { target:0, decanted:0, rem:0, needed:0, active:0, delta:0, will:0, forecast:0, gap:0 };
+  const sum = { target:0, decanted:0, rem:0, needed:0, active:0, delta:0, will:0, forecast:0, gap:0, floorTgt:0, floorEnd:0 };
   const any = { needed:false, delta:false, will:false };
-  let allForecast = true, anyTarget = false, shiftOver = false;
-  const floorLines = [], squeezed = [], noUph = [], noPeople = [];
+  let allForecast = true, allFloorTgt = true, allFloorEnd = true, anyTarget = false, shiftOver = false;
+  const floorLines = [], squeezed = [], noUph = [], noPeople = [], runsOut = [];
+  const negRed = n => '<span class="' + (Math.round(n) < 0 ? 'delta-crit' : '') + '">' + fmt(n) + '</span>';
 
   IB_ZONES.forEach(z => {
-    set('ib-split-' + z, ib.split[z]);
     set('ib-uph-' + z, ib.uph[z] || '');
     set('ib-decanted-' + z, sh[z].decanted || '');
     set('ib-floor-' + z, sh[z].floor === null ? '' : sh[z].floor);
+    set('ib-incoming-' + z, sh[z].incoming || '');
     set('ib-people-' + z, sh[z].people || '');
     set('ib-breaks-' + z, sh[z].breaks || '');
 
@@ -2281,8 +2394,21 @@ function refreshInboundTab() {
     if (showForecast) { sum.forecast += Math.round(c.forecast); sum.gap += Math.round(c.forecast) - Math.round(c.target); }
     else allForecast = false;
 
+    // What is left on the floor if the target is reached, and at shift end with the
+    // people on now. Both need a floor count; the second also needs a forecast, or
+    // a finished shift, which leaves the floor as it is.
+    const showFloorTgt = c.floor !== null && c.hasTarget;
+    const showFloorEnd = c.floor !== null && (c.expired || showWill);
+    txt('ib-r-floortgt-' + z, showFloorTgt ? negRed(c.floorAtTarget) : dash);
+    txt('ib-r-floorend-' + z, !showFloorEnd ? dash
+      : c.floorRunsOut ? '<span class="delta-crit">0</span>' : fmt(c.floorAtEnd));
+    if (showFloorTgt) sum.floorTgt += Math.round(c.floorAtTarget); else allFloorTgt = false;
+    if (showFloorEnd) sum.floorEnd += Math.round(c.floorAtEnd); else allFloorEnd = false;
+    if (showFloorEnd && c.floorRunsOut) runsOut.push(ZLABEL[z]);
+
     if (c.hasTarget && c.floorShort >= 1) {
-      floorLines.push(ZLABEL[z] + ' floor stock is ' + fmt(c.floorShort) + ' short of what it still needs to reach target.');
+      floorLines.push(ZLABEL[z] + (c.incoming > 0 ? ' floor stock plus incoming is ' : ' floor stock is ')
+        + fmt(c.floorShort) + ' short of what it still needs to reach target.');
     }
   });
 
@@ -2296,6 +2422,23 @@ function refreshInboundTab() {
   // A part-forecast total would read as the whole shift, so it needs every chamber.
   txt('ib-r-forecast-total', allForecast ? fmt(sum.forecast) : dash);
   txt('ib-r-gap-total', allForecast ? signed(sum.gap) : dash);
+  // Like the forecast, a floor total needs every chamber or it reads as the whole.
+  txt('ib-r-floortgt-total', allFloorTgt ? negRed(sum.floorTgt) : dash);
+  txt('ib-r-floorend-total', allFloorEnd ? fmt(sum.floorEnd) : dash);
+
+  // Total people is never stored: it is the chambers' active people added up.
+  set('ib-people-total', IB_ZONES.reduce((t, z) => t + sh[z].people, 0) || '');
+
+  // The slider is Ambient's share and Chill takes the rest. The labels show what
+  // is saved, so a split from an older build that misses 100 still reads true.
+  const pct = v => (Math.round(v * 10) / 10) + '%';
+  const slider = document.getElementById('ib-split');
+  const amb = Math.min(100, Math.max(0, ib.split.ambient));
+  if (slider !== activeEl) slider.value = Math.round(amb);
+  slider.style.setProperty('--amb', amb + '%');
+  slider.setAttribute('aria-valuetext', 'Ambient ' + pct(ib.split.ambient) + ', Chill ' + pct(ib.split.chill));
+  document.getElementById('ibSplitAmb').textContent = 'Ambient ' + pct(ib.split.ambient);
+  document.getElementById('ibSplitChl').textContent = 'Chill ' + pct(ib.split.chill);
 
   const splitSum = IB_ZONES.reduce((t, z) => t + ib.split[z], 0);
   document.getElementById('ibSplitWarn').textContent =
@@ -2317,6 +2460,8 @@ function refreshInboundTab() {
   if (noUph.length) notes.push('Enter UPH for ' + both(noUph) + ' to work out the people needed.');
   if (noPeople.length) notes.push('Enter active people for ' + both(noPeople) + ' to forecast.');
   floorLines.forEach(l => notes.push('<span class="delta-crit">' + l + '</span>'));
+  if (runsOut.length) notes.push('<span class="delta-crit">At this rate ' + both(runsOut)
+    + ' will run out of stock to decant before the shift ends.</span>');
   document.getElementById('ibNote').innerHTML = notes.join('<br>');
 }
 
@@ -2327,15 +2472,39 @@ const ibTargetEl = document.getElementById('ib-target');
 }));
 ibTargetEl.addEventListener('blur', refreshInboundTab);
 
-IB_ZONES.forEach(z => {
-  // Split and UPH are kept across shifts and days; the rest belong to the shift.
-  ['split','uph'].forEach(k => {
-    const el = document.getElementById('ib-' + k + '-' + z);
-    const handler = () => writeInbound(ib => { ib[k][z] = parseFloat(el.value) || 0; });
-    el.addEventListener('input', handler);
-    el.addEventListener('change', handler);
-    el.addEventListener('blur', refreshInboundTab);
+// Dragging moves the split in whole percent, and Chill always takes what Ambient
+// leaves, so the slider can never make a split that misses 100.
+const ibSplitEl = document.getElementById('ib-split');
+ibSplitEl.addEventListener('input', () => {
+  const v = parseInt(ibSplitEl.value, 10);
+  writeInbound(ib => { ib.split.ambient = v; ib.split.chill = 100 - v; });
+});
+
+// Total people shares a headcount out by the split, in whole people: Ambient gets
+// its share rounded and Chill the rest, so the two always add back to the total.
+// Typing a chamber's active people instead updates the total, which is only ever
+// their sum. Moving the slider leaves the headcounts alone.
+const ibTotalEl = document.getElementById('ib-people-total');
+['input','change'].forEach(ev => ibTotalEl.addEventListener(ev, () => {
+  const total = Math.max(0, Math.round(parseFloat(ibTotalEl.value) || 0));
+  writeInbound(ib => {
+    const sum = ib.split.ambient + ib.split.chill;
+    const amb = Math.round(total * (sum > 0 ? ib.split.ambient / sum : 0.5));
+    const sh = ib[ibShift()];
+    sh.ambient.people = amb;
+    sh.chill.people = total - amb;
   });
+}));
+ibTotalEl.addEventListener('blur', refreshInboundTab);
+
+IB_ZONES.forEach(z => {
+  // UPH is kept across shifts and days; the rest belong to the shift. The split
+  // has no box of its own: the slider sets it.
+  const uphEl = document.getElementById('ib-uph-' + z);
+  const uphHandler = () => writeInbound(ib => { ib.uph[z] = parseFloat(uphEl.value) || 0; });
+  uphEl.addEventListener('input', uphHandler);
+  uphEl.addEventListener('change', uphHandler);
+  uphEl.addEventListener('blur', refreshInboundTab);
   Object.keys(IB_CELL).forEach(k => {
     const el = document.getElementById(IB_CELL[k] + z);
     const handler = () => writeInbound(ib => {
@@ -2368,76 +2537,92 @@ function saveInboundRecord() {
     records.unshift(Object.assign({ id: Date.now() + saved }, stamp, {
       zone: z, shift: shift, current: current, end: IB_WIN[shift][1],
       shiftTarget: c.shiftTarget, splitPct: c.splitPct, target: c.target,
-      decanted: c.decanted, remaining: c.remaining, floor: c.floor,
+      decanted: c.decanted, remaining: c.remaining, floor: c.floor, incoming: c.incoming,
       uph: c.uph, breaks: c.breaks, people: c.people, timeRemH: c.hrs,
-      needed: c.needed, delta: c.delta, willDecant: c.willDecant, forecast: c.forecast, gap: c.gap
+      needed: c.needed, delta: c.delta, willDecant: c.willDecant, forecast: c.forecast, gap: c.gap,
+      floorAtEnd: c.floorAtEnd, floorRunsOut: c.floorRunsOut
     }));
     saved++;
   });
 
-  if (!saved) { alert('Nothing to save — enter a shift target, active people, UPH and a shift that has not ended yet.'); return; }
+  if (!saved) { showNotice('Nothing to save — enter a shift target, active people, UPH and a shift that has not ended yet.'); return; }
   localStorage.setItem('inboundRecords', JSON.stringify(records));
-  if (skipped.length) alert('Saved ' + saved + ' of ' + IB_ZONES.length + ' chambers. Skipped: ' + skipped.join(', ') + '.');
+  if (skipped.length) showNotice('Saved ' + saved + ' of ' + IB_ZONES.length + ' chambers. Skipped: ' + skipped.join(', ') + '.');
   switchTab('ibhistory');
 }
 
-function setIbFilter(f) {
-  ibActiveFilter = f;
-  ['all'].concat(IB_ZONES).forEach(x => {
-    const cls = x === 'all' ? 'fall' : x === 'ambient' ? 'famb' : 'fchi';
-    document.getElementById('ibfilter-' + x).className = 'fbtn' + (x === f ? ' ' + cls : '');
+// A card is one Save record, so delete takes every chamber saved with it.
+function deleteInboundSave(ts) {
+  askConfirm('Delete this saved entry for both chambers?', 'Delete', () => {
+    const records = JSON.parse(localStorage.getItem('inboundRecords') || '[]').filter(r => recordSortKey(r) !== ts);
+    localStorage.setItem('inboundRecords', JSON.stringify(records));
+    renderInboundHistory();
   });
-  renderInboundHistory();
 }
 
-function deleteInboundRecord(id) {
-  if (!confirm('Delete this record?')) return;
-  const records = JSON.parse(localStorage.getItem('inboundRecords') || '[]').filter(r => r.id !== id);
-  localStorage.setItem('inboundRecords', JSON.stringify(records));
-  renderInboundHistory();
+// Floor at end, saved with each record since the history started showing it.
+// Older records are worked out from the floor, incoming and will-decant they kept.
+function recFloorAtEnd(r) {
+  if (r.floorAtEnd !== undefined) return { value: r.floorAtEnd, runsOut: !!r.floorRunsOut };
+  if (r.floor === null || r.floor === undefined) return { value: null, runsOut: false };
+  const stock = r.floor + (r.incoming || 0), will = r.willDecant || 0;
+  return { value: Math.max(0, stock - will), runsOut: will > stock };
 }
 
 function clearInboundHistory() {
-  if (!confirm('Clear all inbound history? This cannot be undone.')) return;
-  localStorage.removeItem('inboundRecords');
-  renderInboundHistory();
+  askConfirm('Clear all inbound history? This cannot be undone.', 'Clear', () => {
+    localStorage.removeItem('inboundRecords');
+    renderInboundHistory();
+  });
 }
 
+// One card per Save record, chambers side by side. Records are still stored one
+// per chamber; the ones saved together share a timestamp, which groups them. A
+// chamber skipped when saving shows — down its column.
 function renderInboundHistory() {
-  let records = JSON.parse(localStorage.getItem('inboundRecords') || '[]');
-  if (ibActiveFilter !== 'all') records = records.filter(r => r.zone === ibActiveFilter);
-  // Newest first; records saved together share a timestamp, so id keeps chamber order.
-  records.sort((a, b) => recordSortKey(b) - recordSortKey(a) || (a.id || 0) - (b.id || 0));
+  const records = JSON.parse(localStorage.getItem('inboundRecords') || '[]');
+  const saves = [], byTs = {};
+  records.forEach(r => {
+    const ts = recordSortKey(r);
+    if (!byTs[ts]) { byTs[ts] = { ts: ts, first: r, zones: {} }; saves.push(byTs[ts]); }
+    byTs[ts].zones[r.zone] = r;
+  });
+  saves.sort((a, b) => b.ts - a.ts);   // newest first
   const el = document.getElementById('ibHistoryList');
-  if (!records.length) {
-    el.innerHTML = '<div class="hempty">No saved records' + (ibActiveFilter !== 'all' ? ' for ' + ibActiveFilter : '') + '.</div>';
+  if (!saves.length) {
+    el.innerHTML = '<div class="hempty">No saved records.</div>';
     return;
   }
   const num = x => (x === undefined || x === null) ? '—' : fmt(x);
-  const signed = x => (x === undefined || x === null) ? '—' : (Math.round(x) > 0 ? '+' : '') + fmt(x);
-  const col = (label, val, cls) => '<div class="hgcol"><div class="hglabel">' + label + '</div>'
-    + '<div class="hgval' + (cls ? ' ' + cls : '') + '">' + val + '</div></div>';
+  const dec = x => (x === undefined || x === null) ? '—' : parseFloat(x).toFixed(2);
+  const ROWS = [
+    ['Target',       r => num(r.target)],
+    ['Decanted',     r => num(r.decanted)],
+    ['Rem units',    r => num(r.remaining)],
+    ['Active ppl',   r => num(r.people)],
+    ['UPH',          r => num(r.uph)],
+    ['Breaks',       r => (r.breaks || 0) + 'm'],
+    ['Time rem',     r => dec(r.timeRemH) + 'h'],
+    ['Calc ppl',     r => dec(r.needed)],
+    ['Forecast',     r => num(r.forecast)],
+    ['Floor at end', r => { const f = recFloorAtEnd(r);
+                            return f.value === null ? '—' : f.runsOut ? '<span class="delta-crit">0</span>' : fmt(f.value); }]
+  ];
 
-  el.innerHTML = records.map(r => {
-    const delta = r.delta === undefined ? null : r.delta;
-    const info = getDeltaInfo(delta);
-    const deltaDisplay = delta !== null ? formatDelta(delta) + ' (' + info.label + ')' : '—';
-    return '<div class="hitem">'
-      + '<div class="hhead">'
-      + '<div class="hdate">' + r.savedDate + ' ' + r.current
-      + '<span class="zbadge ' + r.zone + '">' + (ZLABEL[r.zone] || r.zone) + '</span>'
-      + '<span class="sbadge">' + (SLABEL[r.shift] || r.shift) + '</span></div>'
-      + '<button onclick="deleteInboundRecord(' + r.id + ')" style="font-size:10px;color:#999;background:none;border:none;cursor:pointer;white-space:nowrap;margin-left:6px;">delete</button>'
-      + '</div>'
-      + '<div class="hgrid hgrid-3e">' + col('Target', num(r.target)) + col('Decanted', num(r.decanted)) + col('Rem units', num(r.remaining)) + '</div>'
-      + '<div class="hgrid hgrid-4">' + col('Floor', num(r.floor)) + col('UPH', num(r.uph))
-      + col('Breaks', (r.breaks || 0) + 'm') + col('Time rem', parseFloat(r.timeRemH).toFixed(2)) + '</div>'
-      + '<div class="hgrid hgrid-3e">' + col('Will decant', num(r.willDecant)) + col('Forecast', num(r.forecast))
-      + col('vs target', signed(r.gap), Math.round(r.gap) < 0 ? 'delta-crit' : '') + '</div>'
-      + '<div class="hgrid hgrid-3">' + col('Active', r.people || '—') + col('Calc', parseFloat(r.needed).toFixed(2))
-      + col('Delta', deltaDisplay, 'delta-' + info.cls) + '</div>'
-      + '</div>';
-  }).join('');
+  el.innerHTML = saves.map(s => '<div class="hitem">'
+    + '<div class="hhead">'
+    + '<div class="hdate">' + s.first.savedDate + ' ' + s.first.current
+    + '<span class="sbadge">' + (SLABEL[s.first.shift] || s.first.shift) + '</span></div>'
+    + '<button onclick="deleteInboundSave(' + s.ts + ')" style="font-size:10px;color:#999;background:none;border:none;cursor:pointer;white-space:nowrap;margin-left:6px;">delete</button>'
+    + '</div>'
+    + '<table class="stbl htbl"><thead><tr><th></th>'
+    + IB_ZONES.map(z => '<th><span class="zname ' + z + '">' + ZLABEL[z] + '</span></th>').join('')
+    + '</tr></thead><tbody>'
+    + ROWS.map(row => '<tr><td>' + row[0] + '</td>'
+      + IB_ZONES.map(z => '<td>' + (s.zones[z] ? row[1](s.zones[z]) : '—') + '</td>').join('')
+      + '</tr>').join('')
+    + '</tbody></table>'
+    + '</div>').join('');
 }
 
 // --- Mode ---
@@ -2452,7 +2637,12 @@ function setMode(mode) {
 
 function applyMode(mode) {
   const inbound = mode === 'inbound';
-  document.querySelector('.app').classList.toggle('inbound', inbound);
+  const app = document.querySelector('.app');
+  app.classList.toggle('inbound', inbound);
+  // The phone's status bar takes the header's colour too, read from the CSS so
+  // the light and dark values stay in one place.
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+  if (themeMeta) themeMeta.content = getComputedStyle(app).getPropertyValue('--hdr').trim();
   ['pick','inbound'].forEach(m => document.getElementById('mode-' + m).classList.toggle('on', m === mode));
   document.getElementById('appTitle').textContent = inbound ? 'Inbound calculator' : 'Pick calculator';
   document.title = inbound ? 'Inbound Calculator' : 'Pick Calculator';

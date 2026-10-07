@@ -42,21 +42,31 @@ day.
 ## Inbound mode
 
 The **Pick | Inbound** switch in the header changes mode, and the app remembers
-the choice. Inbound plans decanting into Ambient and Chill over the **AM and PM
+the choice. The header is **indigo in Pick** and **plum in Inbound**, so the
+mode shows at a glance. On a phone the status bar takes the same colour. Inbound plans decanting into Ambient and Chill over the **AM and PM
 shifts only**, and hides everything pick-related. It shares only the selected
 shift and the current time with Pick. While Pick is on Night, Inbound shows AM
 before 13:00 and PM after.
 
-1. **Decant tab** — enter the shift's target units and how they split between
-   Ambient and Chill. For each chamber, enter the units decanted so far, the stock
-   on the floor, UPH, breaks and active people. It works to the end of the shift
+1. **Decant tab** — enter the shift's target units, then drag the **split
+   slider** to share it between Ambient and Chill (Chill always takes what
+   Ambient leaves). **Total people** under the slider shares a headcount out by
+   the split; typing a chamber's active people instead updates the total. For
+   each chamber, enter the units decanted so far, the stock
+   on the floor, any incoming stock due during the shift, UPH, breaks and
+   active people. It works to the end of the shift
    (AM 13:00, PM 18:00) and shows the people needed to reach target,
    the delta against active people, the units the current staff will decant by
-   the end of the shift, and the forecast against target. When the floor holds
-   less than a chamber still needs, a warning appears. Floor stock never changes
-   the people needed.
-2. **History tab** — **Save record** on the Decant tab stores one snapshot per
-   chamber. History is kept separate from pick history and has its own clear
+   the end of the shift, and the forecast against target. Two rows show the
+   stock left over, counting floor stock plus incoming: **Floor at target**
+   (if the target is reached; negative in red means the stock can't cover it)
+   and **Floor at end** (at shift end with the current staff; a red 0 means
+   they'll run out first). Stock never changes the people needed.
+2. **History tab** — **Save record** on the Decant tab stores a snapshot, shown
+   as one card with Ambient and Chill side by side: target, decanted, remaining,
+   active people, UPH, breaks, time remaining, people needed, forecast and floor
+   at end. A chamber skipped when saving shows —, and delete removes the whole
+   card. History is kept separate from pick history and has its own clear
    button.
 
 ## Files
